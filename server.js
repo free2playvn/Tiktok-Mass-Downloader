@@ -60,6 +60,11 @@ const liveInteractiveBrain = require('./modules/live_interactive_brain');
 const autopilotPublisher = require('./modules/autopilot_publisher');
 const voiceCloneStudio = require('./modules/voice_clone_studio');
 const virtualStageCompositor = require('./modules/virtual_stage_compositor');
+const adSpyRadar = require('./modules/ad_spy_radar');
+const retentionDropoffPredictor = require('./modules/retention_dropoff_predictor');
+const virtualStreamDeck = require('./modules/virtual_stream_deck');
+const viralThumbnailGenerator = require('./modules/viral_thumbnail_generator');
+const affiliateFinancialLedger = require('./modules/affiliate_financial_ledger');
 
 const PORT = process.env.PORT || 3000;
 const STUDIO_DIR = path.join(__dirname, 'studio');
@@ -2234,7 +2239,106 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  /* ===================================================================
+     PHASE 5 ADVANCED ENTERPRISE ARSENAL (5 WEAPONS)
+     =================================================================== */
 
+  // --- 1. COMPETITOR VIDEO AD SPY & CREATIVE RADAR ---
+  if (pathname === '/api/enterprise/ad-spy/winning-ads' && req.method === 'GET') {
+    const category = parsedUrl.query?.category || 'all';
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(adSpyRadar.getWinningAds(category)));
+    return;
+  }
+  if (pathname === '/api/enterprise/ad-spy/generate-counter-ad' && req.method === 'POST') {
+    try {
+      const { adId, customAngle } = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(adSpyRadar.generateCounterAd(adId, customAngle)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // --- 2. RETENTION HEATMAP & DROP-OFF PREDICTOR ---
+  if (pathname === '/api/enterprise/retention-predictor/analyze' && req.method === 'POST') {
+    try {
+      const body = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(retentionDropoffPredictor.analyzeVideoRetention(body)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // --- 3. VIRTUAL STREAM DECK & MULTI-CAMERA SWITCHER ---
+  if (pathname === '/api/enterprise/stream-deck/state' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(virtualStreamDeck.getState()));
+    return;
+  }
+  if (pathname === '/api/enterprise/stream-deck/switch-camera' && req.method === 'POST') {
+    try {
+      const { cameraId } = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(virtualStreamDeck.switchCamera(cameraId)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+  if (pathname === '/api/enterprise/stream-deck/trigger-sound' && req.method === 'POST') {
+    try {
+      const { soundId } = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(virtualStreamDeck.triggerSoundFx(soundId)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // --- 4. AI VIRAL THUMBNAIL GENERATOR & EYE-TRACKING ---
+  if (pathname === '/api/enterprise/viral-thumbnail/generate' && req.method === 'POST') {
+    try {
+      const body = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(viralThumbnailGenerator.generateThumbnails(body)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // --- 5. AUTOMATED AFFILIATE FINANCIAL LEDGER ---
+  if (pathname === '/api/enterprise/financial-ledger/summary' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(affiliateFinancialLedger.getSummary()));
+    return;
+  }
+  if (pathname === '/api/enterprise/financial-ledger/record-transaction' && req.method === 'POST') {
+    try {
+      const body = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(affiliateFinancialLedger.recordTransaction(body)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+  if (pathname === '/api/enterprise/financial-ledger/export-report' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(affiliateFinancialLedger.exportReport()));
+    return;
+  }
 
   let reqPath = pathname === '/' ? '/index.html' : pathname;
   let filePath = path.join(STUDIO_DIR, reqPath);

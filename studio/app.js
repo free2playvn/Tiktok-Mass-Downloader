@@ -161,6 +161,11 @@ document.addEventListener('DOMContentLoaded', () => {
     setupLiveBrainModule();
     setupAutopilotModule();
     setupCrmWebhookModule();
+    setupAdSpyModule();
+    setupRetentionPredictorModule();
+    setupStreamDeckModule();
+    setupThumbnailGeneratorModule();
+    setupFinancialLedgerModule();
     setupModals();
     loadActiveVideo();
     drawSimulatedWaveform();
@@ -8886,6 +8891,657 @@ document.addEventListener('DOMContentLoaded', () => {
         } finally {
           btnSendTestCrmAlert.disabled = false;
           btnSendTestCrmAlert.textContent = '⚡ Bắn Thông Báo Thử Nghiệm Ngay';
+        }
+      });
+    }
+  }
+
+  /* ===================================================================
+     41. COMPETITOR VIDEO AD SPY & CREATIVE RADAR
+     =================================================================== */
+  function setupAdSpyModule() {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    const modalAdSpy = document.getElementById('modalAdSpy');
+    const btnOpenAdSpyModal = document.getElementById('btnOpenAdSpyModal');
+    const btnCloseAdSpyModal = document.getElementById('btnCloseAdSpyModal');
+    const btnCloseAdSpyModalBottom = document.getElementById('btnCloseAdSpyModalBottom');
+    const adSpyWinningGrid = document.getElementById('adSpyWinningGrid');
+    const btnRefreshAdSpy = document.getElementById('btnRefreshAdSpy');
+    const btnGenerateCounterAd = document.getElementById('btnGenerateCounterAd');
+    const adSpyCustomAngleInput = document.getElementById('adSpyCustomAngleInput');
+    const adSpyBlueprintResult = document.getElementById('adSpyBlueprintResult');
+    const categoryFilters = document.querySelectorAll('#adSpyCategoryFilters button');
+
+    let currentCategory = 'all';
+    let selectedAdId = 'ad_spy_001';
+
+    function openModal() {
+      if (modalAdSpy) {
+        modalAdSpy.classList.add('open');
+        loadWinningAds();
+      }
+    }
+
+    function closeModal() {
+      if (modalAdSpy) modalAdSpy.classList.remove('open');
+    }
+
+    if (btnOpenAdSpyModal) btnOpenAdSpyModal.addEventListener('click', openModal);
+    if (btnCloseAdSpyModal) btnCloseAdSpyModal.addEventListener('click', closeModal);
+    if (btnCloseAdSpyModalBottom) btnCloseAdSpyModalBottom.addEventListener('click', closeModal);
+    if (modalAdSpy) {
+      modalAdSpy.addEventListener('click', (e) => {
+        if (e.target === modalAdSpy) closeModal();
+      });
+    }
+
+    if (categoryFilters) {
+      categoryFilters.forEach(btn => {
+        btn.addEventListener('click', () => {
+          categoryFilters.forEach(b => {
+            b.classList.remove('active');
+            b.classList.add('secondary-btn');
+          });
+          btn.classList.add('active');
+          btn.classList.remove('secondary-btn');
+          currentCategory = btn.dataset.cat || 'all';
+          loadWinningAds();
+        });
+      });
+    }
+
+    if (btnRefreshAdSpy) {
+      btnRefreshAdSpy.addEventListener('click', () => loadWinningAds());
+    }
+
+    async function loadWinningAds() {
+      if (!adSpyWinningGrid) return;
+      adSpyWinningGrid.innerHTML = '<div style="grid-column: span 3; text-align:center; color:#fda4af; padding:20px;">🔄 Đang quét các chiến dịch quảng cáo bùng nổ...</div>';
+
+      try {
+        const res = await fetch(`/api/enterprise/ad-spy/winning-ads?category=${encodeURIComponent(currentCategory)}`);
+        const data = await res.json();
+        if (data.ok && Array.isArray(data.winningAds)) {
+          if (data.winningAds.length === 0) {
+            adSpyWinningGrid.innerHTML = '<div style="grid-column: span 3; text-align:center; color:var(--text-muted); padding:20px;">Không có mẫu ads nào trong danh mục này.</div>';
+            return;
+          }
+
+          adSpyWinningGrid.innerHTML = data.winningAds.map(ad => `
+            <div class="ad-spy-card ${ad.id === selectedAdId ? 'selected' : ''}" data-id="${ad.id}">
+              <div class="ad-spy-thumb-wrap">
+                <img src="${ad.thumbnail}" alt="${escapeHtml(ad.productName)}" loading="lazy">
+                <span class="ad-spy-badge">${escapeHtml(ad.platform)}</span>
+              </div>
+              <div class="ad-spy-content">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong style="font-size:11px; color:#fda4af;">${escapeHtml(ad.brandName)}</strong>
+                  <span style="font-size:10px; color:#34d399; font-weight:700;">$${ad.estimatedSpendUsd.toLocaleString()} Spend</span>
+                </div>
+                <div style="font-size:11px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(ad.productName)}</div>
+                <div style="font-size:10px; color:#fecdd3; background:rgba(0,0,0,0.3); padding:4px 6px; border-radius:4px; border-left:2px solid #f43f5e;">
+                  <strong>Hook 3s:</strong> "${escapeHtml(ad.hookScript)}"
+                </div>
+                <div style="font-size:9px; color:#94a3b8; margin-top:2px;">
+                  ✨ <strong>Yếu tố thắng:</strong> ${escapeHtml(ad.winningFactor)}
+                </div>
+                <button class="studio-btn sm-btn ${ad.id === selectedAdId ? 'primary-btn' : 'secondary-btn'} btn-select-ad-spy" data-id="${ad.id}" style="margin-top:6px; font-size:10px; padding:4px;">
+                  <span>${ad.id === selectedAdId ? '✓ Đã Chọn Mẫu Này' : '🎯 Chọn Để Bẻ Góc'}</span>
+                </button>
+              </div>
+            </div>
+          `).join('');
+
+          adSpyWinningGrid.querySelectorAll('.btn-select-ad-spy').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              selectedAdId = btn.dataset.id;
+              loadWinningAds();
+            });
+          });
+        }
+      } catch (e) {
+        adSpyWinningGrid.innerHTML = `<div style="grid-column: span 3; text-align:center; color:#f87171; padding:20px;">Lỗi tải dữ liệu: ${e.message}</div>`;
+      }
+    }
+
+    if (btnGenerateCounterAd) {
+      btnGenerateCounterAd.addEventListener('click', async () => {
+        btnGenerateCounterAd.disabled = true;
+        btnGenerateCounterAd.textContent = 'Đang phân tích và bẻ góc kịch bản...';
+
+        try {
+          const customAngle = adSpyCustomAngleInput ? adSpyCustomAngleInput.value.trim() : '';
+          const res = await fetch('/api/enterprise/ad-spy/generate-counter-ad', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ adId: selectedAdId, customAngle })
+          });
+          const data = await res.json();
+          if (data.ok && data.blueprint) {
+            const bp = data.blueprint;
+            if (adSpyBlueprintResult) {
+              adSpyBlueprintResult.className = 'pub-status-box success';
+              adSpyBlueprintResult.classList.remove('hidden');
+              adSpyBlueprintResult.innerHTML = `
+                <div style="font-size:12px; font-weight:800; color:#fda4af; margin-bottom:4px;">🎯 KỊCH BẢN ĐỐI KHÁNG ROAS MỤC TIÊU: <span style="color:#34d399;">${escapeHtml(bp.estimatedRoas)}</span></div>
+                <div style="font-size:11px; color:#fecdd3; margin-bottom:6px;"><strong>Chiến lược bẻ góc:</strong> ${escapeHtml(bp.counterStrategy)}</div>
+                <div style="font-size:11px; color:#fff; background:rgba(0,0,0,0.4); padding:6px; border-radius:4px; margin-bottom:6px;">
+                  <strong>⚡ Hook 3 Giây Đầu:</strong> "${escapeHtml(bp.counterHook3s)}"
+                </div>
+                <div style="font-size:10px; color:#cbd5e1;">
+                  ${bp.scriptStructure.map(s => `<div>• <strong>${escapeHtml(s.phase)}:</strong> ${escapeHtml(s.text)}</div>`).join('')}
+                </div>
+              `;
+            }
+          }
+        } catch (e) {
+          alert('Lỗi: ' + e.message);
+        } finally {
+          btnGenerateCounterAd.disabled = false;
+          btnGenerateCounterAd.textContent = '⚡ Tạo Kịch Bản Đối Kháng ROAS 6x';
+        }
+      });
+    }
+  }
+
+  /* ===================================================================
+     42. RETENTION HEATMAP & DROP-OFF PREDICTOR
+     =================================================================== */
+  function setupRetentionPredictorModule() {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    const modalRetentionPredictor = document.getElementById('modalRetentionPredictor');
+    const btnOpenRetentionModal = document.getElementById('btnOpenRetentionModal');
+    const btnCloseRetentionModal = document.getElementById('btnCloseRetentionModal');
+    const btnCloseRetentionModalBottom = document.getElementById('btnCloseRetentionModalBottom');
+    const btnAnalyzeRetention = document.getElementById('btnAnalyzeRetention');
+    const retentionVideoTitleInput = document.getElementById('retentionVideoTitleInput');
+    const retentionDurationSelect = document.getElementById('retentionDurationSelect');
+    const metricViralScore = document.getElementById('metricViralScore');
+    const metricRetention3s = document.getElementById('metricRetention3s');
+    const metricWatchTime = document.getElementById('metricWatchTime');
+    const metricFypOdds = document.getElementById('metricFypOdds');
+    const retentionChartBars = document.getElementById('retentionChartBars');
+    const retentionDangerDropoffsList = document.getElementById('retentionDangerDropoffsList');
+
+    function openModal() {
+      if (modalRetentionPredictor) {
+        modalRetentionPredictor.classList.add('open');
+        runAnalysis();
+      }
+    }
+
+    function closeModal() {
+      if (modalRetentionPredictor) modalRetentionPredictor.classList.remove('open');
+    }
+
+    if (btnOpenRetentionModal) btnOpenRetentionModal.addEventListener('click', openModal);
+    if (btnCloseRetentionModal) btnCloseRetentionModal.addEventListener('click', closeModal);
+    if (btnCloseRetentionModalBottom) btnCloseRetentionModalBottom.addEventListener('click', closeModal);
+    if (modalRetentionPredictor) {
+      modalRetentionPredictor.addEventListener('click', (e) => {
+        if (e.target === modalRetentionPredictor) closeModal();
+      });
+    }
+
+    if (btnAnalyzeRetention) {
+      btnAnalyzeRetention.addEventListener('click', () => runAnalysis());
+    }
+
+    async function runAnalysis() {
+      if (!btnAnalyzeRetention) return;
+      btnAnalyzeRetention.disabled = true;
+      btnAnalyzeRetention.textContent = 'Đang mô phỏng FYP...';
+
+      const videoTitle = retentionVideoTitleInput ? retentionVideoTitleInput.value.trim() : 'Video Sáng Tạo';
+      const durationSec = retentionDurationSelect ? Number(retentionDurationSelect.value) : 20;
+
+      try {
+        const res = await fetch('/api/enterprise/retention-predictor/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ videoTitle, durationSec })
+        });
+        const data = await res.json();
+        if (data.ok && data.analytics) {
+          const a = data.analytics;
+          if (metricViralScore) metricViralScore.textContent = `${a.viralScore}/100`;
+          if (metricRetention3s) metricRetention3s.textContent = a.retention3s;
+          if (metricWatchTime) metricWatchTime.textContent = a.averageWatchTime;
+          if (metricFypOdds) metricFypOdds.textContent = a.fypPromotionOdds.includes('CỰC CAO') ? 'CỰC CAO' : 'TRUNG BÌNH';
+
+          // Render chart bars
+          if (retentionChartBars && Array.isArray(a.retentionCurve)) {
+            retentionChartBars.innerHTML = a.retentionCurve.map(pt => {
+              const pct = pt.retentionPct;
+              let barColor = '#10b981'; // Green
+              if (pct < 50) barColor = '#ef4444'; // Red
+              else if (pct < 75) barColor = '#f59e0b'; // Amber
+
+              return `
+                <div class="retention-bar-item" title="Giây ${pt.second}s: ${pct}% giữ chân">
+                  <div class="retention-bar-fill" style="height:${pct}%; background:${barColor};"></div>
+                </div>
+              `;
+            }).join('');
+          }
+
+          // Render danger drop-offs
+          if (retentionDangerDropoffsList && Array.isArray(a.dangerDropoffs)) {
+            retentionDangerDropoffsList.innerHTML = a.dangerDropoffs.map(d => `
+              <div class="danger-dropoff-card">
+                <div>
+                  <div style="font-size:11px; font-weight:700; color:#fca5a5;">
+                    ⏱️ Mốc ${escapeHtml(d.timecode)} (Tụt đột ngột ${escapeHtml(d.retentionDrop)}): ${escapeHtml(d.issueDetected)}
+                  </div>
+                  <div style="font-size:10px; color:#6ee7b7; margin-top:2px;">
+                    ${escapeHtml(d.recommendedFix)}
+                  </div>
+                </div>
+                <span class="badge-mini-3d" style="background:#ef4444; color:#fff;">DANGER</span>
+              </div>
+            `).join('');
+          }
+        }
+      } catch (e) {
+        alert('Lỗi: ' + e.message);
+      } finally {
+        btnAnalyzeRetention.disabled = false;
+        btnAnalyzeRetention.textContent = '⚡ Phân Tích Đường Cong';
+      }
+    }
+  }
+
+  /* ===================================================================
+     43. VIRTUAL STREAM DECK & MULTI-CAMERA SWITCHER
+     =================================================================== */
+  function setupStreamDeckModule() {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    const modalStreamDeck = document.getElementById('modalStreamDeck');
+    const btnOpenStreamDeckModal = document.getElementById('btnOpenStreamDeckModal');
+    const btnCloseStreamDeckModal = document.getElementById('btnCloseStreamDeckModal');
+    const btnCloseStreamDeckModalBottom = document.getElementById('btnCloseStreamDeckModalBottom');
+    const deckCurrentFps = document.getElementById('deckCurrentFps');
+    const deckBitrate = document.getElementById('deckBitrate');
+    const deckActiveCamName = document.getElementById('deckActiveCamName');
+    const deckCameraGrid = document.getElementById('deckCameraGrid');
+    const deckSoundboardGrid = document.getElementById('deckSoundboardGrid');
+    const deckRecentLogs = document.getElementById('deckRecentLogs');
+
+    function openModal() {
+      if (modalStreamDeck) {
+        modalStreamDeck.classList.add('open');
+        loadDeckState();
+      }
+    }
+
+    function closeModal() {
+      if (modalStreamDeck) modalStreamDeck.classList.remove('open');
+    }
+
+    if (btnOpenStreamDeckModal) btnOpenStreamDeckModal.addEventListener('click', openModal);
+    if (btnCloseStreamDeckModal) btnCloseStreamDeckModal.addEventListener('click', closeModal);
+    if (btnCloseStreamDeckModalBottom) btnCloseStreamDeckModalBottom.addEventListener('click', closeModal);
+    if (modalStreamDeck) {
+      modalStreamDeck.addEventListener('click', (e) => {
+        if (e.target === modalStreamDeck) closeModal();
+      });
+    }
+
+    async function loadDeckState() {
+      try {
+        const res = await fetch('/api/enterprise/stream-deck/state');
+        const data = await res.json();
+        if (data.ok) {
+          if (deckCurrentFps) deckCurrentFps.textContent = `${data.currentFps || 60} FPS`;
+          if (deckBitrate) deckBitrate.textContent = `${(data.bitrateKbps || 6500).toLocaleString()} Kbps`;
+
+          const activeCam = data.cameras?.find(c => c.isLive) || data.cameras?.[0];
+          if (deckActiveCamName && activeCam) deckActiveCamName.textContent = activeCam.name;
+
+          // Render cameras
+          if (deckCameraGrid && Array.isArray(data.cameras)) {
+            deckCameraGrid.innerHTML = data.cameras.map((c, i) => `
+              <button class="camera-deck-btn ${c.isLive ? 'live-active' : ''}" data-id="${c.id}">
+                <div style="font-size:24px;">${c.icon}</div>
+                <div style="font-size:11px; font-weight:700; color:#fff; text-align:center;">Phím ${i + 1}: ${escapeHtml(c.name.split(':')[1] || c.name)}</div>
+                <span class="badge-mini-3d" style="background:${c.isLive ? '#ef4444' : 'rgba(255,255,255,0.1)'}; color:#fff;">
+                  ${c.isLive ? '🔴 ĐANG PHÁT SÓNG' : escapeHtml(c.resolution)}
+                </span>
+              </button>
+            `).join('');
+
+            deckCameraGrid.querySelectorAll('.camera-deck-btn').forEach(btn => {
+              btn.addEventListener('click', async () => {
+                const camId = btn.dataset.id;
+                await switchCamera(camId);
+              });
+            });
+          }
+
+          // Render soundboard
+          if (deckSoundboardGrid && Array.isArray(data.soundboard)) {
+            deckSoundboardGrid.innerHTML = data.soundboard.map(s => `
+              <button class="soundboard-deck-btn" data-id="${s.id}">
+                <div style="font-size:22px;">${s.icon}</div>
+                <div style="flex:1; text-align:left;">
+                  <div style="font-size:11px; font-weight:700; color:#fff;">${escapeHtml(s.name)}</div>
+                  <div style="font-size:9px; color:#c4b5fd;">Đã kích hoạt: ${s.triggerCount || 0} lần</div>
+                </div>
+                <span style="font-size:10px; color:#a5b4fc;">▶</span>
+              </button>
+            `).join('');
+
+            deckSoundboardGrid.querySelectorAll('.soundboard-deck-btn').forEach(btn => {
+              btn.addEventListener('click', async () => {
+                const soundId = btn.dataset.id;
+                await triggerSound(soundId);
+              });
+            });
+          }
+
+          // Render logs
+          if (deckRecentLogs && Array.isArray(data.recentLogs)) {
+            deckRecentLogs.innerHTML = data.recentLogs.map(l => `
+              <div>• <span style="color:#67e8f9;">[${escapeHtml(l.time)}]</span> ${escapeHtml(l.action)}</div>
+            `).join('');
+          }
+        }
+      } catch (e) {
+        console.error('Lỗi tải stream deck state:', e);
+      }
+    }
+
+    async function switchCamera(cameraId) {
+      try {
+        const res = await fetch('/api/enterprise/stream-deck/switch-camera', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cameraId })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          loadDeckState();
+        }
+      } catch (e) {
+        alert('Lỗi: ' + e.message);
+      }
+    }
+
+    async function triggerSound(soundId) {
+      try {
+        const res = await fetch('/api/enterprise/stream-deck/trigger-sound', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ soundId })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          loadDeckState();
+        }
+      } catch (e) {
+        alert('Lỗi: ' + e.message);
+      }
+    }
+  }
+
+  /* ===================================================================
+     44. AI VIRAL THUMBNAIL GENERATOR & EYE-TRACKING HEATMAP
+     =================================================================== */
+  function setupThumbnailGeneratorModule() {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    const modalViralThumbnail = document.getElementById('modalViralThumbnail');
+    const btnOpenThumbnailModal = document.getElementById('btnOpenThumbnailModal');
+    const btnCloseThumbnailModal = document.getElementById('btnCloseThumbnailModal');
+    const btnCloseThumbnailModalBottom = document.getElementById('btnCloseThumbnailModalBottom');
+    const btnGenerateThumbnails = document.getElementById('btnGenerateThumbnails');
+    const thumbHeadlineInput = document.getElementById('thumbHeadlineInput');
+    const thumbDiscountTagInput = document.getElementById('thumbDiscountTagInput');
+    const thumbVariantsGrid = document.getElementById('thumbVariantsGrid');
+    const thumbEyeTrackingText = document.getElementById('thumbEyeTrackingText');
+
+    function openModal() {
+      if (modalViralThumbnail) {
+        modalViralThumbnail.classList.add('open');
+        generateThumbnails();
+      }
+    }
+
+    function closeModal() {
+      if (modalViralThumbnail) modalViralThumbnail.classList.remove('open');
+    }
+
+    if (btnOpenThumbnailModal) btnOpenThumbnailModal.addEventListener('click', openModal);
+    if (btnCloseThumbnailModal) btnCloseThumbnailModal.addEventListener('click', closeModal);
+    if (btnCloseThumbnailModalBottom) btnCloseThumbnailModalBottom.addEventListener('click', closeModal);
+    if (modalViralThumbnail) {
+      modalViralThumbnail.addEventListener('click', (e) => {
+        if (e.target === modalViralThumbnail) closeModal();
+      });
+    }
+
+    if (btnGenerateThumbnails) {
+      btnGenerateThumbnails.addEventListener('click', () => generateThumbnails());
+    }
+
+    async function generateThumbnails() {
+      if (!btnGenerateThumbnails) return;
+      btnGenerateThumbnails.disabled = true;
+      btnGenerateThumbnails.textContent = 'Đang thiết kế 3 biến thể 4K...';
+
+      const headline = thumbHeadlineInput ? thumbHeadlineInput.value.trim() : 'BÍ QUYẾT TRIỆU VIEW';
+      const discountTag = thumbDiscountTagInput ? thumbDiscountTagInput.value.trim() : 'GIẢM 50%';
+
+      try {
+        const res = await fetch('/api/enterprise/viral-thumbnail/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ headline, discountTag })
+        });
+        const data = await res.json();
+        if (data.ok && Array.isArray(data.variants)) {
+          if (thumbVariantsGrid) {
+            thumbVariantsGrid.innerHTML = data.variants.map(v => `
+              <div class="thumb-variant-card ${v.isWinner ? 'winner' : ''}">
+                <div class="thumb-variant-img-wrap">
+                  <img src="${v.thumbnailUrl}" alt="${escapeHtml(v.styleName)}" loading="lazy">
+                  <span class="badge-mini-3d" style="position:absolute; top:6px; left:6px; background:${v.isWinner ? '#eab308' : '#3b82f6'}; color:${v.isWinner ? '#000' : '#fff'};">
+                    ${escapeHtml(v.badge)}
+                  </span>
+                  <span style="position:absolute; bottom:6px; right:6px; background:rgba(0,0,0,0.8); color:#fef08a; font-size:10px; font-weight:800; padding:2px 6px; border-radius:4px;">
+                    CTR: ${escapeHtml(v.estimatedCtr)}
+                  </span>
+                </div>
+                <div style="padding:10px; display:flex; flex-direction:column; gap:4px;">
+                  <strong style="font-size:11px; color:#fff;">${escapeHtml(v.styleName)}</strong>
+                  <div style="font-size:10px; color:#fde047; font-weight:700;">Chữ: "${escapeHtml(v.headlineText)}"</div>
+                  <div style="font-size:9px; color:#cbd5e1;">Biểu cảm: ${escapeHtml(v.facialExpression)}</div>
+                  <div style="font-size:9px; color:#94a3b8; background:rgba(0,0,0,0.3); padding:4px; border-radius:4px; margin-top:2px;">
+                    👁️ Điểm nhìn: Khuôn mặt ${v.saliencyBreakdown.faceFocus} • Chữ ${v.saliencyBreakdown.textFocus} • Nút ${v.saliencyBreakdown.accentFocus}
+                  </div>
+                </div>
+              </div>
+            `).join('');
+          }
+
+          if (thumbEyeTrackingText && data.eyeTrackingInsights) {
+            thumbEyeTrackingText.textContent = data.eyeTrackingInsights.insight;
+          }
+        }
+      } catch (e) {
+        alert('Lỗi: ' + e.message);
+      } finally {
+        btnGenerateThumbnails.disabled = false;
+        btnGenerateThumbnails.textContent = '⚡ Tạo 3 Ảnh Bìa Viral';
+      }
+    }
+  }
+
+  /* ===================================================================
+     45. AUTOMATED AFFILIATE P&L FINANCIAL LEDGER
+     =================================================================== */
+  function setupFinancialLedgerModule() {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    const modalFinancialLedger = document.getElementById('modalFinancialLedger');
+    const btnOpenLedgerModal = document.getElementById('btnOpenLedgerModal');
+    const btnCloseLedgerModal = document.getElementById('btnCloseLedgerModal');
+    const btnCloseLedgerModalBottom = document.getElementById('btnCloseLedgerModalBottom');
+    const ledgerGmvVal = document.getElementById('ledgerGmvVal');
+    const ledgerCommissionVal = document.getElementById('ledgerCommissionVal');
+    const ledgerAdSpendVal = document.getElementById('ledgerAdSpendVal');
+    const ledgerNetProfitVal = document.getElementById('ledgerNetProfitVal');
+    const ledgerRoiVal = document.getElementById('ledgerRoiVal');
+    const btnRecordTransaction = document.getElementById('btnRecordTransaction');
+    const ledgerNewChannelSelect = document.getElementById('ledgerNewChannelSelect');
+    const ledgerNewProductName = document.getElementById('ledgerNewProductName');
+    const ledgerNewAmount = document.getElementById('ledgerNewAmount');
+    const ledgerTransactionsTable = document.getElementById('ledgerTransactionsTable');
+    const btnExportFinancialReport = document.getElementById('btnExportFinancialReport');
+    const ledgerStatusBox = document.getElementById('ledgerStatusBox');
+
+    function openModal() {
+      if (modalFinancialLedger) {
+        modalFinancialLedger.classList.add('open');
+        loadLedgerSummary();
+      }
+    }
+
+    function closeModal() {
+      if (modalFinancialLedger) modalFinancialLedger.classList.remove('open');
+    }
+
+    if (btnOpenLedgerModal) btnOpenLedgerModal.addEventListener('click', openModal);
+    if (btnCloseLedgerModal) btnCloseLedgerModal.addEventListener('click', closeModal);
+    if (btnCloseLedgerModalBottom) btnCloseLedgerModalBottom.addEventListener('click', closeModal);
+    if (modalFinancialLedger) {
+      modalFinancialLedger.addEventListener('click', (e) => {
+        if (e.target === modalFinancialLedger) closeModal();
+      });
+    }
+
+    async function loadLedgerSummary() {
+      try {
+        const res = await fetch('/api/enterprise/financial-ledger/summary');
+        const data = await res.json();
+        if (data.ok && data.summary) {
+          const s = data.summary;
+          if (ledgerGmvVal) ledgerGmvVal.textContent = `${(s.grossMerchandiseValue || 0).toLocaleString('vi-VN')} đ`;
+          if (ledgerCommissionVal) ledgerCommissionVal.textContent = `${(s.netCommissionEarned || 0).toLocaleString('vi-VN')} đ`;
+          if (ledgerAdSpendVal) ledgerAdSpendVal.textContent = `${(s.totalAdSpend || 0).toLocaleString('vi-VN')} đ`;
+          if (ledgerNetProfitVal) ledgerNetProfitVal.textContent = `${(s.netProfit || 0).toLocaleString('vi-VN')} đ`;
+          if (ledgerRoiVal) ledgerRoiVal.textContent = `${s.roiPercent || 363.7}%`;
+
+          // Render transactions table
+          if (ledgerTransactionsTable && Array.isArray(data.recentTransactions)) {
+            ledgerTransactionsTable.innerHTML = `
+              <table class="ledger-table">
+                <thead>
+                  <tr>
+                    <th>Kênh Bán</th>
+                    <th>Sản Phẩm / Chiến Dịch</th>
+                    <th>GMV Doanh Số</th>
+                    <th>Hoa Hồng / Chi Phí</th>
+                    <th>Thời Gian</th>
+                    <th>Trạng Thái</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${data.recentTransactions.map(tx => `
+                    <tr>
+                      <td><span style="color:#a7f3d0; font-weight:700;">${escapeHtml(tx.channel)}</span></td>
+                      <td><strong>${escapeHtml(tx.product)}</strong></td>
+                      <td>${(tx.gmvAmount || 0).toLocaleString('vi-VN')} đ</td>
+                      <td style="color:${tx.commission >= 0 ? '#34d399' : '#f87171'}; font-weight:700;">
+                        ${tx.commission >= 0 ? '+' : ''}${(tx.commission || 0).toLocaleString('vi-VN')} đ
+                      </td>
+                      <td style="color:#94a3b8; font-size:10px;">${escapeHtml(tx.date)}</td>
+                      <td>
+                        <span class="badge-mini-3d" style="background:${tx.status === 'PAID' ? '#10b981' : '#f59e0b'}; color:#fff;">
+                          ${escapeHtml(tx.status)}
+                        </span>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            `;
+          }
+        }
+      } catch (e) {
+        console.error('Lỗi tải ledger summary:', e);
+      }
+    }
+
+    if (btnRecordTransaction) {
+      btnRecordTransaction.addEventListener('click', async () => {
+        const channel = ledgerNewChannelSelect ? ledgerNewChannelSelect.value : 'TikTok Shop';
+        const product = ledgerNewProductName ? ledgerNewProductName.value.trim() : '';
+        const amount = ledgerNewAmount ? Number(ledgerNewAmount.value) : 250000;
+
+        if (!product) {
+          alert('Vui lòng nhập tên sản phẩm!');
+          return;
+        }
+
+        btnRecordTransaction.disabled = true;
+        try {
+          const res = await fetch('/api/enterprise/financial-ledger/record-transaction', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ channel, product, amount })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            if (ledgerNewProductName) ledgerNewProductName.value = '';
+            if (ledgerStatusBox) {
+              ledgerStatusBox.className = 'pub-status-box success';
+              ledgerStatusBox.innerHTML = `✅ ${escapeHtml(data.message)}`;
+              ledgerStatusBox.classList.remove('hidden');
+            }
+            loadLedgerSummary();
+          }
+        } catch (e) {
+          alert('Lỗi: ' + e.message);
+        } finally {
+          btnRecordTransaction.disabled = false;
+        }
+      });
+    }
+
+    if (btnExportFinancialReport) {
+      btnExportFinancialReport.addEventListener('click', async () => {
+        try {
+          const res = await fetch('/api/enterprise/financial-ledger/export-report');
+          const data = await res.json();
+          if (data.ok) {
+            if (ledgerStatusBox) {
+              ledgerStatusBox.className = 'pub-status-box success';
+              ledgerStatusBox.innerHTML = `📥 Đã kết xuất báo cáo tài chính thành công: <strong>${escapeHtml(data.reportUrl)}</strong> (${escapeHtml(data.period)} • Lợi nhuận: ${escapeHtml(data.netProfitFormatted)})`;
+              ledgerStatusBox.classList.remove('hidden');
+            }
+          }
+        } catch (e) {
+          alert('Lỗi: ' + e.message);
         }
       });
     }

@@ -158,6 +158,41 @@
           <span class="badge-mini-3d" style="background: #8b5cf6; color: #fff;">RVC v2</span>
         </button>
 
+        <!-- Phase 5: Ad Spy Radar Button -->
+        <button class="studio-btn ad-spy-btn pulse-glow" id="btnOpenAdSpyModal" title="Quét Quảng Cáo Đối Thủ & Kịch Bản Đối Kháng (Ad Spy Creative Radar)">
+          <span class="cinema-icon">🎯</span>
+          <span>Ad Spy</span>
+          <span class="badge-mini-3d" style="background: #f43f5e; color: #fff;">ROAS 6X</span>
+        </button>
+
+        <!-- Phase 5: Retention Heatmap Button -->
+        <button class="studio-btn retention-btn" id="btnOpenRetentionModal" title="Dự Đoán Biểu Đồ Giữ Chân Khán Giả Từng Giây (Retention Drop-off Predictor)">
+          <span class="cinema-icon">📈</span>
+          <span>Retention</span>
+          <span class="badge-mini-3d" style="background: #10b981; color: #fff;">FYP AI</span>
+        </button>
+
+        <!-- Phase 5: Virtual Stream Deck Button -->
+        <button class="studio-btn stream-deck-btn pulse-glow" id="btnOpenStreamDeckModal" title="Bàn Điều Khiển Đa Góc Máy & Soundboard Trực Tiếp (Virtual Stream Deck)">
+          <span class="cinema-icon">🎛️</span>
+          <span>Stream Deck</span>
+          <span class="badge-mini-3d" style="background: #06b6d4; color: #fff;">4-CAM</span>
+        </button>
+
+        <!-- Phase 5: Viral Thumbnail Generator Button -->
+        <button class="studio-btn thumbnail-btn" id="btnOpenThumbnailModal" title="Tạo Ảnh Bìa Triệu View & Phân Tích Điểm Nhìn Eye-Tracking (Viral Thumbnail AI)">
+          <span class="cinema-icon">🖼️</span>
+          <span>Thumbnail AI</span>
+          <span class="badge-mini-3d" style="background: #eab308; color: #000;">CTR 17%</span>
+        </button>
+
+        <!-- Phase 5: Affiliate Financial Ledger Button -->
+        <button class="studio-btn ledger-btn" id="btnOpenLedgerModal" title="Sổ Kế Toán & Lợi Nhuận Ròng Tự Động (Affiliate P&L Financial Ledger)">
+          <span class="cinema-icon">📊</span>
+          <span>Sổ P&L</span>
+          <span class="badge-mini-3d" style="background: #8b5cf6; color: #fff;">ROI 360%</span>
+        </button>
+
         <div class="tool-divider"></div>
 
         <!-- User Profile Pill & Dropdown -->
@@ -4776,6 +4811,350 @@
         <div class="modal-footer" style="display:flex; justify-content:space-between;">
           <span style="font-size:11px; color:#7dd3fc;">💡 Thông báo được gửi bảo mật mã hóa qua giao thức HTTPS Webhook với độ trễ dưới 200ms.</span>
           <button class="studio-btn secondary-btn" id="btnCloseCrmWebhookModalBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL 13: COMPETITOR VIDEO AD SPY & CREATIVE RADAR
+         =================================================================== -->
+    <div class="studio-modal-backdrop" id="modalAdSpy">
+      <div class="studio-modal" style="max-width: 980px; background:#1c1017; border:1px solid rgba(244, 63, 94, 0.4); box-shadow:0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(244, 63, 94, 0.2);">
+        <div class="modal-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="badge-mini-3d" style="background:#f43f5e; color:#fff;">AD SPY RADAR</span>
+            <div>
+              <h3 style="margin:0; font-size:16px; color:#fff;">🎯 Competitor Video Ad Spy & Creative Radar (Quét Ads Đối Thủ & Kịch Bản Đối Kháng)</h3>
+              <div style="font-size:11px; color:#fecdd3;">Quét các mẫu video ads đang chi tiêu ngân sách khủng trên TikTok & FB Ads Library để tạo kịch bản bẻ góc thắng thế</div>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseAdSpyModal">✕</button>
+        </div>
+
+        <div class="modal-body" style="padding: 18px;">
+          <!-- Category Filter Bar -->
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <div style="display:flex; gap:8px;" id="adSpyCategoryFilters">
+              <button class="studio-btn sm-btn active" data-cat="all">Tất Cả Ngành Hàng</button>
+              <button class="studio-btn sm-btn secondary-btn" data-cat="beauty">Mỹ Phẩm & Skincare</button>
+              <button class="studio-btn sm-btn secondary-btn" data-cat="fashion">Thời Trang & Đồng Hồ</button>
+              <button class="studio-btn sm-btn secondary-btn" data-cat="home_appliances">Gia Dụng & Đồ Tiện Ích</button>
+            </div>
+            <button class="studio-btn primary-btn sm-btn" id="btnRefreshAdSpy">
+              <span>🔄 Quét Lại Ads Realtime</span>
+            </button>
+          </div>
+
+          <!-- Winning Ads Grid -->
+          <div id="adSpyWinningGrid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; max-height:300px; overflow-y:auto; margin-bottom:14px;">
+            <!-- Injected via JS -->
+          </div>
+
+          <!-- Counter-Ad Blueprint Generator Section -->
+          <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <div style="font-size:12px; font-weight:700; color:#fff;">Tùy chỉnh góc tiếp cận kịch bản đối kháng (Counter-Ad Angle):</div>
+              <button class="studio-btn primary-btn sm-btn glow-btn" id="btnGenerateCounterAd">
+                <span>⚡ Tạo Kịch Bản Đối Kháng ROAS 6x</span>
+              </button>
+            </div>
+            <input type="text" id="adSpyCustomAngleInput" class="studio-input sm-input" placeholder="Nhập góc tiếp cận riêng (VD: Nhấn mạnh bảo hành 5 năm hoặc thành phần tự nhiên lành tính)..." style="width:100%;">
+            <div id="adSpyBlueprintResult" class="pub-status-box hidden" style="margin-top: 10px;"></div>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:space-between;">
+          <span style="font-size:11px; color:#fecdd3;">💡 Kịch bản đối kháng tự động khai thác điểm yếu của đối thủ để tăng tỷ lệ click-through rate (CTR) lên 300%.</span>
+          <button class="studio-btn secondary-btn" id="btnCloseAdSpyModalBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL 14: RETENTION HEATMAP & DROP-OFF PREDICTOR
+         =================================================================== -->
+    <div class="studio-modal-backdrop" id="modalRetentionPredictor">
+      <div class="studio-modal" style="max-width: 950px; background:#0f1f17; border:1px solid rgba(16, 185, 129, 0.4); box-shadow:0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(16, 185, 129, 0.2);">
+        <div class="modal-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="badge-mini-3d" style="background:#10b981; color:#fff;">RETENTION AI</span>
+            <div>
+              <h3 style="margin:0; font-size:16px; color:#fff;">📈 Retention Heatmap & Drop-off Predictor (Dự Đoán Giữ Chân Khán Giả FYP)</h3>
+              <div style="font-size:11px; color:#a7f3d0;">Phân tích biểu đồ giữ chân từng giây (0s - 60s), cảnh báo điểm chết khiến người xem lướt đi và giải pháp khắc phục</div>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseRetentionModal">✕</button>
+        </div>
+
+        <div class="modal-body" style="padding: 18px;">
+          <!-- Controls Bar -->
+          <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:10px; margin-bottom:14px; background:rgba(255,255,255,0.03); padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.08);">
+            <div>
+              <label style="font-size:11px; color:#cbd5e1;">Tên video cần phân tích:</label>
+              <input type="text" id="retentionVideoTitleInput" class="studio-input sm-input" value="NST Viet Mix Vol 4 2025" style="margin-top:3px;">
+            </div>
+            <div>
+              <label style="font-size:11px; color:#cbd5e1;">Thời lượng mô phỏng:</label>
+              <select id="retentionDurationSelect" class="studio-select sm-select" style="margin-top:3px;">
+                <option value="15">15 Giây (Short Hook)</option>
+                <option value="20" selected>20 Giây (Chuẩn TikTok Shop)</option>
+                <option value="30">30 Giây (Kể chuyện Storytelling)</option>
+                <option value="60">60 Giây (Review Chi Tiết)</option>
+              </select>
+            </div>
+            <div style="display:flex; align-items:flex-end;">
+              <button class="studio-btn success-btn sm-btn full-btn glow-btn" id="btnAnalyzeRetention">
+                <span>⚡ Phân Tích Đường Cong</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Score Metrics Row -->
+          <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:14px;" id="retentionMetricsRow">
+            <div class="metric-mini-card" style="background:rgba(16, 185, 129, 0.1); border:1px solid rgba(16, 185, 129, 0.3); padding:10px; border-radius:8px; text-align:center;">
+              <div style="font-size:10px; color:#a7f3d0;">VIRAL SCORE DỰ ĐOÁN</div>
+              <div style="font-size:22px; font-weight:800; color:#34d399;" id="metricViralScore">89/100</div>
+              <div style="font-size:10px; color:#6ee7b7;">Xác suất lên xu hướng: 94%</div>
+            </div>
+            <div class="metric-mini-card" style="background:rgba(6, 182, 212, 0.1); border:1px solid rgba(6, 182, 212, 0.3); padding:10px; border-radius:8px; text-align:center;">
+              <div style="font-size:10px; color:#a5f3fc;">GIỮ CHÂN HOOK 3 GIÂY</div>
+              <div style="font-size:22px; font-weight:800; color:#22d3ee;" id="metricRetention3s">86.4%</div>
+              <div style="font-size:10px; color:#67e8f9;">Top 5% ngành hàng</div>
+            </div>
+            <div class="metric-mini-card" style="background:rgba(245, 158, 11, 0.1); border:1px solid rgba(245, 158, 11, 0.3); padding:10px; border-radius:8px; text-align:center;">
+              <div style="font-size:10px; color:#fde68a;">THỜI GIAN XEM TRUNG BÌNH</div>
+              <div style="font-size:22px; font-weight:800; color:#fbbf24;" id="metricWatchTime">14.2s</div>
+              <div style="font-size:10px; color:#fcd34d;">Vượt ngưỡng 70% video</div>
+            </div>
+            <div class="metric-mini-card" style="background:rgba(168, 85, 247, 0.1); border:1px solid rgba(168, 85, 247, 0.3); padding:10px; border-radius:8px; text-align:center;">
+              <div style="font-size:10px; color:#e9d5ff;">TIỀM NĂNG FYP PUSH</div>
+              <div style="font-size:18px; font-weight:800; color:#c084fc; margin-top:3px;" id="metricFypOdds">CỰC CAO</div>
+              <div style="font-size:10px; color:#d8b4fe;">Đạt chuẩn thuật toán 2026</div>
+            </div>
+          </div>
+
+          <!-- Retention Curve Visual Visualizer -->
+          <div style="background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:12px; margin-bottom:12px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+              <span style="font-size:11px; font-weight:700; color:#fff;">📊 Biểu Đồ Đường Cong Giữ Chân Khán Giả (Retention Curve Timeline):</span>
+              <span style="font-size:11px; color:#34d399;">Xanh lá: An toàn • Đỏ: Nguy cơ lướt đi</span>
+            </div>
+            <div id="retentionChartBars" style="display:flex; align-items:flex-end; gap:3px; height:90px; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.15);">
+              <!-- Bars injected via JS -->
+            </div>
+          </div>
+
+          <!-- Danger Dropoffs & Solutions -->
+          <div style="font-size:12px; font-weight:700; color:#fff; margin-bottom:6px;">⚠️ Cảnh Báo "Điểm Chết" & Hướng Dẫn Sửa Lỗi Ngay Trên Timeline:</div>
+          <div id="retentionDangerDropoffsList" style="display:flex; flex-direction:column; gap:6px; max-height:160px; overflow-y:auto;">
+            <!-- Dropoff warnings injected via JS -->
+          </div>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:space-between;">
+          <span style="font-size:11px; color:#a7f3d0;">💡 Video có tỷ lệ giữ chân 3s trên 80% sẽ tự động được thuật toán TikTok phân phối sang tệp khán giả mới.</span>
+          <button class="studio-btn secondary-btn" id="btnCloseRetentionModalBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL 15: VIRTUAL STREAM DECK & MULTI-CAMERA SWITCHER
+         =================================================================== -->
+    <div class="studio-modal-backdrop" id="modalStreamDeck">
+      <div class="studio-modal" style="max-width: 950px; background:#0b192c; border:1px solid rgba(6, 182, 212, 0.4); box-shadow:0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(6, 182, 212, 0.2);">
+        <div class="modal-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="badge-mini-3d" style="background:#06b6d4; color:#fff;">STREAM DECK</span>
+            <div>
+              <h3 style="margin:0; font-size:16px; color:#fff;">🎛️ Virtual Stream Deck & Multi-Camera Switcher (Bàn Điều Khiển Livestream)</h3>
+              <div style="font-size:11px; color:#a5f3fc;">1-Click chuyển đổi đa góc máy camera 4K không độ trễ, kích hoạt Soundboard chốt đơn và điều khiển OBS Studio</div>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseStreamDeckModal">✕</button>
+        </div>
+
+        <div class="modal-body" style="padding: 18px;">
+          <!-- Top Stream Status Bar -->
+          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:8px 12px; margin-bottom:14px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span class="live-dot pulse"></span>
+              <span style="font-size:12px; font-weight:700; color:#fff;">TRỰC TIẾP TRUYỀN HÌNH:</span>
+              <span class="badge-mini-3d" style="background:#10b981; color:#fff;" id="deckCurrentFps">60 FPS</span>
+              <span class="badge-mini-3d" style="background:#3b82f6; color:#fff;" id="deckBitrate">6,500 Kbps</span>
+              <span style="font-size:11px; color:#67e8f9;" id="deckActiveCamName">Góc 1: Người Ảo MC Toàn Thân</span>
+            </div>
+            <div style="font-size:11px; color:var(--text-muted);">Độ trễ: <strong>45ms</strong> (Ultra-low latency)</div>
+          </div>
+
+          <!-- Section 1: Multi-Camera Switching Grid -->
+          <div style="font-size:12px; font-weight:700; color:#fff; margin-bottom:8px;">1. Bàn Chuyển Góc Máy Truyền Hình (Multi-Camera Switcher):</div>
+          <div id="deckCameraGrid" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:14px;">
+            <!-- Cameras injected via JS -->
+          </div>
+
+          <!-- Section 2: Soundboard Trigger Grid -->
+          <div style="font-size:12px; font-weight:700; color:#fff; margin-bottom:8px;">2. Soundboard Âm Thanh Kích Thích Tâm Lý Khán Giả:</div>
+          <div id="deckSoundboardGrid" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:14px;">
+            <!-- Soundboard buttons injected via JS -->
+          </div>
+
+          <!-- Section 3: Recent Activity Log -->
+          <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px;">
+            <div style="font-size:11px; font-weight:700; color:#a5f3fc; margin-bottom:4px;">📋 Nhật Ký Thao Tác Bàn Stream Deck:</div>
+            <div id="deckRecentLogs" style="font-size:11px; color:#cbd5e1; max-height:80px; overflow-y:auto; display:flex; flex-direction:column; gap:3px;">
+              <!-- Logs injected via JS -->
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:space-between;">
+          <span style="font-size:11px; color:#a5f3fc;">💡 Có thể gán phím tắt số 1, 2, 3, 4 trên bàn phím cứng hoặc kết nối ứng dụng OBS qua WebSocket Port 4455.</span>
+          <button class="studio-btn secondary-btn" id="btnCloseStreamDeckModalBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL 16: AI VIRAL THUMBNAIL GENERATOR & EYE-TRACKING HEATMAP
+         =================================================================== -->
+    <div class="studio-modal-backdrop" id="modalViralThumbnail">
+      <div class="studio-modal" style="max-width: 980px; background:#1c1708; border:1px solid rgba(234, 179, 8, 0.4); box-shadow:0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(234, 179, 8, 0.2);">
+        <div class="modal-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="badge-mini-3d" style="background:#eab308; color:#000;">VIRAL THUMBNAIL AI</span>
+            <div>
+              <h3 style="margin:0; font-size:16px; color:#fff;">🖼️ AI Viral Thumbnail Generator & Eye-Tracking Heatmap (Ảnh Bìa CTR 17%+)</h3>
+              <div style="font-size:11px; color:#fef08a;">Tự động trích xuất biểu cảm đắt giá, phủ chữ 3D giật tít và đo lường hướng nhìn của mắt khán giả bằng AI Saliency Map</div>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseThumbnailModal">✕</button>
+        </div>
+
+        <div class="modal-body" style="padding: 18px;">
+          <!-- Custom Prompt Bar -->
+          <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:10px; margin-bottom:14px; background:rgba(255,255,255,0.03); padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.08);">
+            <div>
+              <label style="font-size:11px; color:#cbd5e1;">Tiêu đề chữ lớn giật tít (Headline):</label>
+              <input type="text" id="thumbHeadlineInput" class="studio-input sm-input" value="BÍ QUYẾT TRIỆU VIEW" style="margin-top:3px;">
+            </div>
+            <div>
+              <label style="font-size:11px; color:#cbd5e1;">Sticker giảm giá / Ưu đãi:</label>
+              <input type="text" id="thumbDiscountTagInput" class="studio-input sm-input" value="GIẢM 50% HÔM NAY" style="margin-top:3px;">
+            </div>
+            <div style="display:flex; align-items:flex-end;">
+              <button class="studio-btn primary-btn sm-btn full-btn glow-btn" id="btnGenerateThumbnails">
+                <span>⚡ Tạo 3 Ảnh Bìa Viral</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Thumbnail Variants Grid -->
+          <div style="font-size:12px; font-weight:700; color:#fff; margin-bottom:8px;">3 Biến Thể Phong Cách Đạt Tỷ Lệ Nhấp Chuột (CTR) Cao Nhất:</div>
+          <div id="thumbVariantsGrid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-bottom:14px;">
+            <!-- Variants injected via JS -->
+          </div>
+
+          <!-- Eye-Tracking Insights Box -->
+          <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:12px;" id="thumbEyeTrackingBox">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-size:12px; font-weight:700; color:#fde047;">👁️ Phân Tích Bản Đồ Hướng Nhìn Mắt Người (AI Saliency Eye-Tracking):</span>
+              <span class="badge-mini-3d" style="background:#10b981; color:#fff;">RECOMMENDED WINNER</span>
+            </div>
+            <p style="font-size:11px; color:#cbd5e1; margin:0;" id="thumbEyeTrackingText">
+              Biến thể 2 (Reaction Shot) tạo lực hút ánh mắt mạnh nhất trong 0.3 giây đầu (CTR dự kiến 17.2%). Mắt người xem sẽ quét từ Khuôn mặt ngạc nhiên ➔ Chữ tiêu đề nổi 3D ➔ Nút CTA góc dưới.
+            </p>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:space-between;">
+          <span style="font-size:11px; color:#fef08a;">💡 Ảnh bìa chuẩn kích thước dọc 9:16 và ngang 16:9 sắc nét 4K không vỡ nét khi hiển thị trên mobile.</span>
+          <button class="studio-btn secondary-btn" id="btnCloseThumbnailModalBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL 17: AUTOMATED AFFILIATE P&L FINANCIAL LEDGER
+         =================================================================== -->
+    <div class="studio-modal-backdrop" id="modalFinancialLedger">
+      <div class="studio-modal" style="max-width: 980px; background:#181028; border:1px solid rgba(139, 92, 246, 0.4); box-shadow:0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(139, 92, 246, 0.2);">
+        <div class="modal-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="badge-mini-3d" style="background:#8b5cf6; color:#fff;">P&L LEDGER</span>
+            <div>
+              <h3 style="margin:0; font-size:16px; color:#fff;">📊 Automated Affiliate P&L Financial Ledger (Sổ Kế Toán & Dòng Tiền Tự Động)</h3>
+              <div style="font-size:11px; color:#ddd6fe;">Tổng hợp doanh số GMV, tiền hoa hồng thực nhận, trừ chi phí Ads và hoàn hủy COD để tính Lợi Nhuận Ròng & ROI</div>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseLedgerModal">✕</button>
+        </div>
+
+        <div class="modal-body" style="padding: 18px;">
+          <!-- 5 Financial Cards Grid -->
+          <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:8px; margin-bottom:14px;" id="ledgerSummaryCards">
+            <div class="metric-mini-card" style="background:rgba(59, 130, 246, 0.1); border:1px solid rgba(59, 130, 246, 0.3); padding:10px; border-radius:8px; text-align:center;">
+              <div style="font-size:10px; color:#93c5fd;">TỔNG GMV DOANH SỐ</div>
+              <div style="font-size:16px; font-weight:800; color:#60a5fa;" id="ledgerGmvVal">48,650,000 đ</div>
+              <div style="font-size:9px; color:#bfdbfe;">245 đơn hàng</div>
+            </div>
+            <div class="metric-mini-card" style="background:rgba(16, 185, 129, 0.1); border:1px solid rgba(16, 185, 129, 0.3); padding:10px; border-radius:8px; text-align:center;">
+              <div style="font-size:10px; color:#a7f3d0;">HOA HỒNG THỰC NHẬN</div>
+              <div style="font-size:16px; font-weight:800; color:#34d399;" id="ledgerCommissionVal">10,420,000 đ</div>
+              <div style="font-size:9px; color:#6ee7b7;">Trung bình 21.4%</div>
+            </div>
+            <div class="metric-mini-card" style="background:rgba(239, 68, 68, 0.1); border:1px solid rgba(239, 68, 68, 0.3); padding:10px; border-radius:8px; text-align:center;">
+              <div style="font-size:10px; color:#fca5a5;">CHI PHÍ CHẠY ADS</div>
+              <div style="font-size:16px; font-weight:800; color:#f87171;" id="ledgerAdSpendVal">2,150,000 đ</div>
+              <div style="font-size:9px; color:#fecaca;">TikTok & FB Ads</div>
+            </div>
+            <div class="metric-mini-card" style="background:rgba(245, 158, 11, 0.1); border:1px solid rgba(245, 158, 11, 0.3); padding:10px; border-radius:8px; text-align:center;">
+              <div style="font-size:10px; color:#fde68a;">LỢI NHUẬN RÒNG</div>
+              <div style="font-size:16px; font-weight:800; color:#fbbf24;" id="ledgerNetProfitVal">7,820,000 đ</div>
+              <div style="font-size:9px; color:#fcd34d;">Sau trừ chi phí & hoàn</div>
+            </div>
+            <div class="metric-mini-card" style="background:rgba(168, 85, 247, 0.1); border:1px solid rgba(168, 85, 247, 0.3); padding:10px; border-radius:8px; text-align:center;">
+              <div style="font-size:10px; color:#e9d5ff;">TỶ SUẤT ROI</div>
+              <div style="font-size:16px; font-weight:800; color:#c084fc;" id="ledgerRoiVal">363.7%</div>
+              <div style="font-size:9px; color:#d8b4fe;">Hiệu quả đầu tư cao</div>
+            </div>
+          </div>
+
+          <!-- Quick Add Transaction Bar -->
+          <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:10px; margin-bottom:12px;">
+            <div style="font-size:11px; font-weight:700; color:#c4b5fd; margin-bottom:6px;">➕ Ghi Nhận Nhanh Đơn Hàng / Chi Phí Mới:</div>
+            <div style="display:grid; grid-template-columns: 1fr 2fr 1fr 1fr; gap:8px;">
+              <select id="ledgerNewChannelSelect" class="studio-select sm-select">
+                <option value="TikTok Shop Live">TikTok Shop Live</option>
+                <option value="Facebook Reels">Facebook Reels</option>
+                <option value="Shopee Affiliate">Shopee Affiliate</option>
+                <option value="TikTok Ads Manager">TikTok Ads (Chi phí)</option>
+              </select>
+              <input type="text" id="ledgerNewProductName" class="studio-input sm-input" placeholder="Tên sản phẩm (VD: Combo Son Velvet)...">
+              <input type="number" id="ledgerNewAmount" class="studio-input sm-input" placeholder="Giá trị (VNĐ)..." value="250000">
+              <button class="studio-btn success-btn sm-btn" id="btnRecordTransaction">
+                <span>💰 Ghi Sổ Kế Toán</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Transactions Table -->
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <div style="font-size:12px; font-weight:700; color:#fff;">📋 Nhật Ký Giao Dịch & Hoa Hồng Gần Nhất:</div>
+            <button class="studio-btn primary-btn sm-btn glow-btn" id="btnExportFinancialReport">
+              <span>📥 Xuất Báo Cáo Excel / PDF</span>
+            </button>
+          </div>
+          <div id="ledgerTransactionsTable" style="max-height:160px; overflow-y:auto; border:1px solid rgba(255,255,255,0.1); border-radius:6px; background:rgba(0,0,0,0.3);">
+            <!-- Transactions table injected via JS -->
+          </div>
+
+          <div id="ledgerStatusBox" class="pub-status-box hidden" style="margin-top: 8px;"></div>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:space-between;">
+          <span style="font-size:11px; color:#ddd6fe;">💡 Dữ liệu tự động đồng bộ từ webhook TikTok Shop Partner & Shopee Open API qua giao thức mã hóa.</span>
+          <button class="studio-btn secondary-btn" id="btnCloseLedgerModalBottom">Đóng</button>
         </div>
       </div>
     </div>
