@@ -104,6 +104,23 @@ Tiktok-Mass-Downloader/
 
 ---
 
+## 🚀 TMD Studio Pro v3.2 AI - 8 Strategic Enterprise Weapons (MMO & Live Automation)
+
+### 🔴 Livestream Suite 24/7 (AI Virtual Host & 3D Spatial Engine)
+1. **⚔️ AI Live PK Battle & Minigame Lucky Wheel**: Kết nối phiên thách đấu đối kháng thời gian thực, thanh so sánh điểm động (Cyan vs Rose), bơm điểm quà tặng và vòng quay may mắn phát mã coupon giảm giá tự động.
+2. **⚡ AI Flash Sale Scarcity Countdown & FOMO Audio Alert Engine**: Đếm ngược 60 giây chớp nhoáng, hiển thị ruy-băng khan hiếm tồn kho, giả lập ticker khách chốt đơn thời gian thực và chuông âm thanh Ting-Ting kích thích chốt đơn dồn dập.
+3. **🎭 Voice Emotion Auto-Morphing Engine**: Biến đổi linh hoạt 5 sắc thái cảm xúc giọng nói MC AI (`excited`, `urgent_fomo`, `whisper_secret`, `expert_authoritative`, `warm_grateful`) kết hợp thanh trượt cao độ (Pitch) và tốc độ (Tempo).
+
+### 🎬 Enterprise 10X Production & Marketing Suite
+4. **📹 AI Auto B-Roll Inserter & Facecam Reaction Generator**: Tự động phân tích kịch bản video tiếng Việt, bóc tách từ khóa hành động/sản phẩm để đề xuất footage 4K bản quyền và chèn khung Facecam reaction đè lớp PiP.
+5. **👄 Deep Lip-Sync & AI Face Swap 4K**: Công nghệ LivePortrait & Wav2Lip Ultra-HD hoán đổi khuôn mặt KOL nước ngoài sang chủ shop người Việt, khử rung biên độ môi (Anti-Jitter) và khớp từng âm tiết tiếng Việt.
+6. **🩺 Shadowban Health Checker & Auto Account Warming**: Đo điểm sức khỏe tài khoản, tỷ lệ cắn phân phối đề xuất FYP %, phát hiện vi phạm bản quyền và kích hoạt kịch bản lướt ngầm (Auto Warm-Up 4G Proxy) để giải vây kênh bóp view.
+7. **📲 Omnichannel CRM Hub & Shipping Logistics**: Gom đơn livestream từ 3 kênh (TikTok Shop, Facebook, YouTube), tự động đẩy đơn qua API bưu cục GHTK / Viettel Post và in phiếu giao hàng nhiệt tức thì.
+8. **🎯 TikTok Affiliate KOC Hunter & Sample Outreach**: Radar quét mạng lưới KOC theo ngành hàng (Thời trang, Mỹ phẩm, Công nghệ), định giá GMV 30 ngày, tỷ lệ chuyển đổi và tự động soạn thảo gửi lời mời nhận mẫu thử (Free Sample).
+
+---
+
 ## 📄 License
 
 MIT License.
+

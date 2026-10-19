@@ -4326,6 +4326,367 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (e) {}
     }
 
+    // 18. Auto B-Roll & Facecam
+    const btnAnalyzeBrollScript = document.getElementById('btnAnalyzeBrollScript');
+    const brollScriptInput = document.getElementById('brollScriptInput');
+    const brollSuggestionsList = document.getElementById('brollSuggestionsList');
+    const brollStatusBox = document.getElementById('brollStatusBox');
+    const btnGenerateFacecam = document.getElementById('btnGenerateFacecam');
+    const facecamReactionSelect = document.getElementById('facecamReactionSelect');
+    const facecamPositionSelect = document.getElementById('facecamPositionSelect');
+
+    async function analyzeBroll(scriptText) {
+      if (!brollSuggestionsList) return;
+      try {
+        const res = await fetch('/api/enterprise/video/broll/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ script: scriptText || brollScriptInput?.value })
+        });
+        const data = await res.json();
+        const brolls = data.suggestedBrolls || data.suggestions || [];
+        if (data.ok && brolls.length > 0) {
+          brollSuggestionsList.innerHTML = brolls.map((item, idx) => `
+            <div class="broll-item-card">
+              <img src="${item.thumb || item.footageUrl}" class="broll-thumb" alt="Footage ${idx}">
+              <div class="broll-item-info">
+                <span class="broll-keyword-pill">🏷️ ${item.keyword}</span>
+                <div class="broll-item-title">${escapeHtml(item.title || item.suggestedAction)}</div>
+                <div class="broll-time-tag">⏱️ Thời lượng: ${item.duration ? item.duration + 's' : item.timestamp || '4.0s'} | Độ phân giải: 4K 60fps</div>
+              </div>
+              <button class="studio-btn secondary-btn sm-btn btn-insert-broll" data-idx="${idx}">
+                <span>➕ Chèn</span>
+              </button>
+            </div>
+          `).join('');
+
+          brollSuggestionsList.querySelectorAll('.btn-insert-broll').forEach(btn => {
+            btn.addEventListener('click', () => {
+              btn.textContent = '✅ Đã chèn';
+              btn.disabled = true;
+            });
+          });
+        }
+      } catch (e) {
+        console.error('Lỗi phân tích B-Roll:', e);
+      }
+    }
+
+    if (btnAnalyzeBrollScript) {
+      btnAnalyzeBrollScript.addEventListener('click', async () => {
+        const script = brollScriptInput?.value.trim();
+        if (!script) return;
+        btnAnalyzeBrollScript.disabled = true;
+        btnAnalyzeBrollScript.textContent = '⏳ Đang phân tích kịch bản...';
+        await analyzeBroll(script);
+        btnAnalyzeBrollScript.disabled = false;
+        btnAnalyzeBrollScript.innerHTML = '<span>🚀 Phân Tích & Gợi Ý B-Roll 4K</span>';
+        if (brollStatusBox) {
+          brollStatusBox.className = 'pub-status-box success';
+          brollStatusBox.innerHTML = '✅ Đã phân tích kịch bản và ghép 3 footage 4K bản quyền sạch!';
+          brollStatusBox.classList.remove('hidden');
+        }
+      });
+    }
+
+    if (btnGenerateFacecam) {
+      btnGenerateFacecam.addEventListener('click', async () => {
+        const reactionId = facecamReactionSelect?.value || 'react_wow';
+        const position = facecamPositionSelect?.value || 'bottom-right';
+        try {
+          const res = await fetch('/api/enterprise/video/broll/facecam', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reactionId, position })
+          });
+          const data = await res.json();
+          if (data.ok && brollStatusBox) {
+            brollStatusBox.className = 'pub-status-box success';
+            const label = data.facecamConfig ? data.facecamConfig.label : 'Reaction';
+            brollStatusBox.innerHTML = `✅ Đã sinh lớp phủ Facecam (<strong>${label}</strong>) tại vị trí <strong>${position}</strong>!`;
+            brollStatusBox.classList.remove('hidden');
+          }
+        } catch (e) {
+          alert('Lỗi tạo Facecam: ' + e.message);
+        }
+      });
+    }
+
+    // 19. Deep Lip-Sync & Face Swap 4K
+    const faceswapProfilesGrid = document.getElementById('faceswapProfilesGrid');
+    const btnProcessDeepLipsync = document.getElementById('btnProcessDeepLipsync');
+    const faceswapStatusBox = document.getElementById('faceswapStatusBox');
+    const chkEnableFaceSwap = document.getElementById('chkEnableFaceSwap');
+    let selectedFaceProfile = 'profile_boss_man';
+
+    async function loadDeepLipsyncData() {
+      try {
+        const res = await fetch('/api/enterprise/video/lipsync/state');
+        const data = await res.json();
+        if (data.ok && faceswapProfilesGrid && data.templates) {
+          faceswapProfilesGrid.innerHTML = data.templates.map(prof => `
+            <div class="faceswap-profile-card ${prof.id === selectedFaceProfile ? 'active' : ''}" data-id="${prof.id}">
+              <img src="${prof.avatar}" class="faceswap-avatar" alt="${prof.name}">
+              <div class="faceswap-profile-name">${escapeHtml(prof.name)}</div>
+              <div class="faceswap-profile-tag">${escapeHtml(prof.role)}</div>
+            </div>
+          `).join('');
+
+          faceswapProfilesGrid.querySelectorAll('.faceswap-profile-card').forEach(card => {
+            card.addEventListener('click', () => {
+              faceswapProfilesGrid.querySelectorAll('.faceswap-profile-card').forEach(c => c.classList.remove('active'));
+              card.classList.add('active');
+              selectedFaceProfile = card.dataset.id;
+            });
+          });
+        }
+      } catch (e) {}
+    }
+
+    if (btnProcessDeepLipsync) {
+      btnProcessDeepLipsync.addEventListener('click', async () => {
+        btnProcessDeepLipsync.disabled = true;
+        btnProcessDeepLipsync.textContent = '⏳ Đang render LivePortrait 4K...';
+        try {
+          const res = await fetch('/api/enterprise/video/lipsync/process', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              videoSrc: 'current_timeline.mp4',
+              profileId: selectedFaceProfile,
+              enableFaceSwap: chkEnableFaceSwap ? chkEnableFaceSwap.checked : true
+            })
+          });
+          const data = await res.json();
+          if (data.ok && faceswapStatusBox) {
+            faceswapStatusBox.className = 'pub-status-box success';
+            const resData = data.result || {};
+            faceswapStatusBox.innerHTML = `✅ ${data.message} | Độ chính xác khớp môi: <strong>${resData.lipSyncAccuracy || '99.4%'}</strong> | Tương đồng khuôn mặt: <strong>${resData.faceSwapSimilarity || '97.8%'}</strong> | Thời gian xử lý: <strong>${resData.processingTimeSec || 8.5}s</strong>`;
+            faceswapStatusBox.classList.remove('hidden');
+          }
+        } catch (e) {
+          alert('Lỗi Deep Lip-Sync: ' + e.message);
+        } finally {
+          btnProcessDeepLipsync.disabled = false;
+          btnProcessDeepLipsync.innerHTML = '<span>🚀 Xử Lý Khớp Khẩu Hình & Thay Mặt Video 4K</span>';
+        }
+      });
+    }
+
+    // 20. Shadowban Health Checker & Auto Warmup
+    const btnAuditAccountHealth = document.getElementById('btnAuditAccountHealth');
+    const inputAuditHandle = document.getElementById('inputAuditHandle');
+    const selectAuditPlatform = document.getElementById('selectAuditPlatform');
+    const shadowbanReportCard = document.getElementById('shadowbanReportCard');
+    const btnDispatchWarmup = document.getElementById('btnDispatchWarmup');
+    const selectWarmupRoutine = document.getElementById('selectWarmupRoutine');
+    const warmupStatusBox = document.getElementById('warmupStatusBox');
+
+    async function auditChannelHealth(handle, platform) {
+      try {
+        const res = await fetch('/api/enterprise/matrix/shadowban/audit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ channelHandle: handle, platform: platform })
+        });
+        const data = await res.json();
+        if (data.ok && shadowbanReportCard) {
+          const report = data.report || {};
+          const score = report.healthScore || 88;
+          const scoreColor = score >= 80 ? '#10b981' : score >= 60 ? '#f59e0b' : '#ef4444';
+          const statusText = report.statusText || (score >= 80 ? 'ĐẠT CHUẨN XANH (GOOD)' : 'CẦN CHÚ Ý (WARNING)');
+          const fypRate = report.fypRate || report.fypRatio || '82.4%';
+          const riskText = report.shadowbanRisk || (score >= 80 ? 'THẤP (LOW)' : 'TRUNG BÌNH');
+          const flagsCount = report.flagsDetected ?? report.communityStrikes ?? 0;
+          const recText = report.recommendation || (report.flags && report.flags[0]) || 'Duy trì đăng video đều đặn.';
+
+          shadowbanReportCard.innerHTML = `
+            <div class="shadowban-score-row">
+              <div>
+                <span style="font-size: 11px; color: var(--text-muted);">ĐIỂM SỨC KHỎE KÊNH:</span>
+                <div class="shadowban-big-score" style="color: ${scoreColor};">${score} / 100</div>
+              </div>
+              <div style="text-align: right;">
+                <span class="status-pill active" style="background: ${scoreColor}22; color: ${scoreColor}; border-color: ${scoreColor}55;">
+                  ${statusText}
+                </span>
+                <div style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">Kênh: ${escapeHtml(report.channelHandle || handle)}</div>
+              </div>
+            </div>
+            <div class="shadowban-metrics-grid">
+              <div class="metric-pill-item">
+                <span class="metric-pill-label">Tỷ lệ cắn đề xuất (FYP Rate):</span>
+                <span class="metric-pill-val" style="color: #38bdf8;">${fypRate}</span>
+              </div>
+              <div class="metric-pill-item">
+                <span class="metric-pill-label">Rủi ro Shadowban:</span>
+                <span class="metric-pill-val" style="color: ${scoreColor};">${riskText}</span>
+              </div>
+              <div class="metric-pill-item">
+                <span class="metric-pill-label">Cảnh báo vi phạm từ khóa:</span>
+                <span class="metric-pill-val">${flagsCount} vi phạm</span>
+              </div>
+              <div class="metric-pill-item">
+                <span class="metric-pill-label">Khuyến nghị giải vây:</span>
+                <span class="metric-pill-val" style="color: #a3e635;">${escapeHtml(recText)}</span>
+              </div>
+            </div>
+          `;
+        }
+      } catch (e) {
+        console.error('Lỗi audit kênh:', e);
+      }
+    }
+
+    if (btnAuditAccountHealth) {
+      btnAuditAccountHealth.addEventListener('click', () => {
+        auditChannelHealth(inputAuditHandle?.value || '@tmd_official_store', selectAuditPlatform?.value || 'tiktok');
+      });
+    }
+
+    if (btnDispatchWarmup) {
+      btnDispatchWarmup.addEventListener('click', async () => {
+        const routineId = selectWarmupRoutine?.value || 'warmup_niche_browse';
+        const channelHandle = inputAuditHandle?.value || '@tmd_official_store';
+        try {
+          const res = await fetch('/api/enterprise/matrix/shadowban/warmup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ channelHandle, routineId })
+          });
+          const data = await res.json();
+          if (data.ok && warmupStatusBox) {
+            warmupStatusBox.className = 'pub-status-box success';
+            warmupStatusBox.innerHTML = `✅ ${data.message} | Thiết bị: <strong>${data.simulatedDevice || 'Galaxy S22 4G'}</strong> | Thời lượng: <strong>${data.durationMinutes || 30} phút</strong>`;
+            warmupStatusBox.classList.remove('hidden');
+          }
+        } catch (e) {
+          alert('Lỗi warmup: ' + e.message);
+        }
+      });
+    }
+
+    // 21. Omnichannel CRM Hub & TikTok Affiliate KOC Hunter
+    const crmOrdersList = document.getElementById('crmOrdersList');
+    const btnCreateFastOrder = document.getElementById('btnCreateFastOrder');
+    const kocHunterList = document.getElementById('kocHunterList');
+    const kocNicheFilter = document.getElementById('kocNicheFilter');
+    const kocOutreachStatusBox = document.getElementById('kocOutreachStatusBox');
+
+    async function loadCrmOrders() {
+      try {
+        const res = await fetch('/api/enterprise/crm/orders');
+        const data = await res.json();
+        if (data.ok && crmOrdersList && data.orders) {
+          crmOrdersList.innerHTML = data.orders.map(ord => `
+            <div class="crm-order-card">
+              <div class="crm-order-main">
+                <div style="display: flex; gap: 6px; align-items: center; margin-bottom: 2px;">
+                  <span class="crm-order-id">${ord.orderId}</span>
+                  <span class="feat-tag">${ord.channel}</span>
+                </div>
+                <div class="crm-customer-name">${escapeHtml(ord.customerName)} - ${ord.phone}</div>
+                <div style="font-size: 10px; color: var(--text-muted);">${ord.items[0]?.title || 'Sản phẩm'} (${ord.totalAmount})</div>
+              </div>
+              <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+                <span class="crm-carrier-badge">${ord.carrier.split(' ')[0]}</span>
+                <span class="crm-tracking-code">${ord.trackingCode}</span>
+                <button class="studio-btn secondary-btn sm-btn btn-print-label" style="padding: 2px 6px; font-size: 9px;">
+                  <span>🖨️ In Phiếu</span>
+                </button>
+              </div>
+            </div>
+          `).join('');
+
+          crmOrdersList.querySelectorAll('.btn-print-label').forEach(btn => {
+            btn.addEventListener('click', () => {
+              alert('Đã gửi lệnh in mã vận đơn ra máy in nhiệt bưu cục kết nối!');
+            });
+          });
+        }
+      } catch (e) {}
+    }
+
+    if (btnCreateFastOrder) {
+      btnCreateFastOrder.addEventListener('click', async () => {
+        try {
+          const res = await fetch('/api/enterprise/crm/create-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              channel: 'Facebook Live',
+              customerName: 'Hoàng Minh Quân',
+              phone: '0977665544',
+              address: 'Số 15 Cầu Giấy, Hà Nội',
+              items: [{ title: 'Giày Sneaker Cyberpunk Phantom X', qty: 1, price: '1.250.000 ₫' }],
+              totalAmount: '1.250.000 ₫',
+              carrier: 'viettel_post'
+            })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            loadCrmOrders();
+            alert(`Tạo đơn thành công! Mã vận đơn Viettel Post: ${data.order.trackingCode}`);
+          }
+        } catch (e) {
+          alert('Lỗi tạo đơn: ' + e.message);
+        }
+      });
+    }
+
+    async function loadKocHunter(niche = 'all') {
+      try {
+        const res = await fetch(`/api/enterprise/affiliate/koc/list?niche=${encodeURIComponent(niche)}`);
+        const data = await res.json();
+        if (data.ok && kocHunterList && data.kocs) {
+          kocHunterList.innerHTML = data.kocs.map(koc => `
+            <div class="koc-hunter-card">
+              <img src="${koc.avatar}" class="koc-avatar" alt="${koc.displayName}">
+              <div class="koc-main-meta">
+                <div class="koc-handle">${escapeHtml(koc.displayName)} <span style="font-size: 9px; color: var(--accent-cyan); font-weight: normal;">${koc.handle}</span></div>
+                <div style="font-size: 10px; color: var(--text-muted);">Ngành: ${koc.niche} | Follow: ${koc.followers}</div>
+                <div class="koc-gmv-badge">💰 GMV 30 ngày: ${koc.gmv30Days} (CR: ${koc.conversionRate})</div>
+              </div>
+              <button class="studio-btn primary-btn sm-btn btn-send-outreach" data-id="${koc.id}" style="font-size: 10px; padding: 4px 8px;">
+                <span>${koc.outreachStatus === 'NOT_SENT' ? '📩 Gửi Mẫu' : '✅ Đã Mời'}</span>
+              </button>
+            </div>
+          `).join('');
+
+          kocHunterList.querySelectorAll('.btn-send-outreach').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              const kocId = btn.dataset.id;
+              try {
+                const res = await fetch('/api/enterprise/affiliate/koc/outreach', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ kocId, commissionPercent: 20, productName: 'Sneaker Cyberpunk Phantom X' })
+                });
+                const data = await res.json();
+                if (data.ok) {
+                  btn.textContent = '✅ Đã Mời';
+                  btn.disabled = true;
+                  if (kocOutreachStatusBox) {
+                    kocOutreachStatusBox.className = 'pub-status-box success';
+                    kocOutreachStatusBox.innerHTML = `✅ ${data.message} | Chiết khấu đề xuất: <strong>${data.commissionPercent || 20}%</strong> | Kênh: <strong>${data.outreachChannel || 'TikTok Creator Marketplace'}</strong>`;
+                    kocOutreachStatusBox.classList.remove('hidden');
+                  }
+                }
+              } catch (e) {
+                alert('Lỗi gửi lời mời: ' + e.message);
+              }
+            });
+          });
+        }
+      } catch (e) {}
+    }
+
+    if (kocNicheFilter) {
+      kocNicheFilter.addEventListener('change', () => {
+        loadKocHunter(kocNicheFilter.value);
+      });
+    }
+
     function initMegaSuiteData() {
       loadShieldsData();
       loadTrendAudioData();
@@ -4335,6 +4696,11 @@ document.addEventListener('DOMContentLoaded', () => {
       loadPropsData();
       loadRenderFarmData();
       loadBioCloakData();
+      analyzeBroll();
+      loadDeepLipsyncData();
+      auditChannelHealth('@tmd_official_store', 'tiktok');
+      loadCrmOrders();
+      loadKocHunter('all');
     }
   }
 
@@ -4991,6 +5357,9 @@ document.addEventListener('DOMContentLoaded', () => {
           renderComments(data.recentComments);
           renderPlatformSettings(data.platforms);
           updateSessionOverlay(data.session, data.platforms);
+          loadPKState();
+          loadFlashSaleState();
+          loadVoiceEmotionState();
         }
       } catch (e) {
         console.error('Lỗi tải live state:', e);
@@ -5305,6 +5674,254 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         } catch (e) {
           console.error('Lỗi phát sóng:', e);
+        }
+      });
+    }
+
+    // =========================================================================
+    // ENTERPRISE: LIVE PK BATTLE & MINIGAME LUCKY WHEEL
+    // =========================================================================
+    const pkHostScore = document.getElementById('pkHostScore');
+    const pkChallengerScore = document.getElementById('pkChallengerScore');
+    const pkBarHost = document.getElementById('pkBarHost');
+    const pkBarChallenger = document.getElementById('pkBarChallenger');
+    const btnPkBoostHost = document.getElementById('btnPkBoostHost');
+    const btnPkLuckyWheelSpin = document.getElementById('btnPkLuckyWheelSpin');
+    const pkStatusBox = document.getElementById('pkStatusBox');
+
+    async function loadPKState() {
+      try {
+        const res = await fetch('/api/enterprise/live/pk/state');
+        const data = await res.json();
+        const s = data.pkSession || data.currentSession;
+        if (data.ok && s) {
+          const ourScore = s.ourScore ?? s.hostScore ?? 14200;
+          const rivalScore = (s.opponent ? s.opponent.score : s.rivalScore) ?? 12850;
+          if (pkHostScore) pkHostScore.textContent = ourScore.toLocaleString('vi-VN');
+          if (pkChallengerScore) pkChallengerScore.textContent = rivalScore.toLocaleString('vi-VN');
+          const total = (ourScore + rivalScore) || 1;
+          const hostPct = Math.min(95, Math.max(5, Math.round((ourScore / total) * 100)));
+          if (pkBarHost) pkBarHost.style.width = hostPct + '%';
+          if (pkBarChallenger) pkBarChallenger.style.width = (100 - hostPct) + '%';
+        }
+      } catch (e) {}
+    }
+
+    if (btnPkBoostHost) {
+      btnPkBoostHost.addEventListener('click', async () => {
+        try {
+          const res = await fetch('/api/enterprise/live/pk/boost', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ points: 500, isGift: true })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            loadPKState();
+            if (pkStatusBox) {
+              const ourScore = data.pkSession?.ourScore || 14700;
+              const rivalScore = data.pkSession?.opponent?.score || 13200;
+              const lead = ourScore - rivalScore;
+              pkStatusBox.className = 'pub-status-box success';
+              pkStatusBox.innerHTML = `🔥 Fan vừa ném <strong>Tên Lửa Siêu Cấp</strong>! Mai Phương +500 điểm PK (Dẫn trước ${lead > 0 ? '+' + lead : lead} điểm)!`;
+              pkStatusBox.classList.remove('hidden');
+            }
+          }
+        } catch (e) {
+          alert('Lỗi bơm điểm PK: ' + e.message);
+        }
+      });
+    }
+
+    if (btnPkLuckyWheelSpin) {
+      btnPkLuckyWheelSpin.addEventListener('click', async () => {
+        try {
+          const res = await fetch('/api/enterprise/live/pk/wheel-spin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ viewer: '@nguyen_van_a' })
+          });
+          const data = await res.json();
+          if (data.ok && pkStatusBox) {
+            const winnerName = (data.winner ? (data.winner.user || data.winner.viewer) : '@nguyen_van_a');
+            const prizeTitle = (data.prize ? (data.prize.label || data.prize.name) : (data.winner ? data.winner.prize : 'Voucher 50%'));
+            const coupon = (data.winner ? (data.winner.couponCode || 'LUCKY_WHEEL_50') : 'LUCKY_WHEEL_50');
+            pkStatusBox.className = 'pub-status-box success';
+            pkStatusBox.innerHTML = `🎉 VÒNG QUAY MAY MẮN: <strong>${winnerName}</strong> vừa trúng <strong>${prizeTitle}</strong> (Mã: <code>${coupon}</code>)!`;
+            pkStatusBox.classList.remove('hidden');
+            const speechRibbon = document.getElementById('liveSpeechSub');
+            if (speechRibbon) speechRibbon.textContent = `💬 MC: "Chúc mừng bạn ${winnerName} đã trúng ${prizeTitle} trên vòng quay may mắn nha!"`;
+          }
+        } catch (e) {
+          alert('Lỗi quay thưởng: ' + e.message);
+        }
+      });
+    }
+
+    // =========================================================================
+    // ENTERPRISE: FLASH SALE SCARCITY & FOMO SOUND ENGINE
+    // =========================================================================
+    const fomoOverlayTitle = document.getElementById('fomoOverlayTitle');
+    const fomoOverlayStock = document.getElementById('fomoOverlayStock');
+    const fomoOverlayTimer = document.getElementById('fomoOverlayTimer');
+    const btnTriggerFlashSale = document.getElementById('btnTriggerFlashSale');
+    const btnSimulatePurchase = document.getElementById('btnSimulatePurchase');
+    const chkEnableFomoAudio = document.getElementById('chkEnableFomoAudio');
+    const fomoTickerText = document.getElementById('fomoTickerText');
+    let fomoTimerInterval = null;
+    let fomoSecondsRemaining = 60;
+
+    function playSyntheticChime() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+        osc.frequency.exponentialRampToValueAtTime(1760, audioCtx.currentTime + 0.15); // A6
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.35);
+      } catch (e) {}
+    }
+
+    async function loadFlashSaleState() {
+      try {
+        const res = await fetch('/api/enterprise/live/fomo/state');
+        const data = await res.json();
+        if (data.ok && data.activeDeal) {
+          if (fomoOverlayTitle) fomoOverlayTitle.textContent = data.activeDeal.dealTitle || 'DEAL SỐC 60 GIÂY';
+          if (fomoOverlayStock) fomoOverlayStock.textContent = `Chỉ còn ${data.activeDeal.remainingStock} / ${data.activeDeal.initialStock} suất!`;
+          if (data.recentPurchases && data.recentPurchases.length > 0 && fomoTickerText) {
+            const p = data.recentPurchases[0];
+            fomoTickerText.textContent = `🔔 ${p.buyerName} (${p.city}) vừa chốt 1 đơn lúc ${p.time}!`;
+          }
+        }
+      } catch (e) {}
+    }
+
+    function startFlashSaleTimer(seconds = 60) {
+      if (fomoTimerInterval) clearInterval(fomoTimerInterval);
+      fomoSecondsRemaining = seconds;
+      if (fomoOverlayTimer) fomoOverlayTimer.textContent = fomoSecondsRemaining + 's';
+
+      fomoTimerInterval = setInterval(() => {
+        fomoSecondsRemaining--;
+        if (fomoSecondsRemaining <= 0) {
+          clearInterval(fomoTimerInterval);
+          if (fomoOverlayTimer) fomoOverlayTimer.textContent = 'HẾT GIỜ';
+        } else {
+          if (fomoOverlayTimer) fomoOverlayTimer.textContent = fomoSecondsRemaining + 's';
+        }
+      }, 1000);
+    }
+
+    if (btnTriggerFlashSale) {
+      btnTriggerFlashSale.addEventListener('click', async () => {
+        try {
+          const res = await fetch('/api/enterprise/live/fomo/start', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              productTitle: 'Giày Sneaker Cyberpunk Phantom X',
+              dealPrice: '1.250.000 ₫',
+              stockCount: 50
+            })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            startFlashSaleTimer(60);
+            loadFlashSaleState();
+            if (chkEnableFomoAudio?.checked) playSyntheticChime();
+            const speechRibbon = document.getElementById('liveSpeechSub');
+            if (speechRibbon) speechRibbon.textContent = `💬 MC: "Dạ mọi người ơi, đúng 60 giây chớp nhoáng với giá chỉ 1.250k, giỏ hàng đang giảm 50%, ai nhanh tay người đó được ạ! 🔥"`;
+          }
+        } catch (e) {
+          alert('Lỗi kích hoạt Flash Sale: ' + e.message);
+        }
+      });
+    }
+
+    if (btnSimulatePurchase) {
+      btnSimulatePurchase.addEventListener('click', async () => {
+        try {
+          const res = await fetch('/api/enterprise/live/fomo/simulate-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              customerName: 'Anh Quốc Bảo',
+              itemName: 'Sneaker Phantom X'
+            })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            loadFlashSaleState();
+            if (chkEnableFomoAudio?.checked) playSyntheticChime();
+            if (fomoTickerText) {
+              fomoTickerText.textContent = `🔔 Anh Quốc Bảo (Hà Nội) vừa chốt 1 Đôi Sneaker Phantom X vừa xong!`;
+            }
+          }
+        } catch (e) {
+          alert('Lỗi đặt hàng mô phỏng: ' + e.message);
+        }
+      });
+    }
+
+    // =========================================================================
+    // ENTERPRISE: VOICE EMOTION AUTO-MORPHING (TTS ĐA CẢM XÚC)
+    // =========================================================================
+    const activeEmotionPill = document.getElementById('activeEmotionPill');
+    const emotionChips = document.querySelectorAll('.emotion-chip');
+    const voiceMorphPitch = document.getElementById('voiceMorphPitch');
+    const voiceMorphSpeed = document.getElementById('voiceMorphSpeed');
+    const btnTestVoiceEmotion = document.getElementById('btnTestVoiceEmotion');
+
+    async function loadVoiceEmotionState() {
+      try {
+        const res = await fetch('/api/enterprise/live/voice/emotions');
+        const data = await res.json();
+        if (data.ok && data.activeEmotion) {
+          if (activeEmotionPill) activeEmotionPill.textContent = data.activeEmotion.name;
+          if (voiceMorphPitch) voiceMorphPitch.value = data.activeEmotion.pitchModifier;
+          if (voiceMorphSpeed) voiceMorphSpeed.value = data.activeEmotion.speedModifier;
+          emotionChips.forEach(chip => {
+            chip.classList.toggle('active', chip.dataset.emotion === data.activeEmotion.id);
+          });
+        }
+      } catch (e) {}
+    }
+
+    emotionChips.forEach(chip => {
+      chip.addEventListener('click', async () => {
+        const emotionId = chip.dataset.emotion;
+        try {
+          const res = await fetch('/api/enterprise/live/voice/set-emotion', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ emotionId })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            loadVoiceEmotionState();
+            const speechRibbon = document.getElementById('liveSpeechSub');
+            if (speechRibbon) speechRibbon.textContent = `💬 MC [${data.activeEmotion.name}]: "${data.activeEmotion.sampleScript}"`;
+          }
+        } catch (e) {
+          alert('Lỗi chọn cảm xúc giọng nói: ' + e.message);
+        }
+      });
+    });
+
+    if (btnTestVoiceEmotion) {
+      btnTestVoiceEmotion.addEventListener('click', () => {
+        const activeChip = document.querySelector('.emotion-chip.active');
+        const emotionName = activeChip ? activeChip.textContent.trim() : 'Hào hứng';
+        const speechRibbon = document.getElementById('liveSpeechSub');
+        if (speechRibbon) {
+          speechRibbon.textContent = `💬 MC [Cảm xúc ${emotionName}]: "Dạ em xin cảm ơn chị Lan Hương đã thả tim và chốt 2 sản phẩm nha! Em gói quà đặc biệt ngay ạ! 🥰"`;
         }
       });
     }

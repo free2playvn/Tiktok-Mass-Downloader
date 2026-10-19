@@ -12,7 +12,7 @@
       "status": "active",
       "avatar": "👑",
       "createdAt": "2026-10-19T07:25:11.039Z",
-      "lastLogin": "2026-10-19T11:24:43.260Z",
+      "lastLogin": "2026-10-19T11:34:09.715Z",
       "stats": {
         "downloadsCount": 67,
         "editedVideos": 12,
@@ -203,9 +203,22 @@
       "userId": "usr_admin_001",
       "createdAt": "2026-10-19T11:24:43.264Z",
       "expiresAt": "2026-11-18T11:24:43.264Z"
+    },
+    {
+      "token": "tmd_tok_5afa2cdfb379010e5b2f4b0151929e3f26a42c704cc31f7fc33ca7d7f50e9dc9",
+      "userId": "usr_admin_001",
+      "createdAt": "2026-10-19T11:34:09.717Z",
+      "expiresAt": "2026-11-18T11:34:09.717Z"
     }
   ],
   "activity_logs": [
+    {
+      "id": "act_mvf6fd4j",
+      "userId": "usr_admin_001",
+      "action": "user_login",
+      "details": "Đăng nhập thành công vào hệ thống",
+      "timestamp": "2026-10-19T11:34:09.715Z"
+    },
     {
       "id": "act_mvf6381o",
       "userId": "usr_admin_001",

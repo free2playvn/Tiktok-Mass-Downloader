@@ -2034,6 +2034,34 @@
                 <span class="mega-tab-sub">Bọc link Shopee chống quét</span>
               </div>
             </button>
+            <button class="mega-nav-tab" data-target="megaTabAutoBroll">
+              <span class="mega-tab-icon">📹</span>
+              <div class="mega-tab-meta">
+                <span class="mega-tab-title">18. Auto B-Roll & Facecam</span>
+                <span class="mega-tab-sub">Bóc kịch bản & ghép Facecam</span>
+              </div>
+            </button>
+            <button class="mega-nav-tab" data-target="megaTabDeepLipsync">
+              <span class="mega-tab-icon">👄</span>
+              <div class="mega-tab-meta">
+                <span class="mega-tab-title">19. Lip-Sync & Face Swap 4K</span>
+                <span class="mega-tab-sub">Thay mặt KOL ngoại sang chủ shop</span>
+              </div>
+            </button>
+            <button class="mega-nav-tab" data-target="megaTabShadowban">
+              <span class="mega-tab-icon">🩺</span>
+              <div class="mega-tab-meta">
+                <span class="mega-tab-title">20. Soi Điểm Shadowban</span>
+                <span class="mega-tab-sub">Audit kênh & Lướt ngầm nuôi nick</span>
+              </div>
+            </button>
+            <button class="mega-nav-tab" data-target="megaTabOmniCrm">
+              <span class="mega-tab-icon">📲</span>
+              <div class="mega-tab-meta">
+                <span class="mega-tab-title">21. CRM Đơn & KOC Hunter</span>
+                <span class="mega-tab-sub">In mã GHTK/Viettel & Săn KOC</span>
+              </div>
+            </button>
           </div>
 
           <!-- Right Content Panels -->
@@ -2470,6 +2498,203 @@
               </div>
             </div>
 
+            <!-- PANEL 18: AI Auto B-Roll Inserter & Facecam Reaction -->
+            <div class="mega-panel" id="megaTabAutoBroll">
+              <div class="mega-panel-header">
+                <h4>📹 AI Auto B-Roll Inserter & Facecam Reaction Generator</h4>
+                <span class="status-pill active">Script-to-Footage AI</span>
+              </div>
+              <p class="panel-desc">Phân tích kịch bản video tiếng Việt, tự động bóc tách từ khóa hành động/sản phẩm để chèn footage 4K minh họa và sinh khung Facecam reaction biểu cảm sinh động.</p>
+
+              <div class="mega-grid-2">
+                <div class="mega-card">
+                  <h5 class="mega-card-title">📝 Kịch Bản Video Cần Chèn B-Roll:</h5>
+                  <textarea id="brollScriptInput" class="studio-textarea" rows="4" placeholder="Nhập kịch bản video...">Hôm nay mình mở hộp đôi sneaker phiên bản giới hạn cực đẹp, chất liệu vải dệt thoáng khí, đế đệm êm ái khi chạy bộ đường dài và dạ quang phát sáng trong bóng tối rất ấn tượng...</textarea>
+                  <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+                    <button class="studio-btn primary-btn sm-btn" id="btnAnalyzeBrollScript">
+                      <span>🚀 Phân Tích & Gợi Ý B-Roll 4K</span>
+                    </button>
+                  </div>
+
+                  <h5 class="mega-card-title" style="margin-top: 14px;">🎭 Ghép Khung Facecam Reaction (PiP Overlay):</h5>
+                  <div class="form-row-2">
+                    <div>
+                      <label class="form-label">Biểu cảm Reaction:</label>
+                      <select id="facecamReactionSelect" class="studio-select">
+                        <option value="react_wow">😲 Sửng Sốt Wow (Khi thấy tính năng đỉnh)</option>
+                        <option value="react_hype">🔥 Phấn Khích Hype (Kêu gọi deal hời)</option>
+                        <option value="react_nod">🧐 Trầm Trồ Gật Gù (Phân tích chất lượng)</option>
+                        <option value="react_laugh">😂 Cười Tươi Sảng Khoái (Tạo thiện cảm)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="form-label">Vị trí hiển thị:</label>
+                      <select id="facecamPositionSelect" class="studio-select">
+                        <option value="bottom-right">Góc dưới bên phải (PiP Mini)</option>
+                        <option value="top-right">Góc trên bên phải</option>
+                        <option value="bottom-left">Góc dưới bên trái</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+                    <button class="studio-btn secondary-btn sm-btn" id="btnGenerateFacecam">
+                      <span>⚡ Sinh Lớp Phủ Facecam Reaction</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="mega-card">
+                  <h5 class="mega-card-title">🎞️ Danh Sách B-Roll 4K Khớp Kịch Bản:</h5>
+                  <div id="brollSuggestionsList" class="broll-results-list">
+                    <!-- Injected via JS -->
+                  </div>
+                  <div id="brollStatusBox" class="pub-status-box hidden" style="margin-top: 10px;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PANEL 19: Deep Lip-Sync & AI Face Swap 4K -->
+            <div class="mega-panel" id="megaTabDeepLipsync">
+              <div class="mega-panel-header">
+                <h4>👄 Deep Lip-Sync & AI Face Swap 4K (Hoán Đổi Khuôn Mặt)</h4>
+                <span class="status-pill active">LivePortrait 4K</span>
+              </div>
+              <p class="panel-desc">Hoán đổi khuôn mặt của Reviewer/KOL quốc tế sang khuôn mặt của bạn hoặc mẫu Việt Nam với độ phân giải 4K, đồng bộ khẩu hình tiếng Việt tự nhiên 100%.</p>
+
+              <div class="mega-grid-2">
+                <div class="mega-card">
+                  <h5 class="mega-card-title">👤 Chọn Khuôn Mặt Đích (Target Identity):</h5>
+                  <div class="faceswap-profiles-grid" id="faceswapProfilesGrid">
+                    <!-- Injected via JS -->
+                  </div>
+
+                  <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 8px;">
+                    <label class="studio-switch-label" style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #fff; cursor: pointer;">
+                      <input type="checkbox" id="chkEnableFaceSwap" checked>
+                      <strong>Kích hoạt Hoán Đổi Khuôn Mặt (AI Face Swap)</strong>
+                    </label>
+                    <label class="studio-switch-label" style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #cbd5e1; cursor: pointer;">
+                      <input type="checkbox" id="chkLipsyncTemporalSmooth" checked>
+                      <span>Khử rung giật biên độ môi (Temporal Anti-Jitter)</span>
+                    </label>
+                  </div>
+
+                  <div style="margin-top: 14px;">
+                    <button class="studio-btn primary-btn full-btn" id="btnProcessDeepLipsync">
+                      <span>🚀 Xử Lý Khớp Khẩu Hình & Thay Mặt Video 4K</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="mega-card">
+                  <h5 class="mega-card-title">📺 Bản Xem Trước Kết Quả (Preview 4K):</h5>
+                  <div class="faceswap-preview-box">
+                    <img id="faceswapPreviewImg" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80" alt="Face Swap Preview" class="faceswap-img">
+                    <div class="faceswap-tag">4K ULTRA-HD LIVEPORTRAIT</div>
+                  </div>
+                  <div id="faceswapStatusBox" class="pub-status-box hidden" style="margin-top: 10px;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PANEL 20: Shadowban Health Checker & Auto Account Warming -->
+            <div class="mega-panel" id="megaTabShadowban">
+              <div class="mega-panel-header">
+                <h4>🩺 Shadowban Health Checker & Auto Account Warming</h4>
+                <span class="status-pill active">Radar Thuật Toán 2026</span>
+              </div>
+              <p class="panel-desc">Kiểm tra sức khỏe kênh, đo tỷ lệ cắn phân phối đề xuất FYP % và kích hoạt kịch bản lướt ngầm (Auto Warm-Up) qua mạng 4G sạch để giải vây kênh bị bóp tương tác.</p>
+
+              <div class="mega-grid-2">
+                <div class="mega-card">
+                  <h5 class="mega-card-title">🔍 Kiểm Tra Chỉ Số Sức Khỏe Kênh:</h5>
+                  <div class="form-row-2">
+                    <div>
+                      <label class="form-label">Tên kênh / Handle:</label>
+                      <input type="text" id="inputAuditHandle" class="studio-input" value="@tmd_official_store">
+                    </div>
+                    <div>
+                      <label class="form-label">Nền tảng:</label>
+                      <select id="selectAuditPlatform" class="studio-select">
+                        <option value="tiktok">🎵 TikTok</option>
+                        <option value="youtube">▶️ YouTube</option>
+                        <option value="facebook">👥 Facebook Reels</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+                    <button class="studio-btn primary-btn sm-btn" id="btnAuditAccountHealth">
+                      <span>🩺 Quét Sức Khỏe Kênh Ngay</span>
+                    </button>
+                  </div>
+
+                  <h5 class="mega-card-title" style="margin-top: 16px;">⚡ Kịch Bản Nuôi Nick & Giải Vây Kênh:</h5>
+                  <div class="form-field">
+                    <label class="form-label">Chọn quy trình Auto-Warmup:</label>
+                    <select id="selectWarmupRoutine" class="studio-select">
+                      <option value="warmup_niche_browse">Lướt FYP theo chủ đề & Thả tim ngẫu nhiên (45 phút)</option>
+                      <option value="warmup_full_watch">Xem trọn 100% video & Bình luận tương tác tự nhiên</option>
+                      <option value="warmup_recovery_shield">Giải vây Shadowban (Chống quét IP 4G xoay vòng)</option>
+                    </select>
+                  </div>
+                  <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+                    <button class="studio-btn secondary-btn sm-btn" id="btnDispatchWarmup">
+                      <span>🚀 Bắt Đầu Lướt Nuôi Nick Tự Động</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="mega-card">
+                  <h5 class="mega-card-title">📊 Báo Cáo Sức Khỏe Kênh & Tỷ Lệ FYP:</h5>
+                  <div id="shadowbanReportCard" class="shadowban-report-box">
+                    <!-- Injected via JS -->
+                  </div>
+                  <div id="warmupStatusBox" class="pub-status-box hidden" style="margin-top: 10px;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PANEL 21: Omnichannel CRM Hub & TikTok Affiliate KOC Hunter -->
+            <div class="mega-panel" id="megaTabOmniCrm">
+              <div class="mega-panel-header">
+                <h4>📲 Omnichannel CRM Gom Đơn & TikTok Affiliate KOC Hunter</h4>
+                <span class="status-pill active">Logistics & KOC Hub</span>
+              </div>
+              <p class="panel-desc">Gom toàn bộ đơn hàng livestream từ Facebook, TikTok Shop, YouTube, tự động xuất mã vận đơn GHTK / Viettel Post và săn tìm KOC tiềm năng để gửi lời mời nhận mẫu.</p>
+
+              <div class="mega-grid-2">
+                <!-- Left: Omnichannel Orders & Shipping -->
+                <div class="mega-card">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h5 class="mega-card-title" style="margin: 0;">📦 Đơn Hàng Live & Mã Vận Đơn:</h5>
+                    <button class="studio-btn primary-btn sm-btn" id="btnCreateFastOrder">
+                      <span>➕ Tạo Đơn & In Mã</span>
+                    </button>
+                  </div>
+                  <div id="crmOrdersList" class="crm-orders-list">
+                    <!-- Injected via JS -->
+                  </div>
+                </div>
+
+                <!-- Right: KOC Affiliate Hunter -->
+                <div class="mega-card">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h5 class="mega-card-title" style="margin: 0;">🎯 Săn KOC Đẩy Doanh Số (Free Sample):</h5>
+                    <select id="kocNicheFilter" class="studio-select" style="width: 140px; font-size: 11px;">
+                      <option value="all">Tất cả ngành hàng</option>
+                      <option value="Thời trang">Thời trang & Giày</option>
+                      <option value="Mỹ phẩm">Mỹ phẩm & Skincare</option>
+                      <option value="điện tử">Đồ công nghệ</option>
+                    </select>
+                  </div>
+                  <div id="kocHunterList" class="koc-hunter-list">
+                    <!-- Injected via JS -->
+                  </div>
+                  <div id="kocOutreachStatusBox" class="pub-status-box hidden" style="margin-top: 10px;"></div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -2553,6 +2778,44 @@
                 <span class="chan-chip chip-tiktok" id="chipViewersTikTok">🎵 TikTok: 1.4K</span>
                 <span class="chan-chip chip-youtube" id="chipViewersYouTube">▶️ YouTube: 890</span>
                 <span class="chan-chip chip-facebook" id="chipViewersFacebook">👥 Facebook: 640</span>
+              </div>
+
+              <!-- Realtime PK Battle Overlay Bar -->
+              <div class="live-pk-battle-overlay" id="livePkBattleOverlay">
+                <div class="pk-top-row">
+                  <div class="pk-team-info team-host">
+                    <span class="pk-avatar-mini">🌟</span>
+                    <span class="pk-name">Mai Phương (Shop)</span>
+                    <span class="pk-score-badge" id="pkHostScore">14,200</span>
+                  </div>
+                  <div class="pk-timer-center">
+                    <span class="pk-vs-tag">⚔️ PK</span>
+                    <span class="pk-countdown" id="pkTimerVal">03:45</span>
+                  </div>
+                  <div class="pk-team-info team-rival">
+                    <span class="pk-score-badge rival" id="pkChallengerScore">12,850</span>
+                    <span class="pk-name">Thảo Nhi Live</span>
+                    <span class="pk-avatar-mini">🔥</span>
+                  </div>
+                </div>
+                <div class="pk-bar-track">
+                  <div class="pk-bar-host" id="pkBarHost" style="width: 53%;"></div>
+                  <div class="pk-bar-rival" id="pkBarChallenger" style="width: 47%;"></div>
+                </div>
+              </div>
+
+              <!-- FOMO Flash Sale Countdown Ribbon Overlay -->
+              <div class="live-fomo-sale-ribbon" id="liveFomoRibbon">
+                <div class="fomo-ribbon-left">
+                  <span class="fomo-fire-icon pulse">🔥</span>
+                  <div class="fomo-meta">
+                    <strong class="fomo-title" id="fomoOverlayTitle">DEAL SỐC 60 GIÂY</strong>
+                    <span class="fomo-stock" id="fomoOverlayStock">Chỉ còn 7/50 suất!</span>
+                  </div>
+                </div>
+                <div class="fomo-ribbon-right">
+                  <span class="fomo-timer" id="fomoOverlayTimer">58s</span>
+                </div>
               </div>
 
               <!-- Top Right: Realtime Revenue Counter -->
@@ -2850,6 +3113,90 @@
                 <button class="studio-btn secondary-btn sm-btn" id="btnSavePlatformKeys">
                   <span>💾 Lưu Cấu Hình Stream Key 3 Kênh</span>
                 </button>
+              </div>
+            </div>
+
+            <!-- =========================================================
+                 ENTERPRISE: AI LIVE PK BATTLE & LUCKY WHEEL
+                 ========================================================= -->
+            <div class="live-control-group live-pk-suite">
+              <div class="live-group-title" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>⚔️ PK Đối Kháng & Minigame Vòng Quay May Mắn:</span>
+                <span class="badge-pill active" id="pkStatusPill">PK ĐANG DIỄN RA</span>
+              </div>
+              <p class="panel-desc" style="margin-bottom: 8px;">Kích thích người xem ném quà đẩy thanh điểm đối kháng và phát quà ngẫu nhiên tăng tương tác.</p>
+              
+              <div class="pk-actions-row">
+                <button class="studio-btn primary-btn sm-btn" id="btnPkBoostHost">
+                  <span>🚀 Bơm Điểm PK (+500 Điểm / Tặng Quà)</span>
+                </button>
+                <button class="studio-btn secondary-btn sm-btn" id="btnPkLuckyWheelSpin">
+                  <span>🎡 Quay Thưởng Lucky Wheel (Voucher 50%)</span>
+                </button>
+              </div>
+              <div id="pkStatusBox" class="pub-status-box hidden" style="margin-top: 8px;"></div>
+            </div>
+
+            <!-- =========================================================
+                 ENTERPRISE: FLASH SALE SCARCITY & FOMO SOUND ENGINE
+                 ========================================================= -->
+            <div class="live-control-group live-fomo-suite">
+              <div class="live-group-title" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>⚡ Flash Sale Khan Hiếm & Âm Thanh FOMO Cảnh Báo:</span>
+                <span class="badge-mini-3d" style="background: #ef4444; color: #fff;">ĐẾM NGƯỢC 60S</span>
+              </div>
+              <p class="panel-desc" style="margin-bottom: 8px;">Tự động trừ tồn kho ảo, chèn chuông ting-ting kích thích chốt đơn dồn dập.</p>
+              
+              <div class="fomo-controls-row">
+                <button class="studio-btn danger-btn sm-btn" id="btnTriggerFlashSale">
+                  <span>⚡ Kích Hoạt Deal Sốc 60s (Giảm 50%)</span>
+                </button>
+                <button class="studio-btn secondary-btn sm-btn" id="btnSimulatePurchase">
+                  <span>🔔 Giả Lập Khách Đặt Hàng (FOMO Realtime)</span>
+                </button>
+                <label class="studio-switch-label" style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: #cbd5e1; cursor: pointer;">
+                  <input type="checkbox" id="chkEnableFomoAudio" checked>
+                  <span>🔊 Bật Chuông Ting Ting</span>
+                </label>
+              </div>
+              <div id="fomoRecentTicker" class="fomo-ticker-box">
+                <span class="ticker-dot pulse"></span>
+                <span id="fomoTickerText">🔔 Anh Tuấn (TP.HCM) vừa chốt 1 Đôi Sneaker Phantom X cách đây 5 giây!</span>
+              </div>
+            </div>
+
+            <!-- =========================================================
+                 ENTERPRISE: VOICE EMOTION AUTO-MORPHING (TTS ĐA CẢM XÚC)
+                 ========================================================= -->
+            <div class="live-control-group live-voice-morph-suite">
+              <div class="live-group-title" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>🎭 Voice Emotion Auto-Morphing Engine (Cảm Xúc MC AI):</span>
+                <span class="badge-pill active" id="activeEmotionPill">🔥 Hào Hứng & Năng Lượng</span>
+              </div>
+              <p class="panel-desc" style="margin-bottom: 8px;">Tự động biến đổi ngữ điệu giọng nói MC theo nhịp bán hàng: lúc mở đầu hào hứng, lúc báo deal gấp gáp, lúc tư vấn tin cậy.</p>
+              
+              <div class="emotion-presets-grid" id="emotionPresetsGrid">
+                <button class="emotion-chip active" data-emotion="excited">🔥 Hào Hứng (Mở đầu)</button>
+                <button class="emotion-chip" data-emotion="urgent_fomo">⚡ Gấp Gáp (Deal sắp hết)</button>
+                <button class="emotion-chip" data-emotion="whisper_secret">🤫 Thì Thầm (Bật mí giá kín)</button>
+                <button class="emotion-chip" data-emotion="expert_authoritative">💼 Chuyên Gia (Phân tích)</button>
+                <button class="emotion-chip" data-emotion="warm_grateful">🥰 Ấm Áp (Cảm ơn)</button>
+              </div>
+
+              <div class="voice-morph-sliders" style="display: flex; gap: 12px; margin-top: 8px;">
+                <div style="flex: 1;">
+                  <span style="font-size: 10px; color: var(--text-muted);">Cao độ (Pitch Morphing):</span>
+                  <input type="range" id="voiceMorphPitch" min="80" max="130" value="115" class="studio-slider" style="width: 100%;">
+                </div>
+                <div style="flex: 1;">
+                  <span style="font-size: 10px; color: var(--text-muted);">Tốc độ nói (Speech Tempo):</span>
+                  <input type="range" id="voiceMorphSpeed" min="90" max="140" value="118" class="studio-slider" style="width: 100%;">
+                </div>
+                <div style="display: flex; align-items: flex-end;">
+                  <button class="studio-btn secondary-btn sm-btn" id="btnTestVoiceEmotion">
+                    <span>🔊 Test Đọc Thử</span>
+                  </button>
+                </div>
               </div>
             </div>
 

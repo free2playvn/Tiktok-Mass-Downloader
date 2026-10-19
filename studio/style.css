@@ -4572,3 +4572,513 @@ body.theme-windows .window-titlebar {
   color: #60a5fa;
   border: 1px solid rgba(24, 119, 242, 0.4);
 }
+
+/* ==========================================================================
+   SECTION 26: ENTERPRISE LIVE PK BATTLE, FLASH SALE FOMO & VOICE MORPHING
+   ========================================================================== */
+
+/* 1. Live PK Battle Overlay */
+.live-pk-battle-overlay {
+  position: absolute;
+  top: 72px;
+  left: 12px;
+  right: 12px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 6px 10px;
+  z-index: 25;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.pk-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  margin-bottom: 5px;
+}
+
+.pk-team-info {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pk-team-info.team-host {
+  color: #38bdf8;
+}
+
+.pk-team-info.team-rival {
+  color: #f43f5e;
+}
+
+.pk-name {
+  font-weight: 700;
+  font-size: 10px;
+  max-width: 90px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pk-score-badge {
+  background: rgba(56, 189, 248, 0.2);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.pk-score-badge.rival {
+  background: rgba(244, 63, 94, 0.2);
+  border-color: rgba(244, 63, 94, 0.4);
+  color: #f43f5e;
+}
+
+.pk-timer-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pk-vs-tag {
+  font-size: 9px;
+  font-weight: 900;
+  color: #fbbf24;
+  letter-spacing: 0.5px;
+}
+
+.pk-countdown {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.pk-bar-track {
+  display: flex;
+  height: 6px;
+  width: 100%;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #1e293b;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.pk-bar-host {
+  background: linear-gradient(90deg, #0284c7, #38bdf8);
+  transition: width 0.4s ease;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+}
+
+.pk-bar-rival {
+  background: linear-gradient(90deg, #f43f5e, #e11d48);
+  transition: width 0.4s ease;
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.6);
+}
+
+/* 2. FOMO Flash Sale Ribbon Overlay */
+.live-fomo-sale-ribbon {
+  position: absolute;
+  top: 130px;
+  left: 12px;
+  right: 12px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.92), rgba(185, 28, 28, 0.95));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(254, 202, 202, 0.3);
+  border-radius: 8px;
+  padding: 6px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 24;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+  animation: fomoPulseGlow 2s infinite alternate;
+}
+
+@keyframes fomoPulseGlow {
+  0% { box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35); }
+  100% { box-shadow: 0 6px 20px rgba(239, 68, 68, 0.7); }
+}
+
+.fomo-ribbon-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fomo-fire-icon {
+  font-size: 16px;
+}
+
+.fomo-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.fomo-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.fomo-stock {
+  font-size: 9px;
+  color: #fef08a;
+  font-weight: 600;
+}
+
+.fomo-timer {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 900;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* 3. Control groups & Tickers */
+.pk-actions-row, .fomo-controls-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.fomo-ticker-box {
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 6px;
+  font-size: 11px;
+  color: #fca5a5;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ticker-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ef4444;
+  flex-shrink: 0;
+}
+
+/* 4. Emotion Presets Grid */
+.emotion-presets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.emotion-chip {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition-fast);
+}
+
+.emotion-chip:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--accent-purple);
+  color: #fff;
+}
+
+.emotion-chip.active {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(99, 102, 241, 0.25));
+  border-color: #a855f7;
+  color: #fff;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.3);
+}
+
+/* ==========================================================================
+   SECTION 27: ENTERPRISE SUITE MODULES (18, 19, 20, 21)
+   ========================================================================== */
+
+/* Panel 18: Auto B-Roll & Facecam */
+.broll-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.broll-item-card {
+  display: flex;
+  gap: 10px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  align-items: center;
+  transition: border-color var(--transition-fast);
+}
+
+.broll-item-card:hover {
+  border-color: var(--accent-cyan);
+}
+
+.broll-thumb {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.broll-item-info {
+  flex: 1;
+}
+
+.broll-keyword-pill {
+  font-size: 9px;
+  background: rgba(6, 182, 212, 0.15);
+  color: #38bdf8;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-weight: 700;
+  display: inline-block;
+  margin-bottom: 2px;
+}
+
+.broll-item-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.broll-time-tag {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* Panel 19: Deep Lip-Sync & Face Swap */
+.faceswap-profiles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.faceswap-profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: all var(--transition-fast);
+}
+
+.faceswap-profile-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--accent-purple);
+}
+
+.faceswap-profile-card.active {
+  border-color: #ec4899;
+  background: rgba(236, 72, 153, 0.15);
+  box-shadow: 0 0 14px rgba(236, 72, 153, 0.3);
+}
+
+.faceswap-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 6px;
+  border: 2px solid transparent;
+}
+
+.faceswap-profile-card.active .faceswap-avatar {
+  border-color: #ec4899;
+}
+
+.faceswap-profile-name {
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.faceswap-profile-tag {
+  font-size: 8px;
+  color: var(--text-muted);
+}
+
+.faceswap-preview-box {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 240px;
+}
+
+.faceswap-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.faceswap-tag {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid rgba(236, 72, 153, 0.5);
+  color: #f472b6;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+
+/* Panel 20: Shadowban Health Checker */
+.shadowban-report-box {
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+
+.shadowban-score-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.shadowban-big-score {
+  font-size: 32px;
+  font-weight: 900;
+  color: #10b981;
+  font-family: var(--font-mono);
+}
+
+.shadowban-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.metric-pill-item {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+.metric-pill-label {
+  color: var(--text-muted);
+  font-size: 9px;
+  display: block;
+}
+
+.metric-pill-val {
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Panel 21: Omnichannel CRM & KOC Hunter */
+.crm-orders-list, .koc-hunter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.crm-order-card, .koc-hunter-card {
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.crm-order-main, .koc-main-meta {
+  flex: 1;
+}
+
+.crm-order-id {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.crm-customer-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.crm-carrier-badge {
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  background: rgba(249, 115, 22, 0.15);
+  color: #fb923c;
+  border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+.crm-tracking-code {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: #a3e635;
+}
+
+.koc-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.koc-handle {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.koc-gmv-badge {
+  font-size: 9px;
+  color: #34d399;
+  font-weight: 700;
+}
+

@@ -31,6 +31,14 @@ const virtualProduct3D = require('./modules/virtual_product_3d');
 const distributedRenderFarm = require('./modules/distributed_render_farm');
 const smartBioCloaker = require('./modules/smart_bio_cloaker');
 const dashboard3DPlatform = require('./modules/dashboard_3d_platform');
+const livePKMinigame = require('./modules/live_pk_minigame');
+const flashSaleFomo = require('./modules/flash_sale_fomo');
+const voiceEmotionMorph = require('./modules/voice_emotion_morph');
+const autoBrollReaction = require('./modules/auto_broll_reaction');
+const lipsyncFaceSwap = require('./modules/lipsync_faceswap');
+const shadowbanWarmup = require('./modules/shadowban_warmup');
+const omnichannelCrmShipping = require('./modules/omnichannel_crm_shipping');
+const affiliateKocHunter = require('./modules/affiliate_koc_hunter');
 
 const PORT = process.env.PORT || 3000;
 const STUDIO_DIR = path.join(__dirname, 'studio');
@@ -1414,6 +1422,220 @@ const server = http.createServer(async (req, res) => {
     try {
       const { slug, targetUrl } = await readJsonBody();
       const result = smartBioCloaker.createCloakLink(slug, targetUrl);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 41. AI Live PK Battle & Lucky Wheel
+  if (pathname === '/api/enterprise/live/pk/state' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(livePKMinigame.getPKState()));
+    return;
+  }
+
+  if (pathname === '/api/enterprise/live/pk/toggle' && req.method === 'POST') {
+    try {
+      const { start } = await readJsonBody();
+      const result = livePKMinigame.togglePKBattle(start);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  if (pathname === '/api/enterprise/live/pk/boost' && req.method === 'POST') {
+    try {
+      const { points, isGift } = await readJsonBody();
+      const result = livePKMinigame.boostScore(points, isGift);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  if (pathname === '/api/enterprise/live/pk/wheel-spin' && req.method === 'POST') {
+    try {
+      const { viewer } = await readJsonBody();
+      const result = livePKMinigame.spinLuckyWheel(viewer);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 42. AI Flash Sale Scarcity & FOMO Sound Engine
+  if (pathname === '/api/enterprise/live/fomo/state' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(flashSaleFomo.getFlashSaleState()));
+    return;
+  }
+
+  if (pathname === '/api/enterprise/live/fomo/start' && req.method === 'POST') {
+    try {
+      const { productTitle, dealPrice, stockCount } = await readJsonBody();
+      const result = flashSaleFomo.triggerFlashSale(productTitle, dealPrice, stockCount);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  if (pathname === '/api/enterprise/live/fomo/simulate-order' && req.method === 'POST') {
+    try {
+      const { customerName, itemName } = await readJsonBody();
+      const result = flashSaleFomo.simulateNewCustomerPurchase(customerName, itemName);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 43. Voice Emotion Auto-Morphing
+  if (pathname === '/api/enterprise/live/voice/emotions' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(voiceEmotionMorph.getEmotionsState()));
+    return;
+  }
+
+  if (pathname === '/api/enterprise/live/voice/set-emotion' && req.method === 'POST') {
+    try {
+      const { emotionId } = await readJsonBody();
+      const result = voiceEmotionMorph.setEmotion(emotionId);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 44. AI Auto B-Roll Inserter & Facecam Reaction
+  if (pathname === '/api/enterprise/video/broll/analyze' && req.method === 'POST') {
+    try {
+      const { script } = await readJsonBody();
+      const result = autoBrollReaction.analyzeAndSuggestBroll(script);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  if (pathname === '/api/enterprise/video/broll/facecam' && req.method === 'POST') {
+    try {
+      const { reactionId, position } = await readJsonBody();
+      const result = autoBrollReaction.generateFacecamOverlay(reactionId, position);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 45. Deep Lip-Sync & AI Face Swap 4K
+  if (pathname === '/api/enterprise/video/lipsync/state' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(lipsyncFaceSwap.getEngineState()));
+    return;
+  }
+
+  if (pathname === '/api/enterprise/video/lipsync/process' && req.method === 'POST') {
+    try {
+      const { videoSrc, profileId, enableFaceSwap } = await readJsonBody();
+      const result = lipsyncFaceSwap.processLipSyncAndFaceSwap(videoSrc, profileId, enableFaceSwap);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 46. Shadowban Health Checker & Auto Account Warming
+  if (pathname === '/api/enterprise/matrix/shadowban/audit' && req.method === 'POST') {
+    try {
+      const { channelHandle, platform } = await readJsonBody();
+      const result = shadowbanWarmup.auditAccountHealth(channelHandle, platform);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  if (pathname === '/api/enterprise/matrix/shadowban/warmup' && req.method === 'POST') {
+    try {
+      const { channelHandle, routineId } = await readJsonBody();
+      const result = shadowbanWarmup.dispatchWarmupRoutine(channelHandle, routineId);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 47. Omnichannel CRM Hub & Shipping Logistics (GHTK / Viettel Post)
+  if (pathname === '/api/enterprise/crm/orders' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(omnichannelCrmShipping.getOrders()));
+    return;
+  }
+
+  if (pathname === '/api/enterprise/crm/create-order' && req.method === 'POST') {
+    try {
+      const orderData = await readJsonBody();
+      const result = omnichannelCrmShipping.createOrderAndShippingLabel(orderData);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 48. TikTok Affiliate KOC Hunter & Sample Outreach
+  if (pathname === '/api/enterprise/affiliate/koc/list' && req.method === 'GET') {
+    const parsedQuery = parsedUrl.query;
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(affiliateKocHunter.getKOCList(parsedQuery.niche)));
+    return;
+  }
+
+  if (pathname === '/api/enterprise/affiliate/koc/outreach' && req.method === 'POST') {
+    try {
+      const { kocId, commissionPercent, productName } = await readJsonBody();
+      const result = affiliateKocHunter.sendSampleOutreachProposal(kocId, commissionPercent, productName);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(result));
     } catch (e) {
