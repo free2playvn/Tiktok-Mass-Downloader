@@ -12,7 +12,7 @@
       "status": "active",
       "avatar": "👑",
       "createdAt": "2026-10-19T07:25:11.039Z",
-      "lastLogin": "2026-10-19T09:26:30.856Z",
+      "lastLogin": "2026-10-19T09:40:15.529Z",
       "stats": {
         "downloadsCount": 67,
         "editedVideos": 12,
@@ -161,9 +161,35 @@
       "userId": "usr_admin_001",
       "createdAt": "2026-10-19T09:26:30.858Z",
       "expiresAt": "2026-11-18T09:26:30.858Z"
+    },
+    {
+      "token": "tmd_tok_c565ef936f3dd066a554c8110a05afcbae24256e21a745ddb78d7e173142f068",
+      "userId": "usr_admin_001",
+      "createdAt": "2026-10-19T09:36:08.907Z",
+      "expiresAt": "2026-11-18T09:36:08.907Z"
+    },
+    {
+      "token": "tmd_tok_4d61fe32fb2142928bf340b1ecf811f6442edf30ebadc0f357cdccbf0c3e0816",
+      "userId": "usr_admin_001",
+      "createdAt": "2026-10-19T09:40:15.532Z",
+      "expiresAt": "2026-11-18T09:40:15.532Z"
     }
   ],
   "activity_logs": [
+    {
+      "id": "act_mvf2cvu1",
+      "userId": "usr_admin_001",
+      "action": "user_login",
+      "details": "Đăng nhập thành công vào hệ thống",
+      "timestamp": "2026-10-19T09:40:15.529Z"
+    },
+    {
+      "id": "act_mvf27ljb",
+      "userId": "usr_admin_001",
+      "action": "user_login",
+      "details": "Đăng nhập thành công vào hệ thống",
+      "timestamp": "2026-10-19T09:36:08.903Z"
+    },
     {
       "id": "act_mvf1v7ig",
       "userId": "usr_admin_001",

@@ -1181,6 +1181,9 @@
           <div class="playhead-line"></div>
         </div>
 
+        <!-- Vertical Hover Scrub Guideline (Realtime) -->
+        <div class="timeline-hover-guideline hidden" id="timelineHoverGuideline"></div>
+
         <!-- TRACK 1: Subtitle & Captions Track -->
         <div class="timeline-track subtitle-track" id="subtitleTrack">
           <div class="track-header">
@@ -1226,6 +1229,19 @@
           </div>
         </div>
       </div>
+
+      <!-- Realtime Floating Hover Scrub Thumbnail Tooltip -->
+      <div class="timeline-hover-preview-tooltip hidden" id="timelineHoverPreview">
+        <div class="hover-thumb-box">
+          <canvas id="hoverThumbCanvas" width="100" height="178"></canvas>
+          <span class="hover-timecode-badge" id="hoverTimecodeBadge">00:00.00</span>
+        </div>
+        <div class="hover-cue-preview hidden" id="hoverCuePreview"></div>
+        <div class="hover-tooltip-arrow"></div>
+      </div>
+
+      <!-- Offscreen Video for Scrubbing without interrupting main video playback -->
+      <video id="hoverScrubVideo" preload="auto" muted playsinline crossorigin="anonymous" style="display:none;"></video>
     </footer>
 
     <!-- MODAL: Import TikTok URL -->

@@ -130,6 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupAspectRatio();
     setupVideoPlayer();
     setupTimeline();
+    setupTimelineHoverScrub();
     setupHumanizer();
     setupMediaLibrary();
     setupAudioDubbing();
@@ -258,7 +259,13 @@ document.addEventListener('DOMContentLoaded', () => {
      2. VIDEO PLAYER & SYNC
      =================================================================== */
   function loadActiveVideo() {
-    video.src = `/api/stream?file=${encodeURIComponent(state.currentVideoSrc)}`;
+    const src = `/api/stream?file=${encodeURIComponent(state.currentVideoSrc)}`;
+    video.src = src;
+    const hoverScrubVideo = document.getElementById('hoverScrubVideo');
+    if (hoverScrubVideo) {
+      hoverScrubVideo.src = src;
+      hoverScrubVideo.load();
+    }
     timelineClipTitle.textContent = state.currentVideoSrc.split('/').pop();
     currentProjectName.textContent = `Dự án: ${state.currentVideoTitle}`;
     video.load();
@@ -404,6 +411,127 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  /* ===================================================================
+     3B. REALTIME TIMELINE HOVER SCRUB THUMBNAIL ENGINE
+     =================================================================== */
+  function setupTimelineHoverScrub() {
+    const hoverPreview = document.getElementById('timelineHoverPreview');
+    const hoverCanvas = document.getElementById('hoverThumbCanvas');
+    const hoverTimecodeBadge = document.getElementById('hoverTimecodeBadge');
+    const hoverCuePreview = document.getElementById('hoverCuePreview');
+    const hoverGuideline = document.getElementById('timelineHoverGuideline');
+    const hoverScrubVideo = document.getElementById('hoverScrubVideo');
+
+    if (!hoverPreview || !hoverCanvas || !hoverScrubVideo) return;
+    const ctx = hoverCanvas.getContext('2d');
+
+    function syncHoverVideoSrc() {
+      if (video && video.src && hoverScrubVideo.src !== video.src) {
+        hoverScrubVideo.src = video.src;
+        hoverScrubVideo.load();
+      }
+    }
+
+    function updateHoverCanvasDimensions() {
+      if (state.aspectRatio === '9:16') {
+        hoverCanvas.width = 100;
+        hoverCanvas.height = 178;
+      } else if (state.aspectRatio === '16:9') {
+        hoverCanvas.width = 160;
+        hoverCanvas.height = 90;
+      } else if (state.aspectRatio === '1:1') {
+        hoverCanvas.width = 120;
+        hoverCanvas.height = 120;
+      } else {
+        hoverCanvas.width = 110;
+        hoverCanvas.height = 146;
+      }
+    }
+
+    let isSeeking = false;
+    let pendingTime = null;
+
+    hoverScrubVideo.addEventListener('seeked', () => {
+      isSeeking = false;
+      try {
+        ctx.drawImage(hoverScrubVideo, 0, 0, hoverCanvas.width, hoverCanvas.height);
+      } catch (e) {}
+
+      if (pendingTime !== null) {
+        const nextTime = pendingTime;
+        pendingTime = null;
+        seekToTime(nextTime);
+      }
+    });
+
+    function seekToTime(targetTime) {
+      if (isSeeking) {
+        pendingTime = targetTime;
+        return;
+      }
+      isSeeking = true;
+      hoverScrubVideo.currentTime = targetTime;
+    }
+
+    timelineViewport.addEventListener('mouseenter', () => {
+      syncHoverVideoSrc();
+      updateHoverCanvasDimensions();
+    });
+
+    timelineViewport.addEventListener('mouseleave', () => {
+      hoverPreview.classList.add('hidden');
+      if (hoverGuideline) hoverGuideline.classList.add('hidden');
+    });
+
+    timelineViewport.addEventListener('mousemove', (e) => {
+      syncHoverVideoSrc();
+      const rect = timelineViewport.getBoundingClientRect();
+      const scrollLeft = timelineViewport.scrollLeft;
+
+      // Track header is 120px wide
+      const trackX = e.clientX - rect.left + scrollLeft - 120;
+      if (trackX < 0) {
+        hoverPreview.classList.add('hidden');
+        if (hoverGuideline) hoverGuideline.classList.add('hidden');
+        return;
+      }
+
+      const maxDuration = state.duration || (video ? video.duration || 60 : 60);
+      const hoverTime = Math.max(0, Math.min(maxDuration, trackX / state.timelineZoom));
+
+      // 1. Show vertical scrub guideline in timeline
+      if (hoverGuideline) {
+        hoverGuideline.classList.remove('hidden');
+        hoverGuideline.style.left = `${trackX + 120}px`;
+      }
+
+      // 2. Position floating tooltip above mouse cursor
+      hoverPreview.classList.remove('hidden');
+      const tooltipX = Math.max(70, Math.min(window.innerWidth - 70, e.clientX));
+      const tooltipY = rect.top - 12; // 12px above timeline top edge
+      hoverPreview.style.left = `${tooltipX}px`;
+      hoverPreview.style.top = `${tooltipY}px`;
+
+      // 3. Update timecode badge
+      hoverTimecodeBadge.textContent = formatTimecode(hoverTime);
+
+      // 4. Update subtitle preview if cue matches
+      const activeCue = (state.subtitleCues || []).find(
+        (c) => hoverTime >= c.startTime && hoverTime <= c.endTime
+      );
+      if (activeCue && activeCue.text) {
+        hoverCuePreview.classList.remove('hidden');
+        hoverCuePreview.textContent = `💬 ${activeCue.text}`;
+      } else {
+        hoverCuePreview.classList.add('hidden');
+      }
+
+      // 5. Seek offscreen video to draw frame realtime
+      seekToTime(hoverTime);
+    });
+  }
+
 
   function updateRulerAndClipWidth() {
     const totalWidth = Math.max(1200, state.duration * state.timelineZoom);
