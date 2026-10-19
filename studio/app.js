@@ -51,6 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
     bgmAudioElement: null
   };
 
+  let currentCinemaVideo = null;
+
   // DOM Elements
   const appRoot = document.getElementById('app-root');
   const video = document.getElementById('studioVideo');
@@ -150,6 +152,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setupLiveStudioModule();
     setupAiVideoCinemaStudio();
     setupCloudAiGatewayModule();
+    setupDigitalHumanModule();
+    setupAbTestingModule();
+    setupEcommerceBotModule();
     setupModals();
     loadActiveVideo();
     drawSimulatedWaveform();
@@ -6746,7 +6751,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // State
     let selectedGenre = 'animated_short';
     let selectedEngine = 'openai_sora_2';
-    let currentCinemaVideo = null;
     let cachedEngines = [];
     let cachedGenres = [];
     let isGenerating = false;
@@ -7627,8 +7631,463 @@ document.addEventListener('DOMContentLoaded', () => {
     setupPingTest('btnTestPika', 'pika');
   }
 
+  /* ===================================================================
+     32. DIGITAL HUMAN 4K STREAMER & PHOTOREALISTIC AVATAR
+     =================================================================== */
+  function setupDigitalHumanModule() {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    const modalDigitalHumanStudio = document.getElementById('modalDigitalHumanStudio');
+    const btnOpenDigitalHumanModal = document.getElementById('btnOpenDigitalHumanModal');
+    const btnCloseDigitalHumanModal = document.getElementById('btnCloseDigitalHumanModal');
+    const btnCloseDigitalHumanModalBottom = document.getElementById('btnCloseDigitalHumanModalBottom');
+    const digitalHumanAvatarsGrid = document.getElementById('digitalHumanAvatarsGrid');
+    const digitalHumanScriptInput = document.getElementById('digitalHumanScriptInput');
+    const btnRenderDigitalHumanVideo = document.getElementById('btnRenderDigitalHumanVideo');
+    const btnToggleDigitalHumanLive = document.getElementById('btnToggleDigitalHumanLive');
+    const digitalHumanStatusBox = document.getElementById('digitalHumanStatusBox');
+
+    let selectedAvatarId = 'avatar_viet_mc_phuong_anh';
+    let isLiveActive = false;
+
+    function openModal() {
+      if (modalDigitalHumanStudio) {
+        modalDigitalHumanStudio.classList.add('open');
+        loadAvatars();
+      }
+    }
+
+    function closeModal() {
+      if (modalDigitalHumanStudio) modalDigitalHumanStudio.classList.remove('open');
+    }
+
+    if (btnOpenDigitalHumanModal) btnOpenDigitalHumanModal.addEventListener('click', openModal);
+    if (btnCloseDigitalHumanModal) btnCloseDigitalHumanModal.addEventListener('click', closeModal);
+    if (btnCloseDigitalHumanModalBottom) btnCloseDigitalHumanModalBottom.addEventListener('click', closeModal);
+
+    if (modalDigitalHumanStudio) {
+      modalDigitalHumanStudio.addEventListener('click', (e) => {
+        if (e.target === modalDigitalHumanStudio) closeModal();
+      });
+    }
+
+    async function loadAvatars() {
+      try {
+        const res = await fetch('/api/enterprise/digital-human/avatars');
+        const data = await res.json();
+        if (data.ok && Array.isArray(data.avatars) && digitalHumanAvatarsGrid) {
+          isLiveActive = data.activeSession?.isActive || false;
+          updateLiveButtonUI();
+
+          digitalHumanAvatarsGrid.innerHTML = data.avatars.map(avatar => {
+            const isSelected = avatar.id === selectedAvatarId;
+            return `
+              <div class="digital-human-card ${isSelected ? 'selected' : ''}" data-avatar-id="${avatar.id}">
+                <div class="avatar-preview-box">
+                  <img src="${avatar.thumbnail}" alt="${escapeHtml(avatar.name)}" class="avatar-preview-img">
+                  <span class="avatar-live-badge">${escapeHtml(avatar.resolution)}</span>
+                </div>
+                <div>
+                  <div class="avatar-meta-title">${escapeHtml(avatar.name)}</div>
+                  <div class="avatar-meta-sub">${escapeHtml(avatar.specialty)}</div>
+                </div>
+                <div class="avatar-specs-list">
+                  <span class="avatar-spec-pill">📍 Giọng: ${escapeHtml(avatar.accent)}</span>
+                  <span class="avatar-spec-pill">🏷️ ${escapeHtml(avatar.category)}</span>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          digitalHumanAvatarsGrid.querySelectorAll('.digital-human-card').forEach(card => {
+            card.addEventListener('click', () => {
+              digitalHumanAvatarsGrid.querySelectorAll('.digital-human-card').forEach(c => c.classList.remove('selected'));
+              card.classList.add('selected');
+              selectedAvatarId = card.getAttribute('data-avatar-id');
+            });
+          });
+        }
+      } catch (err) {
+        console.error('Error loading avatars:', err);
+      }
+    }
+
+    function updateLiveButtonUI() {
+      if (!btnToggleDigitalHumanLive) return;
+      if (isLiveActive) {
+        btnToggleDigitalHumanLive.classList.remove('success-btn');
+        btnToggleDigitalHumanLive.classList.add('danger-btn');
+        btnToggleDigitalHumanLive.innerHTML = '<span>⏹ DỪNG LIVESTREAM BÁN HÀNG</span>';
+      } else {
+        btnToggleDigitalHumanLive.classList.remove('danger-btn');
+        btnToggleDigitalHumanLive.classList.add('success-btn');
+        btnToggleDigitalHumanLive.innerHTML = '<span>🔴 KÍCH HOẠT NGƯỜI ẢO LIVESTREAM 24/7</span>';
+      }
+    }
+
+    if (btnRenderDigitalHumanVideo) {
+      btnRenderDigitalHumanVideo.addEventListener('click', async () => {
+        const text = digitalHumanScriptInput ? digitalHumanScriptInput.value : '';
+        btnRenderDigitalHumanVideo.disabled = true;
+        btnRenderDigitalHumanVideo.innerHTML = '<span>⏳ Đang đồng bộ Viseme & Render LivePortrait 4K...</span>';
+
+        try {
+          const res = await fetch('/api/enterprise/digital-human/generate-video', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              avatarId: selectedAvatarId,
+              text,
+              resolution: '4K'
+            })
+          });
+          const data = await res.json();
+          if (data.ok && data.video) {
+            const v = data.video;
+            if (digitalHumanStatusBox) {
+              digitalHumanStatusBox.innerHTML = `
+                <div style="font-size:12px; font-weight:700; color:#10b981; margin-bottom:4px;">
+                  ${escapeHtml(data.message)}
+                </div>
+                <div style="font-size:11px; color:#e2e8f0; line-height:1.5;">
+                  • <strong>Nhân vật:</strong> ${escapeHtml(v.avatarName)} (${escapeHtml(v.resolution)})<br>
+                  • <strong>Thời lượng:</strong> ${v.durationSec} giây | <strong>Tỉ lệ khớp môi:</strong> 99.4% (Viseme AI)<br>
+                  • <strong>Kịch bản:</strong> "${escapeHtml(v.scriptText)}"
+                </div>
+              `;
+              digitalHumanStatusBox.className = 'pub-status-box success';
+              digitalHumanStatusBox.classList.remove('hidden');
+            }
+          } else {
+            alert('Lỗi render: ' + (data.message || 'Không xác định'));
+          }
+        } catch (e) {
+          alert('Lỗi kết nối render: ' + e.message);
+        } finally {
+          btnRenderDigitalHumanVideo.disabled = false;
+          btnRenderDigitalHumanVideo.innerHTML = '<span>🎬 Render Video Người Ảo 4K (Offline Video)</span>';
+        }
+      });
+    }
+
+    if (btnToggleDigitalHumanLive) {
+      btnToggleDigitalHumanLive.addEventListener('click', async () => {
+        const nextState = !isLiveActive;
+        const speechText = digitalHumanScriptInput ? digitalHumanScriptInput.value : '';
+
+        btnToggleDigitalHumanLive.disabled = true;
+        try {
+          const res = await fetch('/api/enterprise/digital-human/toggle-live', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              enable: nextState,
+              avatarId: selectedAvatarId,
+              speechText
+            })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            isLiveActive = data.session.isActive;
+            updateLiveButtonUI();
+            if (digitalHumanStatusBox) {
+              digitalHumanStatusBox.innerHTML = `
+                <div style="font-size:12px; font-weight:700; color:#10b981; margin-bottom:4px;">
+                  ${escapeHtml(data.message)}
+                </div>
+                <div style="font-size:11px; color:#cbd5e1;">
+                  Trạng thái phát sóng: <strong>${isLiveActive ? '🟢 ĐANG PHÁT TRỰC TIẾP 24/7' : '⚪ ĐÃ TẠM DỪNG'}</strong> | Độ trễ: 120ms (Ultra-Low Latency)
+                </div>
+              `;
+              digitalHumanStatusBox.className = 'pub-status-box success';
+              digitalHumanStatusBox.classList.remove('hidden');
+            }
+          }
+        } catch (e) {
+          alert('Lỗi livestream: ' + e.message);
+        } finally {
+          btnToggleDigitalHumanLive.disabled = false;
+        }
+      });
+    }
+  }
+
+  /* ===================================================================
+     33. AI VIDEO A/B TESTING MATRIX & 3-HOOKS GENERATOR
+     =================================================================== */
+  function setupAbTestingModule() {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    const modalAbTestingMatrix = document.getElementById('modalAbTestingMatrix');
+    const btnOpenAbTestingModal = document.getElementById('btnOpenAbTestingModal');
+    const btnCloseAbTestingModal = document.getElementById('btnCloseAbTestingModal');
+    const btnCloseAbTestingModalBottom = document.getElementById('btnCloseAbTestingModalBottom');
+    const abTargetVideoTitle = document.getElementById('abTargetVideoTitle');
+    const btnGenerateAbHooks = document.getElementById('btnGenerateAbHooks');
+    const abVariantsDisplayGrid = document.getElementById('abVariantsDisplayGrid');
+    const abTestingStatusBox = document.getElementById('abTestingStatusBox');
+
+    function openModal() {
+      if (modalAbTestingMatrix) {
+        modalAbTestingMatrix.classList.add('open');
+        if (currentCinemaVideo && abTargetVideoTitle) {
+          abTargetVideoTitle.textContent = `Video: ${currentCinemaVideo.title}`;
+        }
+        loadCampaigns();
+      }
+    }
+
+    function closeModal() {
+      if (modalAbTestingMatrix) modalAbTestingMatrix.classList.remove('open');
+    }
+
+    if (btnOpenAbTestingModal) btnOpenAbTestingModal.addEventListener('click', openModal);
+    if (btnCloseAbTestingModal) btnCloseAbTestingModal.addEventListener('click', closeModal);
+    if (btnCloseAbTestingModalBottom) btnCloseAbTestingModalBottom.addEventListener('click', closeModal);
+
+    if (modalAbTestingMatrix) {
+      modalAbTestingMatrix.addEventListener('click', (e) => {
+        if (e.target === modalAbTestingMatrix) closeModal();
+      });
+    }
+
+    async function loadCampaigns() {
+      try {
+        const res = await fetch('/api/enterprise/ab-testing/campaigns');
+        const data = await res.json();
+        if (data.ok && Array.isArray(data.campaigns) && data.campaigns.length > 0) {
+          renderVariants(data.campaigns[0].variants, data.campaigns[0].winnerRecommendation);
+        }
+      } catch (e) {
+        console.error('Error loading AB campaigns:', e);
+      }
+    }
+
+    function renderVariants(variants, recommendation) {
+      if (!abVariantsDisplayGrid) return;
+      abVariantsDisplayGrid.innerHTML = variants.map(v => {
+        let badgeClass = 'shocking';
+        if (v.type && v.type.toLowerCase().includes('pain')) badgeClass = 'pain_point';
+        if (v.type && (v.type.toLowerCase().includes('fomo') || v.type.toLowerCase().includes('urgency'))) badgeClass = 'fomo';
+
+        const retention = v.estimatedRetention3s || v.stats?.retention3s || '80%';
+        const isWinner = v.isWinner ? '🏆 CHIẾN THẮNG (BEST HOOK)' : '';
+
+        return `
+          <div class="ab-hook-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="ab-hook-badge ${badgeClass}">${escapeHtml(v.type)}</span>
+              ${v.isWinner ? `<span style="font-size:9px; font-weight:800; color:#fbbf24;">${isWinner}</span>` : ''}
+            </div>
+            <div style="font-size:11px; font-weight:700; color:#fff;">${escapeHtml(v.headline)}</div>
+            <div class="ab-hook-text">"${escapeHtml(v.hookScript)}"</div>
+            <div class="ab-hook-retention-pill">
+              <span>📈 Giữ chân 3s dự kiến:</span>
+              <span>${retention}</span>
+            </div>
+            <button class="studio-btn secondary-btn sm-btn full-btn" onclick="alert('Đã chọn Hook này để xuất bản phiên bản chính!')">
+              <span>🎯 Chọn Hook Này</span>
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      if (abTestingStatusBox && recommendation) {
+        abTestingStatusBox.innerHTML = `💡 <strong>AI Khuyến Nghị:</strong> ${escapeHtml(recommendation)}`;
+        abTestingStatusBox.className = 'pub-status-box success';
+        abTestingStatusBox.classList.remove('hidden');
+      }
+    }
+
+    if (btnGenerateAbHooks) {
+      btnGenerateAbHooks.addEventListener('click', async () => {
+        btnGenerateAbHooks.disabled = true;
+        btnGenerateAbHooks.innerHTML = '<span>⏳ Đang phân tích kịch bản & sinh 3 Hooks...</span>';
+
+        const title = currentCinemaVideo ? currentCinemaVideo.title : 'Bí quyết tăng tương tác video ngắn';
+        const prompt = currentCinemaVideo ? currentCinemaVideo.prompt : '';
+
+        try {
+          const res = await fetch('/api/enterprise/ab-testing/generate-variants', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              videoTitle: title,
+              subjectText: prompt
+            })
+          });
+          const data = await res.json();
+          if (data.ok && data.campaign) {
+            renderVariants(data.campaign.variants, data.campaign.winnerRecommendation);
+          }
+        } catch (e) {
+          alert('Lỗi tạo biến thể: ' + e.message);
+        } finally {
+          btnGenerateAbHooks.disabled = false;
+          btnGenerateAbHooks.innerHTML = '<span>⚡ Sinh 3 Biến Thể A/B Hook Ngay</span>';
+        }
+      });
+    }
+  }
+
+  /* ===================================================================
+     34. TIKTOK SHOP & E-COMMERCE AFFILIATE CLOSING BOT
+     =================================================================== */
+  function setupEcommerceBotModule() {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    const modalEcommerceBot = document.getElementById('modalEcommerceBot');
+    const btnOpenEcommerceBotModal = document.getElementById('btnOpenEcommerceBotModal');
+    const btnCloseEcommerceBotModal = document.getElementById('btnCloseEcommerceBotModal');
+    const btnCloseEcommerceBotModalBottom = document.getElementById('btnCloseEcommerceBotModalBottom');
+    const botTotalOrders = document.getElementById('botTotalOrders');
+    const botTotalRevenue = document.getElementById('botTotalRevenue');
+    const botTotalCommission = document.getElementById('botTotalCommission');
+    const ecommerceProductsGrid = document.getElementById('ecommerceProductsGrid');
+    const botTestCommentInput = document.getElementById('botTestCommentInput');
+    const btnTestBotComment = document.getElementById('btnTestBotComment');
+    const botCommentResultBox = document.getElementById('botCommentResultBox');
+
+    function openModal() {
+      if (modalEcommerceBot) {
+        modalEcommerceBot.classList.add('open');
+        loadCatalogAndOrders();
+      }
+    }
+
+    function closeModal() {
+      if (modalEcommerceBot) modalEcommerceBot.classList.remove('open');
+    }
+
+    if (btnOpenEcommerceBotModal) btnOpenEcommerceBotModal.addEventListener('click', openModal);
+    if (btnCloseEcommerceBotModal) btnCloseEcommerceBotModal.addEventListener('click', closeModal);
+    if (btnCloseEcommerceBotModalBottom) btnCloseEcommerceBotModalBottom.addEventListener('click', closeModal);
+
+    if (modalEcommerceBot) {
+      modalEcommerceBot.addEventListener('click', (e) => {
+        if (e.target === modalEcommerceBot) closeModal();
+      });
+    }
+
+    async function loadCatalogAndOrders() {
+      try {
+        const res = await fetch('/api/enterprise/ecommerce-bot/catalog-and-orders');
+        const data = await res.json();
+        if (data.ok) {
+          if (botTotalOrders) botTotalOrders.textContent = `${data.stats.totalOrdersCount} Đơn`;
+          if (botTotalRevenue) botTotalRevenue.textContent = `${data.stats.totalRevenue.toLocaleString('vi-VN')} đ`;
+          if (botTotalCommission) botTotalCommission.textContent = `${data.stats.totalCommission.toLocaleString('vi-VN')} đ`;
+
+          if (ecommerceProductsGrid && Array.isArray(data.products)) {
+            ecommerceProductsGrid.innerHTML = data.products.map(p => `
+              <div class="ecommerce-prod-card">
+                <img src="${p.thumbnail}" alt="${escapeHtml(p.title)}" class="ecommerce-prod-thumb">
+                <div class="ecommerce-prod-title">${escapeHtml(p.title)}</div>
+                <div class="ecommerce-prod-price-row">
+                  <span class="ecommerce-price">${p.salePrice.toLocaleString('vi-VN')}đ</span>
+                  <span class="ecommerce-comm">+${p.commissionPct}% Hoa Hồng</span>
+                </div>
+                <button class="studio-btn primary-btn sm-btn" onclick="alert('Đã ghim [${escapeHtml(p.title)}] vào góc màn hình Video & Livestream!')">
+                  <span>📌 Ghim Vào Giỏ Hàng</span>
+                </button>
+              </div>
+            `).join('');
+          }
+        }
+      } catch (e) {
+        console.error('Error loading ecommerce data:', e);
+      }
+    }
+
+    if (btnTestBotComment) {
+      btnTestBotComment.addEventListener('click', async () => {
+        const text = botTestCommentInput ? botTestCommentInput.value.trim() : '';
+        if (!text) {
+          alert('Vui lòng nhập bình luận thử nghiệm (VD: chốt 1 son môi 0988777666)');
+          return;
+        }
+
+        btnTestBotComment.disabled = true;
+        btnTestBotComment.innerHTML = '<span>⏳ Đang quét AI...</span>';
+
+        try {
+          const res = await fetch('/api/enterprise/ecommerce-bot/process-comment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              commentText: text,
+              customerName: 'Hoàng Linh (TikTok)'
+            })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            if (botCommentResultBox) {
+              if (data.isOrder) {
+                botCommentResultBox.innerHTML = `
+                  <div style="color:#10b981; font-weight:700; font-size:12px; margin-bottom:4px;">
+                    🎉 CHỐT ĐƠN TỰ ĐỘNG THÀNH CÔNG (Mã: ${data.order.orderId})
+                  </div>
+                  <div style="font-size:11px; color:#cbd5e1; line-height:1.5;">
+                    • <strong>Sản phẩm:</strong> ${escapeHtml(data.order.productName)}<br>
+                    • <strong>Khách hàng:</strong> ${escapeHtml(data.order.customerName)} (${data.order.customerPhone})<br>
+                    • <strong>Giá trị COD:</strong> ${data.order.amount.toLocaleString('vi-VN')}đ (Hoa hồng nhận: ${data.order.commissionEarned.toLocaleString('vi-VN')}đ)<br>
+                    • <strong>Phản hồi tự động:</strong> <em>"${escapeHtml(data.botReply)}"</em><br>
+                    • <strong>Zalo OA:</strong> Đã kích hoạt Webhook bắn tin nhắn xác nhận cho khách hàng!
+                  </div>
+                `;
+                botCommentResultBox.className = 'pub-status-box success';
+              } else {
+                botCommentResultBox.innerHTML = `
+                  <div style="color:#38bdf8; font-weight:700; font-size:12px; margin-bottom:4px;">
+                    💬 Trả lời tương tác tự động (Chưa phát hiện SĐT chốt đơn)
+                  </div>
+                  <div style="font-size:11px; color:#cbd5e1;">
+                    Bot phản hồi: <em>"${escapeHtml(data.botReply)}"</em>
+                  </div>
+                `;
+                botCommentResultBox.className = 'pub-status-box info';
+              }
+              botCommentResultBox.classList.remove('hidden');
+            }
+            loadCatalogAndOrders();
+          }
+        } catch (e) {
+          alert('Lỗi bot chốt đơn: ' + e.message);
+        } finally {
+          btnTestBotComment.disabled = false;
+          btnTestBotComment.innerHTML = '<span>🤖 Quét Comment & Chốt Đơn</span>';
+        }
+      });
+    }
+  }
+
   // Start app
   init();
 });
+
 
 

@@ -51,6 +51,9 @@ const aiTextToVideoDirector = require('./modules/ai_text_to_video_director');
 const aiSoundDesigner = require('./modules/ai_sound_designer');
 const cloudAiGateway = require('./modules/cloud_ai_gateway');
 const autoMultiPublisher = require('./modules/auto_multi_publisher');
+const digitalHumanStreamer = require('./modules/digital_human_streamer');
+const ecommerceAffiliateBot = require('./modules/ecommerce_affiliate_bot');
+const videoAbTestingMatrix = require('./modules/video_ab_testing_matrix');
 
 const PORT = process.env.PORT || 3000;
 const STUDIO_DIR = path.join(__dirname, 'studio');
@@ -1982,6 +1985,83 @@ const server = http.createServer(async (req, res) => {
   if (pathname === '/api/enterprise/publisher/history' && req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(autoMultiPublisher.getPublishHistory()));
+    return;
+  }
+
+  // --- DIGITAL HUMAN 4K STREAMER ---
+  if (pathname === '/api/enterprise/digital-human/avatars' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(digitalHumanStreamer.getAvatars()));
+    return;
+  }
+  if (pathname === '/api/enterprise/digital-human/generate-video' && req.method === 'POST') {
+    try {
+      const params = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(digitalHumanStreamer.generateTalkingVideo(params)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+  if (pathname === '/api/enterprise/digital-human/toggle-live' && req.method === 'POST') {
+    try {
+      const params = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(digitalHumanStreamer.toggleLiveStreamMode(params)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // --- ECOMMERCE AFFILIATE & ORDER CLOSING BOT ---
+  if (pathname === '/api/enterprise/ecommerce-bot/catalog-and-orders' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(ecommerceAffiliateBot.getCatalogAndOrders()));
+    return;
+  }
+  if (pathname === '/api/enterprise/ecommerce-bot/process-comment' && req.method === 'POST') {
+    try {
+      const body = await readJsonBody();
+      const text = body.commentText || body.comment || '';
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(ecommerceAffiliateBot.processCustomerComment(text, body.customerName)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+  if (pathname === '/api/enterprise/ecommerce-bot/add-product' && req.method === 'POST') {
+    try {
+      const productData = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(ecommerceAffiliateBot.addProduct(productData)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // --- VIDEO A/B TESTING MATRIX ---
+  if (pathname === '/api/enterprise/ab-testing/campaigns' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(videoAbTestingMatrix.getCampaigns()));
+    return;
+  }
+  if (pathname === '/api/enterprise/ab-testing/generate-variants' && req.method === 'POST') {
+    try {
+      const params = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(videoAbTestingMatrix.generateAbVariants(params)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
     return;
   }
 

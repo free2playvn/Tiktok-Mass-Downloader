@@ -137,6 +137,13 @@
           <span class="badge-mini-3d" style="background: #0284c7; color: #fff;">BYOK</span>
         </button>
 
+        <!-- Digital Human 4K Button -->
+        <button class="studio-btn digital-human-btn pulse-glow" id="btnOpenDigitalHumanModal" title="Người Ảo Siêu Thực 4K (LivePortrait & MuseTalk cho Video & Livestream)">
+          <span class="cinema-icon pulse">👤</span>
+          <span>Digital Human 4K</span>
+          <span class="badge-mini-3d" style="background: linear-gradient(135deg, #10b981, #06b6d4); color: #fff;">LIVEPORTRAIT</span>
+        </button>
+
         <div class="tool-divider"></div>
 
         <!-- User Profile Pill & Dropdown -->
@@ -3997,6 +4004,12 @@
                 <button class="studio-btn enterprise-btn sm-btn" id="btnOpenOneClickPublishModal">
                   <span>🚀 Xuất Bản 1-Click Đa Kênh</span>
                 </button>
+                <button class="studio-btn secondary-btn sm-btn" id="btnOpenAbTestingModal">
+                  <span>🎯 A/B Testing 3 Hooks</span>
+                </button>
+                <button class="studio-btn secondary-btn sm-btn" id="btnOpenEcommerceBotModal">
+                  <span>🛍️ TikTok Shop & Chốt Đơn</span>
+                </button>
                 <button class="studio-btn secondary-btn sm-btn" id="btnDownloadCurrentAiVideo">
                   <span>⬇ Tải MP4</span>
                 </button>
@@ -4265,6 +4278,156 @@
         <div class="modal-footer" style="display:flex; justify-content:space-between;">
           <span style="font-size:11px; color:var(--text-muted);">💡 Hệ thống tự động phân luồng mạng và mã hóa chuẩn bitrate cho từng nền tảng để đạt chất lượng hiển thị tối đa.</span>
           <button class="studio-btn secondary-btn" id="btnCloseOneClickPublishModalBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL 4: DIGITAL HUMAN 4K STREAMER & TALKING AVATAR STUDIO
+         =================================================================== -->
+    <div class="studio-modal-backdrop" id="modalDigitalHumanStudio">
+      <div class="studio-modal" style="max-width: 1050px; background:#042f2e; border:1px solid rgba(16, 185, 129, 0.4); box-shadow:0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(16, 185, 129, 0.2);">
+        <div class="modal-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="badge-mini-3d" style="background:#10b981; color:#fff;">LIVEPORTRAIT 4K</span>
+            <div>
+              <h3 style="margin:0; font-size:16px; color:#fff;">👤 Người Ảo Siêu Thực 4K (Digital Human & Talking Avatar)</h3>
+              <div style="font-size:11px; color:#a7f3d0;">Công nghệ MuseTalk & Wav2Lip Ultra-HD cho video nói chuyện và Livestream bán hàng 24/7 chân thực 100%</div>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseDigitalHumanModal">✕</button>
+        </div>
+
+        <div class="modal-body" style="padding: 18px;">
+          <!-- Avatar Cards Selector Grid -->
+          <div style="font-size:12px; font-weight:700; color:#fff; margin-bottom:8px;">1. Chọn Nhân Vật Ảo Người Thật (Photorealistic Model):</div>
+          <div class="cinema-genres-grid" id="digitalHumanAvatarsGrid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
+            <!-- Injected via JS -->
+          </div>
+
+          <!-- Script & Speech Input -->
+          <div class="form-field" style="margin-top: 14px;">
+            <label class="form-label">2. Nhập Lời Thoại / Kịch Bản Bán Hàng Của Người Ảo:</label>
+            <textarea id="digitalHumanScriptInput" class="studio-textarea" rows="3" placeholder="Nhập câu thoại tiếng Việt mà người ảo sẽ phát âm và cử động môi (VD: Chào mừng các bạn đến với phiên live đặc biệt hôm nay, áo hoodie này đang giảm 50% chỉ còn 149k)..."></textarea>
+          </div>
+
+          <!-- Dual Actions: Generate Video or Start 24/7 Livestream -->
+          <div style="display:flex; gap:10px; margin-top:12px;">
+            <button class="studio-btn primary-btn glow-btn" id="btnRenderDigitalHumanVideo" style="flex:1; padding:11px;">
+              <span>🎬 Render Video Người Ảo 4K (Offline Video)</span>
+            </button>
+            <button class="studio-btn success-btn pulse-glow" id="btnToggleDigitalHumanLive" style="flex:1; padding:11px; font-weight:800;">
+              <span>🔴 KÍCH HOẠT NGƯỜI ẢO LIVESTREAM 24/7</span>
+            </button>
+          </div>
+
+          <div id="digitalHumanStatusBox" class="pub-status-box hidden" style="margin-top: 12px;"></div>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:space-between;">
+          <span style="font-size:11px; color:#a7f3d0;">💡 Tự động khớp khẩu hình môi (Viseme Lip-sync), chớp mắt tự nhiên 16 lần/phút và lắc đầu theo ngữ điệu câu nói.</span>
+          <button class="studio-btn secondary-btn" id="btnCloseDigitalHumanModalBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL 5: AI VIDEO A/B TESTING MATRIX & VIRAL HOOK GENERATOR
+         =================================================================== -->
+    <div class="studio-modal-backdrop" id="modalAbTestingMatrix">
+      <div class="studio-modal" style="max-width: 950px; background:#18181b; border:1px solid rgba(245, 158, 11, 0.4); box-shadow:0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(245, 158, 11, 0.2);">
+        <div class="modal-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="badge-mini-3d" style="background:#f59e0b; color:#fff;">A/B 3-HOOKS</span>
+            <div>
+              <h3 style="margin:0; font-size:16px; color:#fff;">🎯 Ma Trận A/B Testing 3 Giây Đầu (Viral Hook Matrix)</h3>
+              <div style="font-size:11px; color:var(--text-muted);">Tự động sinh 3 biến thể mở đầu video (Shocking, Pain Point, FOMO) để kiểm thử và chọn phiên bản đạt triệu view cao nhất</div>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseAbTestingModal">✕</button>
+        </div>
+
+        <div class="modal-body" style="padding: 18px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div>
+              <strong style="color:#fff; font-size:13px;" id="abTargetVideoTitle">Video: Hướng dẫn tạo video AI triệu view</strong>
+              <div style="font-size:11px; color:var(--text-muted);">Tạo 3 intro hook khác nhau cho cùng một nội dung video chính</div>
+            </div>
+            <button class="studio-btn primary-btn sm-btn glow-btn" id="btnGenerateAbHooks">
+              <span>⚡ Sinh 3 Biến Thể A/B Hook Ngay</span>
+            </button>
+          </div>
+
+          <!-- 3 Variants Display Grid -->
+          <div id="abVariantsDisplayGrid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-top:12px;">
+            <!-- Injected via JS -->
+          </div>
+
+          <div id="abTestingStatusBox" class="pub-status-box hidden" style="margin-top: 12px;"></div>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:space-between;">
+          <span style="font-size:11px; color:var(--text-muted);">💡 Theo dữ liệu TikTok & Shorts, tối ưu 3 giây đầu giúp tăng tỉ lệ giữ chân (Retention) trung bình từ 45% lên 85%.</span>
+          <button class="studio-btn secondary-btn" id="btnCloseAbTestingModalBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL 6: TIKTOK SHOP & E-COMMERCE AFFILIATE BOT
+         =================================================================== -->
+    <div class="studio-modal-backdrop" id="modalEcommerceBot">
+      <div class="studio-modal" style="max-width: 1000px; background:#1e1b4b; border:1px solid rgba(99, 102, 241, 0.4); box-shadow:0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(99, 102, 241, 0.2);">
+        <div class="modal-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="badge-mini-3d" style="background:#6366f1; color:#fff;">AFFILIATE CRM</span>
+            <div>
+              <h3 style="margin:0; font-size:16px; color:#fff;">🛍️ TikTok Shop & E-Commerce Auto Closing Bot</h3>
+              <div style="font-size:11px; color:#c7d2fe;">Quản lý kho hàng gắn link giỏ hàng và Bot tự động nhận diện bình luận chốt đơn COD gửi Webhook Zalo OA</div>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseEcommerceBotModal">✕</button>
+        </div>
+
+        <div class="modal-body" style="padding: 18px;">
+          <!-- Top Stats Cards -->
+          <div class="analytics-stat-row" style="margin-bottom:12px;">
+            <div class="stat-card" style="padding:10px;">
+              <div class="stat-title">Tổng Đơn Đã Chốt Tự Động</div>
+              <div class="stat-value" id="botTotalOrders" style="color:#10b981; font-size:20px;">2 Đơn</div>
+            </div>
+            <div class="stat-card" style="padding:10px;">
+              <div class="stat-title">Doanh Số Bán Hàng</div>
+              <div class="stat-value" id="botTotalRevenue" style="color:#38bdf8; font-size:20px;">348.000 đ</div>
+            </div>
+            <div class="stat-card" style="padding:10px;">
+              <div class="stat-title">Hoa Hồng Affiliate Tạm Tính</div>
+              <div class="stat-value" id="botTotalCommission" style="color:#f59e0b; font-size:20px;">70.600 đ</div>
+            </div>
+          </div>
+
+          <!-- Product Catalog Preview -->
+          <div style="font-size:12px; font-weight:700; color:#fff; margin-bottom:8px;">📦 Sản Phẩm Đang Gắn Trong Video & Livestream:</div>
+          <div id="ecommerceProductsGrid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:12px;">
+            <!-- Injected via JS -->
+          </div>
+
+          <!-- Comment Simulator / Live Chốt Đơn Test -->
+          <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:12px;">
+            <div style="font-size:12px; font-weight:700; color:#fff; margin-bottom:6px;">⚡ Thử Nghiệm Bot Quét Bình Luận & Tự Động Chốt Đơn COD:</div>
+            <div style="display:flex; gap:8px;">
+              <input type="text" id="botTestCommentInput" placeholder="Nhập comment thử nghiệm (VD: chốt 1 son môi 0988777666)..." class="studio-input" style="flex:1;">
+              <button class="studio-btn success-btn sm-btn" id="btnTestBotComment">
+                <span>🤖 Quét Comment & Chốt Đơn</span>
+              </button>
+            </div>
+            <div id="botCommentResultBox" class="pub-status-box hidden" style="margin-top: 8px;"></div>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:space-between;">
+          <span style="font-size:11px; color:#c7d2fe;">💡 Tự động đồng bộ đơn hàng với đơn vị vận chuyển GHTK, Viettel Post và bắn thông báo xác nhận qua Zalo OA.</span>
+          <button class="studio-btn secondary-btn" id="btnCloseEcommerceBotModalBottom">Đóng</button>
         </div>
       </div>
     </div>
