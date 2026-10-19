@@ -97,6 +97,11 @@
           <span>⚡ Xuất Video & Phụ Đề</span>
         </button>
 
+        <!-- Calendar Matrix Button -->
+        <button class="studio-btn secondary-btn" id="btnOpenCalendarMatrix" title="Ma trận lên lịch đăng 30 ngày">
+          <span>📅 Lịch Ma Trận</span>
+        </button>
+
         <div class="tool-divider"></div>
 
         <!-- User Profile Pill & Dropdown -->
@@ -123,6 +128,12 @@
             <div class="dropdown-divider"></div>
             <button class="dropdown-item-btn" id="btnOpenAccountManager">
               <span>🛡️ Quản Lý Account Website</span>
+            </button>
+            <button class="dropdown-item-btn" id="btnOpenTeamModal">
+              <span>👥 Nhóm Làm Việc (Team Workspace)</span>
+            </button>
+            <button class="dropdown-item-btn" id="btnOpenBillingModal">
+              <span>💎 Nâng Cấp VIP / Quét VietQR</span>
             </button>
             <button class="dropdown-item-btn" id="btnOpenProfileModal">
               <span>👤 Hồ Sơ Của Tôi</span>
@@ -352,6 +363,40 @@
               <span>👁️ Bật/Tắt Xem Thử Quảng Cáo</span>
             </button>
           </div>
+
+          <!-- Section C: Anti-Reup & Video Cloaking Shield -->
+          <div class="branding-card" style="margin-top: 12px;">
+            <h4>3. 🛡️ Lá Chắn Lách Bản Quyền & Anti-Reup</h4>
+            <p class="section-desc">Xáo trộn chữ ký số MD5, vi chỉnh nhịp và đổi vân tay quang học để vượt 100% kiểm duyệt trùng lặp.</p>
+            
+            <div class="form-row">
+              <label>Chế độ lá chắn:</label>
+              <select id="antiReupPresetSelect" class="studio-select full-select">
+                <option value="anti_reup_standard">⚡ Tiêu chuẩn TikTok / Shorts (MD5 + Pitch + Zoom nhẹ)</option>
+                <option value="anti_reup_aggressive">🥷 Lách mạnh (Maximum Stealth Cloaking - Lật Gương + Nhiễu)</option>
+              </select>
+            </div>
+
+            <div class="checkbox-group">
+              <label class="cb-label">
+                <input type="checkbox" id="cbAntiReupHash" checked>
+                <span>🔑 Xáo trộn vân tay số MD5 (100% Unique Signature)</span>
+              </label>
+              <label class="cb-label">
+                <input type="checkbox" id="cbAntiReupSpeedPitch" checked>
+                <span>🎵 Vi chỉnh nhịp 1.015x & Pitch âm thanh (+0.2 semitone)</span>
+              </label>
+              <label class="cb-label">
+                <input type="checkbox" id="cbAntiReupZoomMirror" checked>
+                <span>📐 Zoom động vi mô 1.02x & Lật gương ngang</span>
+              </label>
+            </div>
+
+            <button class="studio-btn primary-btn full-btn" id="btnApplyAntiReupShield" style="margin-top: 10px;">
+              <span>🛡️ Áp Dụng Lá Chắn Lách Bản Quyền</span>
+            </button>
+            <div id="antiReupStatusBadge" class="pub-status-box hidden" style="margin-top: 8px;"></div>
+          </div>
         </div>
 
         <!-- TAB 4: Creative AI Agents -->
@@ -391,6 +436,29 @@
             <p class="ag-desc">Tối ưu hóa caption và bộ hashtag leo top thịnh hành TikTok.</p>
             <button class="studio-btn sm-btn secondary-btn" id="btnGenerateSeo">Tạo Caption & Hashtag</button>
             <div class="seo-results-box hidden" id="seoResultsBox"></div>
+          </div>
+
+          <!-- Agent 4: AI Auto-Clip (Long video to 5-10 shorts) -->
+          <div class="ai-agent-card">
+            <div class="agent-badge">
+              <span class="ag-icon">🎬</span>
+              <span class="ag-name">AI Auto-Clip Siêu Tốc</span>
+            </div>
+            <p class="ag-desc">Tự động cắt video dài thành chuỗi 5-10 clip Shorts/Reels kèm Part 1, 2...</p>
+            <div class="form-row grid-2" style="margin-bottom: 8px;">
+              <div>
+                <label>Số lượng clip:</label>
+                <select id="autoClipCountSelect" class="studio-select sm-select">
+                  <option value="3">3 Clips Short</option>
+                  <option value="5" selected>5 Clips Short</option>
+                  <option value="8">8 Clips Short</option>
+                </select>
+              </div>
+              <div style="display: flex; align-items: flex-end;">
+                <button class="studio-btn sm-btn primary-btn full-btn" id="btnRunAutoClipBatch">Cắt Chuỗi Clip</button>
+              </div>
+            </div>
+            <div class="autoclip-results-box hidden" id="autoClipResultsBox"></div>
           </div>
         </div>
 
@@ -540,6 +608,66 @@
               <span>➕ Thêm Profile Vào Dàn Nuôi</span>
             </button>
           </div>
+
+          <!-- Section 4: Nuôi Nick Tự Động (AI FYP Warm-up Flow) -->
+          <div class="branding-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <h4 style="margin: 0;">4. 🛡️ AI Farm Warm-up (Nuôi Nick FYP)</h4>
+              <span class="trust-score-badge" id="warmupTrustScoreBadge">⚡ Trust 94/100</span>
+            </div>
+            <p class="section-desc">Mô phỏng hành vi người dùng thật, lướt FYP theo ngách âm nhạc/xe cộ, random pause, like, tăng trust score chống shadowban.</p>
+            
+            <div class="form-row grid-2">
+              <div>
+                <label>Thời gian nuôi (phút):</label>
+                <select id="warmupMinutesSelect" class="studio-select sm-select">
+                  <option value="5">5 phút (Khởi động)</option>
+                  <option value="15" selected>15 phút (Chuẩn)</option>
+                  <option value="30">30 phút (Chuyên sâu)</option>
+                </select>
+              </div>
+              <div>
+                <label>Ngách nội dung (Niche):</label>
+                <select id="warmupNicheSelect" class="studio-select sm-select">
+                  <option value="music">Âm nhạc / Vinahouse</option>
+                  <option value="auto">Xe cộ / Lái xe đêm</option>
+                  <option value="trends">Hot Trend TikTok</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="studio-btn primary-btn full-btn" id="btnStartWarmupFlow">
+              <span>🔥 Bắt Đầu Warm-up Tự Động</span>
+            </button>
+            <div id="warmupProgressBox" class="pub-status-box hidden" style="margin-top: 8px;"></div>
+          </div>
+
+          <!-- Section 5: Chiến Thuật "Clash of Clones" Drama Engine -->
+          <div class="branding-card">
+            <h4>5. ⚔️ Clash of Clones (Drama Seeding)</h4>
+            <p class="section-desc">Kích hoạt 2 phe clone tranh cãi đa chiều dưới video để đẩy tương tác bùng nổ thuật toán FYP.</p>
+            
+            <div class="form-row">
+              <label>Kịch bản Drama:</label>
+              <select id="dramaScenarioSelect" class="studio-select full-select">
+                <option value="bass_vs_melody">Tranh luận: "Bass này đi xe gật gù" vs "Nhạc này nghe đau đầu"</option>
+                <option value="original_vs_remix">Tranh luận: "Bản gốc hay hơn" vs "Bản remix này cuốn hơn gấp 10"</option>
+                <option value="dj_skills">Tranh luận: "DJ mix mượt quá" vs "Bình thường thôi đoạn drop hơi gắt"</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <label class="cb-label">
+                <input type="checkbox" id="cbAutoReplyRealUsers" checked>
+                <span>🤖 AI Tự động rep bình luận của người xem thật sau 60s</span>
+              </label>
+            </div>
+
+            <button class="studio-btn secondary-btn full-btn" id="btnLaunchClashDrama">
+              <span>🎭 Kích Hoạt Kịch Bản Drama</span>
+            </button>
+            <div id="clashDramaStatusBox" class="pub-status-box hidden" style="margin-top: 8px;"></div>
+          </div>
         </div>
       </aside>
 
@@ -581,6 +709,7 @@
               <button class="style-choice active" data-style="yellow-box">🟡 Chữ vàng nền đen (TikTok)</button>
               <button class="style-choice" data-style="white-shadow">⚪ Chữ trắng viền đen</button>
               <button class="style-choice" data-style="karaoke-glow">✨ Karaoke Neon Glow</button>
+              <button class="style-choice" data-style="karaoke-pop">🔥 Hormozi Pop Karaoke</button>
               <button class="style-choice" data-style="minimal">📄 Tối giản (Minimal)</button>
             </div>
           </div>
@@ -1133,6 +1262,239 @@
         <div class="modal-footer">
           <button class="studio-btn secondary-btn" id="btnCancelProfile">Hủy</button>
           <button class="studio-btn primary-btn" id="btnSaveProfile">Lưu Thay Đổi</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Social Content Matrix Calendar (30-day interactive scheduling grid) -->
+    <div class="studio-modal-backdrop" id="modalCalendarMatrix">
+      <div class="studio-modal modal-xl">
+        <div class="modal-header">
+          <div class="modal-title-with-badge">
+            <span class="modal-icon">📅</span>
+            <div>
+              <h3>Ma Trận Lên Lịch Đăng Đa Kênh (Social Content Matrix)</h3>
+              <p class="modal-sub">Quản lý và lập lịch 30 ngày cho TikTok, YouTube Shorts & Facebook Reels</p>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseCalendarMatrix">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="calendar-toolbar">
+            <div class="calendar-nav-group">
+              <button class="studio-btn sm-btn secondary-btn" id="btnPrevMonth">◀ Tháng trước</button>
+              <span class="calendar-current-month" id="calendarMonthTitle">Tháng 10 / 2026</span>
+              <button class="studio-btn sm-btn secondary-btn" id="btnNextMonth">Tháng sau ▶</button>
+            </div>
+            <div class="calendar-filter-group">
+              <span class="badge-filter active" data-platform="all">Tất cả kênh</span>
+              <span class="badge-filter" data-platform="TikTok">🎵 TikTok</span>
+              <span class="badge-filter" data-platform="YouTube">▶️ YouTube</span>
+              <span class="badge-filter" data-platform="Facebook">👥 Facebook</span>
+            </div>
+            <button class="studio-btn sm-btn primary-btn" id="btnOpenAddScheduleDrawer">➕ Thêm Lịch Đăng</button>
+          </div>
+
+          <!-- Quick Add Schedule Form (Collapsible) -->
+          <div class="add-schedule-drawer hidden" id="addScheduleDrawer">
+            <h4>➕ Lên Lịch Đăng Bài Mới</h4>
+            <div class="drawer-grid">
+              <div>
+                <label>Kênh / Profile:</label>
+                <select id="schedAccountSelect" class="studio-select sm-select">
+                  <option value="TikTok @nhacnghedixe">TikTok @nhacnghedixe</option>
+                  <option value="TikTok @vinahouse_club">TikTok @vinahouse_club</option>
+                  <option value="YouTube Shorts Official">YouTube Shorts Official</option>
+                  <option value="Facebook Fanpage Reels">Facebook Fanpage Reels</option>
+                </select>
+              </div>
+              <div>
+                <label>Tệp Video:</label>
+                <select id="schedVideoSelect" class="studio-select sm-select">
+                  <option value="@nhacnghedixe/7675792462593428756.mp4">NST Viet Mix Vol 4</option>
+                  <option value="@nhacnghedixe/7696392556535418113.mp4">NONSTOP LỠ YÊU</option>
+                </select>
+              </div>
+              <div>
+                <label>Ngày đăng:</label>
+                <input type="date" id="schedDateInput" class="studio-input sm-input">
+              </div>
+              <div>
+                <label>Giờ đăng (Khung vàng):</label>
+                <select id="schedTimeSlotSelect" class="studio-select sm-select">
+                  <option value="11:30">11:30 (Trưa đỉnh)</option>
+                  <option value="18:30">18:30 (Tan tầm)</option>
+                  <option value="20:00" selected>20:00 (Buổi tối vàng)</option>
+                  <option value="22:30">22:30 (Đêm muộn chill)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row" style="margin-top: 8px;">
+              <label>Caption & Hashtag:</label>
+              <input type="text" id="schedCaptionInput" class="studio-input sm-input" value="🔥 Nhạc bốc lên đường thôi anh em! #fyp #nhacnghedixe #vinahouse">
+            </div>
+            <div class="drawer-actions">
+              <button class="studio-btn secondary-btn sm-btn" id="btnCancelAddSchedule">Hủy</button>
+              <button class="studio-btn success-btn sm-btn" id="btnSaveSchedule">✔ Lưu Vào Lịch</button>
+            </div>
+          </div>
+
+          <!-- Interactive 30-Day Calendar Grid -->
+          <div class="calendar-grid-container">
+            <div class="calendar-days-header">
+              <span>Thứ 2</span><span>Thứ 3</span><span>Thứ 4</span><span>Thứ 5</span><span>Thứ 6</span><span>Thứ 7</span><span>Chủ Nhật</span>
+            </div>
+            <div class="calendar-days-grid" id="calendarDaysGrid">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <span class="footer-hint">💡 Mẹo: Nhấp vào từng ngày để xem lịch đăng chi tiết và khung giờ vàng FYP.</span>
+          <button class="studio-btn secondary-btn" id="btnCloseCalendarMatrixBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Team Workspace & Phân Quyền -->
+    <div class="studio-modal-backdrop" id="modalTeamWorkspace">
+      <div class="studio-modal modal-lg">
+        <div class="modal-header">
+          <div class="modal-title-with-badge">
+            <span class="modal-icon">👥</span>
+            <div>
+              <h3>Quản Lý Nhóm & Phân Quyền (Team Workspace)</h3>
+              <p class="modal-sub">Phân quyền Creator, Editor, Seeder và quản trị viên cho các thành viên trong nhóm</p>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseTeamModal">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="team-header-stats">
+            <div class="stat-card">
+              <span class="stat-number" id="teamMemberCount">4</span>
+              <span class="stat-label">Thành viên hoạt động</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-number">5/5</span>
+              <span class="stat-label">Slot thành viên (VIP Pro)</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-number">3</span>
+              <span class="stat-label">Vai trò hoạt động</span>
+            </div>
+            <button class="studio-btn primary-btn sm-btn" id="btnOpenAddMemberDrawer">➕ Mời Thành Viên</button>
+          </div>
+
+          <!-- Add Member Drawer -->
+          <div class="add-user-drawer hidden" id="addMemberDrawer">
+            <h4>➕ Thêm Thành Viên Mới Vào Workspace</h4>
+            <div class="drawer-grid">
+              <div>
+                <label>Họ và Tên:</label>
+                <input type="text" id="newMemberName" class="studio-input sm-input" placeholder="Trần Văn C">
+              </div>
+              <div>
+                <label>Email:</label>
+                <input type="email" id="newMemberEmail" class="studio-input sm-input" placeholder="member@team.com">
+              </div>
+              <div>
+                <label>Vai trò:</label>
+                <select id="newMemberRole" class="studio-select sm-select">
+                  <option value="editor">Editor (Biên tập & Xuất video)</option>
+                  <option value="seeder">Seeder (Điều khiển dàn clone & tương tác)</option>
+                  <option value="admin">Admin (Toàn quyền quản trị)</option>
+                  <option value="viewer">Viewer (Chỉ xem lịch & số liệu)</option>
+                </select>
+              </div>
+            </div>
+            <div class="drawer-actions">
+              <button class="studio-btn secondary-btn sm-btn" id="btnCancelAddMember">Hủy</button>
+              <button class="studio-btn success-btn sm-btn" id="btnSaveMember">✔ Thêm Thành Viên</button>
+            </div>
+          </div>
+
+          <!-- Team Members List -->
+          <div class="team-list-container" id="teamMembersList">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="studio-btn secondary-btn" id="btnCloseTeamModalBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: VietQR Billing & Nâng Cấp VIP -->
+    <div class="studio-modal-backdrop" id="modalVietQRBilling">
+      <div class="studio-modal modal-md">
+        <div class="modal-header">
+          <div class="modal-title-with-badge">
+            <span class="modal-icon">💎</span>
+            <div>
+              <h3>Nâng Cấp Gói VIP & Thanh Toán VietQR</h3>
+              <p class="modal-sub">Kích hoạt tức thì tính năng Cloaking Stealth, Farm Clone không giới hạn & Team 10 thành viên</p>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseBillingModal">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="plan-options-grid">
+            <div class="plan-option-card active" data-plan="VIP Pro Lifetime" data-price="999000">
+              <div class="plan-badge-top">KHUYÊN DÙNG</div>
+              <h4>VIP Pro Lifetime</h4>
+              <div class="plan-price">999.000đ <small>/ vĩnh viễn</small></div>
+              <ul class="plan-perks">
+                <li>✔ 100% Anti-Reup Shield Vượt Bản Quyền</li>
+                <li>✔ Không giới hạn dàn Clone Seeding</li>
+                <li>✔ Lịch đăng 30 ngày Ma Trận Đa Kênh</li>
+                <li>✔ Team Workspace tối đa 10 người</li>
+              </ul>
+            </div>
+
+            <div class="plan-option-card" data-plan="Creator Studio Pro" data-price="299000">
+              <h4>Creator Studio Pro</h4>
+              <div class="plan-price">299.000đ <small>/ tháng</small></div>
+              <ul class="plan-perks">
+                <li>✔ 50 Clips Auto-Clip mỗi tháng</li>
+                <li>✔ 10 Clone Seeding tự động</li>
+                <li>✔ Team Workspace 3 người</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Dynamic VietQR Container -->
+          <div class="vietqr-checkout-box">
+            <div class="qr-image-wrapper">
+              <img id="vietQrImg" src="https://img.vietqr.io/image/970422-999988882026-compact2.png?amount=999000&addInfo=TMD999PRO&accountName=TMD%20STUDIO%20PRO" alt="Mã VietQR thanh toán">
+              <div class="qr-scan-pulse"></div>
+            </div>
+            <div class="qr-details-meta">
+              <div class="meta-row"><span>Ngân hàng:</span> <strong>MB Bank (Quân Đội)</strong></div>
+              <div class="meta-row"><span>Số tài khoản:</span> <strong>999988882026</strong></div>
+              <div class="meta-row"><span>Chủ tài khoản:</span> <strong>TMD STUDIO PRO</strong></div>
+              <div class="meta-row"><span>Số tiền:</span> <strong id="vietQrAmount" style="color: #10b981; font-size: 16px;">999.000đ</strong></div>
+              <div class="meta-row"><span>Nội dung CK:</span> <strong id="vietQrMemo" style="color: #6366f1; letter-spacing: 1px;">TMD999PRO</strong></div>
+              <div class="vietqr-status-pill">
+                <span class="pulse-dot"></span>
+                <span>Hệ thống đang chờ nhận tiền tự động (Auto-Webhook)...</span>
+              </div>
+            </div>
+          </div>
+
+          <button class="studio-btn success-btn full-btn" id="btnSimulateVietQRSuccess" style="margin-top: 14px;">
+            <span>⚡ Kích Hoạt Tức Thì (Mô Phỏng Nhận Tiền Thành Công)</span>
+          </button>
+          <div id="billingAlertBox" class="auth-alert-box hidden" style="margin-top: 8px;"></div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="studio-btn secondary-btn" id="btnCloseBillingModalBottom">Đóng</button>
         </div>
       </div>
     </div>

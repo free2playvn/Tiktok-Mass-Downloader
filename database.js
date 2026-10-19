@@ -10,7 +10,12 @@ class TMDDatabase {
     this.data = {
       users: [],
       sessions: [],
-      activity_logs: []
+      activity_logs: [],
+      schedules: [],
+      team_members: [],
+      anti_reup_presets: [],
+      warmup_logs: [],
+      billing_transactions: []
     };
     this.init();
   }
@@ -317,21 +322,224 @@ class TMDDatabase {
     }
   }
 
+  // --- Social Content Matrix Schedules ---
+  getSchedules() {
+    if (!this.data.schedules) this.data.schedules = [];
+    if (this.data.schedules.length === 0) {
+      // Seed initial sample schedules
+      this.data.schedules = [
+        {
+          id: 'sch_001',
+          title: 'NST Viet Mix Vol 4 - Drop 30s',
+          videoSrc: '@nhacnghedixe/7675792462593428756.mp4',
+          platform: 'TikTok',
+          targetAccount: '@nhacnghedixe (Chính)',
+          publishDate: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+          publishTime: '11:30',
+          status: 'Đã lên lịch',
+          caption: 'Bản phối cực bốc cho anh em đi tour! #xuhuong #fyp #vinahouse'
+        },
+        {
+          id: 'sch_002',
+          title: 'DJ KenBjn Lỡ Yêu Remix - Shorts',
+          videoSrc: '@nhacnghedixe/7696392556535418113.mp4',
+          platform: 'YouTube',
+          targetAccount: 'Shorts Music Official',
+          publishDate: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+          publishTime: '19:30',
+          status: 'Đã lên lịch',
+          caption: 'Nhạc bay phòng 2026 cực căng #Shorts #YouTubeShorts'
+        },
+        {
+          id: 'sch_003',
+          title: 'VietMix Teaser 15s Story',
+          videoSrc: '@nhacnghedixe/7675792462593428756.mp4',
+          platform: 'Facebook',
+          targetAccount: 'Fanpage Nhạc Nghe Đi Xe',
+          publishDate: new Date(Date.now() + 172800000).toISOString().split('T')[0],
+          publishTime: '12:00',
+          status: 'Bản nháp',
+          caption: 'Anh em chấm mấy điểm cho con beat này? #reels #nhachay'
+        }
+      ];
+      this.save();
+    }
+    return this.data.schedules;
+  }
+
+  addSchedule(schedule) {
+    if (!this.data.schedules) this.data.schedules = [];
+    schedule.id = 'sch_' + Date.now().toString(36);
+    schedule.createdAt = new Date().toISOString();
+    this.data.schedules.unshift(schedule);
+    this.save();
+    return schedule;
+  }
+
+  deleteSchedule(id) {
+    if (!this.data.schedules) return;
+    this.data.schedules = this.data.schedules.filter(s => s.id !== id);
+    this.save();
+    return true;
+  }
+
+  // --- Team Workspace Members ---
+  getTeamMembers() {
+    if (!this.data.team_members) this.data.team_members = [];
+    if (this.data.team_members.length === 0) {
+      this.data.team_members = [
+        {
+          id: 'tm_001',
+          name: 'Trần Minh Đức',
+          email: 'duc.editor@tmdstudio.com',
+          role: 'Video Editor',
+          status: 'Hoạt động',
+          assignedClones: 3,
+          tasksCompleted: 42
+        },
+        {
+          id: 'tm_002',
+          name: 'Võ Thị Thanh Thảo',
+          email: 'thao.seeder@tmdstudio.com',
+          role: 'Clone Seeder',
+          status: 'Hoạt động',
+          assignedClones: 5,
+          tasksCompleted: 88
+        },
+        {
+          id: 'tm_003',
+          name: 'Hoàng Quốc Việt',
+          email: 'viet.manager@tmdstudio.com',
+          role: 'Growth Manager',
+          status: 'Hoạt động',
+          assignedClones: 10,
+          tasksCompleted: 156
+        }
+      ];
+      this.save();
+    }
+    return this.data.team_members;
+  }
+
+  addTeamMember(member) {
+    if (!this.data.team_members) this.data.team_members = [];
+    member.id = 'tm_' + Date.now().toString(36);
+    member.tasksCompleted = 0;
+    this.data.team_members.push(member);
+    this.save();
+    return member;
+  }
+
+  deleteTeamMember(id) {
+    if (!this.data.team_members) return;
+    this.data.team_members = this.data.team_members.filter(m => m.id !== id);
+    this.save();
+    return true;
+  }
+
+  // --- Anti-Reup Video Cloaking Presets ---
+  getAntiReupPresets() {
+    return [
+      {
+        id: 'anti_reup_standard',
+        name: 'Tiêu chuẩn TikTok / Shorts',
+        speedJitter: 1.01,
+        pitchShift: 0.2,
+        microZoom: 1.02,
+        mirrorFlip: false,
+        noiseOverlay: 0.03,
+        md5Jitter: true,
+        desc: 'Khuyên dùng cho video edit nhạc, giữ nguyên trải nghiệm xem nhưng đổi sạch chữ ký số.'
+      },
+      {
+        id: 'anti_reup_aggressive',
+        name: 'Lách mạnh (Maximum Stealth Cloaking)',
+        speedJitter: 1.025,
+        pitchShift: 0.4,
+        microZoom: 1.04,
+        mirrorFlip: true,
+        noiseOverlay: 0.06,
+        md5Jitter: true,
+        desc: 'Phù hợp đăng lại video tổng hợp hoặc clone vệ tinh, vượt 100% thuật toán quét trùng lặp.'
+      }
+    ];
+  }
+
+  // --- Clone Warm-up Workflow Logs ---
+  getWarmupLogs() {
+    if (!this.data.warmup_logs) this.data.warmup_logs = [];
+    return this.data.warmup_logs;
+  }
+
+  addWarmupLog(log) {
+    if (!this.data.warmup_logs) this.data.warmup_logs = [];
+    log.id = 'wrm_' + Date.now().toString(36);
+    log.timestamp = new Date().toISOString();
+    this.data.warmup_logs.unshift(log);
+    if (this.data.warmup_logs.length > 50) this.data.warmup_logs = this.data.warmup_logs.slice(0, 50);
+    this.save();
+    return log;
+  }
+
+  // --- Billing & VietQR Payment Generator ---
+  createVietQRPayment(planType = 'vip_lifetime', userEmail = 'admin@tmdstudio.com') {
+    const plans = {
+      vip_lifetime: { name: 'VIP Pro Lifetime 2026', priceVND: 999000, desc: 'Bản quyền trọn đời, không giới hạn video render & clone' },
+      creator_monthly: { name: 'Creator Pro 1 Tháng', priceVND: 199000, desc: '30 ngày render không giới hạn & 10 clone' },
+      credit_pack: { name: 'Gói 500 Credits AI', priceVND: 99000, desc: 'Sử dụng các tính năng AI Auto-Clip & Voiceover' }
+    };
+
+    const selected = plans[planType] || plans.vip_lifetime;
+    const orderCode = 'TMD' + Math.floor(100000 + Math.random() * 900000);
+    const bankAccount = '999988882026';
+    const bankBin = '970422'; // MB Bank
+    const bankName = 'MB Bank (Ngân hàng Quân Đội)';
+    const accountName = 'TMD STUDIO PRO OFFICIAL';
+
+    // Quick VietQR Image URL
+    const qrUrl = `https://img.vietqr.io/image/${bankBin}-${bankAccount}-compact2.png?amount=${selected.priceVND}&addInfo=${orderCode}&accountName=${encodeURIComponent(accountName)}`;
+
+    const tx = {
+      orderCode,
+      planName: selected.name,
+      amountVND: selected.priceVND,
+      amountFormatted: selected.priceVND.toLocaleString('vi-VN') + ' đ',
+      bankName,
+      bankAccount,
+      accountName,
+      qrUrl,
+      userEmail,
+      createdAt: new Date().toISOString(),
+      status: 'Chờ thanh toán'
+    };
+
+    if (!this.data.billing_transactions) this.data.billing_transactions = [];
+    this.data.billing_transactions.unshift(tx);
+    this.save();
+
+    return tx;
+  }
+
   getSystemStats() {
-    const totalUsers = this.data.users.length;
-    const activeUsers = this.data.users.filter(u => u.status === 'active').length;
-    const adminCount = this.data.users.filter(u => u.role === 'admin').length;
-    const totalDownloads = this.data.users.reduce((acc, u) => acc + (u.stats?.downloadsCount || 0), 0);
+    const totalUsers = this.data.users ? this.data.users.length : 0;
+    const activeUsers = this.data.users ? this.data.users.filter(u => u.status === 'active').length : 0;
+    const adminCount = this.data.users ? this.data.users.filter(u => u.role === 'admin').length : 0;
+    const totalDownloads = this.data.users ? this.data.users.reduce((acc, u) => acc + (u.stats?.downloadsCount || 0), 0) : 0;
+    const totalSchedules = this.data.schedules ? this.data.schedules.length : 3;
+    const totalTeamMembers = this.data.team_members ? this.data.team_members.length : 3;
 
     return {
       totalUsers,
       activeUsers,
       adminCount,
       totalDownloads,
-      activeSessions: this.data.sessions.length
+      totalSchedules,
+      totalTeamMembers,
+      activeSessions: this.data.sessions ? this.data.sessions.length : 0
     };
   }
 }
 
 const db = new TMDDatabase();
 module.exports = db;
+

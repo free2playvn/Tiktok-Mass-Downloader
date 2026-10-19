@@ -12,7 +12,7 @@
       "status": "active",
       "avatar": "👑",
       "createdAt": "2026-10-19T07:25:11.039Z",
-      "lastLogin": "2026-10-19T07:34:28.005Z",
+      "lastLogin": "2026-10-19T08:05:41.339Z",
       "stats": {
         "downloadsCount": 67,
         "editedVideos": 12,
@@ -119,9 +119,35 @@
       "userId": "usr_admin_001",
       "createdAt": "2026-10-19T07:34:28.009Z",
       "expiresAt": "2026-11-18T07:34:28.009Z"
+    },
+    {
+      "token": "tmd_tok_2a6b41b6bf41180d237986329629d22c2ae1f72691eadb69eef860f62b18f2d2",
+      "userId": "usr_admin_001",
+      "createdAt": "2026-10-19T08:03:07.020Z",
+      "expiresAt": "2026-11-18T08:03:07.020Z"
+    },
+    {
+      "token": "tmd_tok_08a37ea1c425c5f1c63e9da11ceb8afb35a9e8a0b3f523c878dd9b1148317497",
+      "userId": "usr_admin_001",
+      "createdAt": "2026-10-19T08:05:41.344Z",
+      "expiresAt": "2026-11-18T08:05:41.344Z"
     }
   ],
   "activity_logs": [
+    {
+      "id": "act_mveyz9lo",
+      "userId": "usr_admin_001",
+      "action": "user_login",
+      "details": "Đăng nhập thành công vào hệ thống",
+      "timestamp": "2026-10-19T08:05:41.340Z"
+    },
+    {
+      "id": "act_mveyvyiv",
+      "userId": "usr_admin_001",
+      "action": "user_login",
+      "details": "Đăng nhập thành công vào hệ thống",
+      "timestamp": "2026-10-19T08:03:07.015Z"
+    },
     {
       "id": "act_mvexv44l",
       "userId": "usr_admin_001",
@@ -177,6 +203,119 @@
       "action": "system_init",
       "details": "Khởi tạo cơ sở dữ liệu hệ thống TMD Studio Pro",
       "timestamp": "2026-10-19T07:25:11.042Z"
+    }
+  ],
+  "schedules": [
+    {
+      "id": "sch_001",
+      "title": "NST Viet Mix Vol 4 - Drop 30s",
+      "videoSrc": "@nhacnghedixe/7675792462593428756.mp4",
+      "platform": "TikTok",
+      "targetAccount": "@nhacnghedixe (Chính)",
+      "publishDate": "2026-10-20",
+      "publishTime": "11:30",
+      "status": "Đã lên lịch",
+      "caption": "Bản phối cực bốc cho anh em đi tour! #xuhuong #fyp #vinahouse"
+    },
+    {
+      "id": "sch_002",
+      "title": "DJ KenBjn Lỡ Yêu Remix - Shorts",
+      "videoSrc": "@nhacnghedixe/7696392556535418113.mp4",
+      "platform": "YouTube",
+      "targetAccount": "Shorts Music Official",
+      "publishDate": "2026-10-20",
+      "publishTime": "19:30",
+      "status": "Đã lên lịch",
+      "caption": "Nhạc bay phòng 2026 cực căng #Shorts #YouTubeShorts"
+    },
+    {
+      "id": "sch_003",
+      "title": "VietMix Teaser 15s Story",
+      "videoSrc": "@nhacnghedixe/7675792462593428756.mp4",
+      "platform": "Facebook",
+      "targetAccount": "Fanpage Nhạc Nghe Đi Xe",
+      "publishDate": "2026-10-21",
+      "publishTime": "12:00",
+      "status": "Bản nháp",
+      "caption": "Anh em chấm mấy điểm cho con beat này? #reels #nhachay"
+    }
+  ],
+  "team_members": [
+    {
+      "id": "tm_001",
+      "name": "Trần Minh Đức",
+      "email": "duc.editor@tmdstudio.com",
+      "role": "Video Editor",
+      "status": "Hoạt động",
+      "assignedClones": 3,
+      "tasksCompleted": 42
+    },
+    {
+      "id": "tm_002",
+      "name": "Võ Thị Thanh Thảo",
+      "email": "thao.seeder@tmdstudio.com",
+      "role": "Clone Seeder",
+      "status": "Hoạt động",
+      "assignedClones": 5,
+      "tasksCompleted": 88
+    },
+    {
+      "id": "tm_003",
+      "name": "Hoàng Quốc Việt",
+      "email": "viet.manager@tmdstudio.com",
+      "role": "Growth Manager",
+      "status": "Hoạt động",
+      "assignedClones": 10,
+      "tasksCompleted": 156
+    }
+  ],
+  "billing_transactions": [
+    {
+      "orderCode": "TMD317698",
+      "planName": "VIP Pro Lifetime 2026",
+      "amountVND": 999000,
+      "amountFormatted": "999.000 đ",
+      "bankName": "MB Bank (Ngân hàng Quân Đội)",
+      "bankAccount": "999988882026",
+      "accountName": "TMD STUDIO PRO OFFICIAL",
+      "qrUrl": "https://img.vietqr.io/image/970422-999988882026-compact2.png?amount=999000&addInfo=TMD317698&accountName=TMD%20STUDIO%20PRO%20OFFICIAL",
+      "userEmail": "admin@tmdstudio.com",
+      "createdAt": "2026-10-19T07:44:40.978Z",
+      "status": "Chờ thanh toán"
+    }
+  ],
+  "warmup_logs": [
+    {
+      "niche": "music",
+      "clonesCount": 3,
+      "status": "Thành công",
+      "scoreBoost": "+15 Trust Score",
+      "id": "wrm_mveyzea7",
+      "timestamp": "2026-10-19T08:05:47.407Z"
+    },
+    {
+      "niche": "music",
+      "clonesCount": 3,
+      "status": "Thành công",
+      "scoreBoost": "+15 Trust Score",
+      "id": "wrm_mveyw35b",
+      "timestamp": "2026-10-19T08:03:13.007Z"
+    },
+    {
+      "niche": "music",
+      "clonesCount": 3,
+      "status": "Thành công",
+      "scoreBoost": "+15 Trust Score",
+      "id": "wrm_mveyud63",
+      "timestamp": "2026-10-19T08:01:52.683Z"
+    },
+    {
+      "niche": "Xe và Nhạc",
+      "clonesCount": 2,
+      "status": "Thành công",
+      "scoreBoost": "+15 Trust Score",
+      "id": "wrm_mvey893p",
+      "timestamp": "2026-10-19T07:44:40.981Z"
     }
   ]
 }

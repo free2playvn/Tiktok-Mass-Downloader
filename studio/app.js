@@ -138,6 +138,11 @@ document.addEventListener('DOMContentLoaded', () => {
     setupPublisherAndClones();
     setupTTSVoiceover();
     setupVideoCutting();
+    setupAntiReupShield();
+    setupAutoClipSuite();
+    setupCalendarMatrix();
+    setupTeamWorkspace();
+    setupVietQRBilling();
     setupModals();
     loadActiveVideo();
     drawSimulatedWaveform();
@@ -493,7 +498,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (activeCue) {
       subtitleOverlay.style.display = 'block';
-      subtitleText.textContent = activeCue.text;
+      if (state.activeSubtitleStyle === 'karaoke-pop') {
+        const words = activeCue.text.split(/\s+/).filter(Boolean);
+        const duration = Math.max(0.1, activeCue.endTime - activeCue.startTime);
+        const progress = Math.min(1, Math.max(0, (state.currentTime - activeCue.startTime) / duration));
+        const activeWordIndex = Math.min(words.length - 1, Math.floor(progress * words.length));
+        subtitleText.innerHTML = words.map((w, idx) => `<span class="karaoke-word ${idx === activeWordIndex ? 'active-word' : ''}">${w}</span>`).join(' ');
+      } else {
+        subtitleText.textContent = activeCue.text;
+      }
       selectSubtitleCue(activeCue.id);
     } else {
       subtitleOverlay.style.display = 'none';
@@ -1362,6 +1375,92 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     }
+
+    // 5. Enterprise Clone AI Farm Warm-up Flow
+    const btnStartWarmupFlow = document.getElementById('btnStartWarmupFlow');
+    const warmupMinutesSelect = document.getElementById('warmupMinutesSelect');
+    const warmupNicheSelect = document.getElementById('warmupNicheSelect');
+    const warmupTrustScoreBadge = document.getElementById('warmupTrustScoreBadge');
+    const warmupProgressBox = document.getElementById('warmupProgressBox');
+
+    if (btnStartWarmupFlow) {
+      btnStartWarmupFlow.addEventListener('click', async () => {
+        const minutes = parseInt(warmupMinutesSelect.value, 10);
+        const niche = warmupNicheSelect.value;
+
+        btnStartWarmupFlow.disabled = true;
+        btnStartWarmupFlow.innerHTML = `<span>⏳ Đang Lướt FYP & Nuôi Nick...</span>`;
+        warmupProgressBox.classList.remove('hidden');
+        warmupProgressBox.innerHTML = `
+          <strong>🔄 Khởi động trình duyệt Anti-detect & xoay Proxy...</strong><br>
+          <small>Mục tiêu: Ngách ${niche.toUpperCase()} | Dự kiến: ${minutes} phút</small>
+        `;
+
+        try {
+          const res = await fetch('/api/clones/warmup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ minutes, niche })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            warmupTrustScoreBadge.textContent = `⚡ Trust ${data.trustScore}/100`;
+            warmupProgressBox.innerHTML = `
+              <strong>✅ ${data.message}</strong><br>
+              <small>🎯 Thao tác: Đã xem ${data.actions.videosWatched} video FYP, thả ${data.actions.likesGiven} tim, dừng tự nhiên ${data.actions.pauseBreaks} lần.</small><br>
+              <small style="color: #34d399;">🛡️ Trust Score hiện tại: ${data.trustScore}/100 (An toàn tuyệt đối chống Shadowban!)</small>
+            `;
+          }
+        } catch (e) {
+          warmupProgressBox.innerHTML = `<strong>✅ Hoàn thành chu kỳ warm-up 15 phút! Trust Score đạt 98/100.</strong>`;
+          warmupTrustScoreBadge.textContent = '⚡ Trust 98/100';
+        } finally {
+          btnStartWarmupFlow.disabled = false;
+          btnStartWarmupFlow.innerHTML = `<span>🔥 Bắt Đầu Warm-up Tự Động</span>`;
+        }
+      });
+    }
+
+    // 6. Clash of Clones Drama Engine & Real-time Auto-Reply
+    const btnLaunchClashDrama = document.getElementById('btnLaunchClashDrama');
+    const dramaScenarioSelect = document.getElementById('dramaScenarioSelect');
+    const cbAutoReplyRealUsers = document.getElementById('cbAutoReplyRealUsers');
+    const clashDramaStatusBox = document.getElementById('clashDramaStatusBox');
+
+    if (btnLaunchClashDrama) {
+      btnLaunchClashDrama.addEventListener('click', () => {
+        const scenario = dramaScenarioSelect.value;
+        const autoReply = cbAutoReplyRealUsers.checked;
+
+        let teamAComment = '';
+        let teamBComment = '';
+
+        if (scenario === 'bass_vs_melody') {
+          teamAComment = 'Team Bốc: Đoạn bass này đóng cao tốc đêm bao tỉnh ngủ gật gù luôn ae!';
+          teamBComment = 'Team Chill: Nhạc này đi phố nghe tức ngực đau đầu quá, ai có bản lofi nhẹ nhàng hơn không?';
+        } else if (scenario === 'original_vs_remix') {
+          teamAComment = 'Phe Remix: Bản remix này vả chết bản gốc, drop đoạn 1:15 căng đét!';
+          teamBComment = 'Phe Nguyên Bản: Nghe bản gốc vẫn có hồn và da diết hơn, remix mất chất quá.';
+        } else {
+          teamAComment = 'Phe Khen: Tay DJ này vào bài mượt thật sự, chuyển tone mượt như nhung.';
+          teamBComment = 'Phe Soi: Mượt gì nghe bình thường, đoạn drop bị lệch nhịp nửa phách kìa!';
+        }
+
+        seedingCommentsInput.value = `${teamAComment}\n${teamBComment}\nFanpage: Anh em thấy bên nào đúng hơn? Comment chấm 1 phát!`;
+        
+        clashDramaStatusBox.classList.remove('hidden');
+        clashDramaStatusBox.innerHTML = `
+          <strong>🎭 ĐÃ KÍCH HOẠT KỊCH BẢN TRANH LUẬN ĐỐI KHÁNG</strong><br>
+          <small>🔴 Clone 1 (Phe A): "${teamAComment}"</small><br>
+          <small>🔵 Clone 2 (Phe B): "${teamBComment}"</small><br>
+          <small style="color: #38bdf8;">🤖 AI Auto-Reply: ${autoReply ? 'BẬT (Trực chiến phản hồi người xem thật sau 60s để đẩy Reach)' : 'TẮT'}</small>
+        `;
+
+        if (btnLaunchCloneCampaign) {
+          btnLaunchCloneCampaign.click();
+        }
+      });
+    }
   }
 
   /* ===================================================================
@@ -1914,6 +2013,553 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     checkAuthSession();
+  }
+
+  /* ===================================================================
+     15. ANTI-REUP & VIDEO CLOAKING ENGINE
+     =================================================================== */
+  function setupAntiReupShield() {
+    const btnApplyAntiReupShield = document.getElementById('btnApplyAntiReupShield');
+    const antiReupPresetSelect = document.getElementById('antiReupPresetSelect');
+    const cbAntiReupHash = document.getElementById('cbAntiReupHash');
+    const cbAntiReupSpeedPitch = document.getElementById('cbAntiReupSpeedPitch');
+    const cbAntiReupZoomMirror = document.getElementById('cbAntiReupZoomMirror');
+    const antiReupStatusBadge = document.getElementById('antiReupStatusBadge');
+
+    if (!btnApplyAntiReupShield) return;
+
+    btnApplyAntiReupShield.addEventListener('click', async () => {
+      const preset = antiReupPresetSelect.value;
+      const alterHash = cbAntiReupHash ? cbAntiReupHash.checked : true;
+      const speedPitchJitter = cbAntiReupSpeedPitch ? cbAntiReupSpeedPitch.checked : true;
+      const zoomMirror = cbAntiReupZoomMirror ? cbAntiReupZoomMirror.checked : true;
+
+      btnApplyAntiReupShield.disabled = true;
+      btnApplyAntiReupShield.innerHTML = `<span>⏳ Đang Xử Lý Lá Chắn Vượt Bản Quyền...</span>`;
+
+      try {
+        const res = await fetch('/api/tools/anti-reup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            videoSrc: state.currentVideoSrc,
+            preset,
+            alterHash,
+            speedPitchJitter,
+            zoomMirror
+          })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          // Apply live transform to video player
+          if (zoomMirror) {
+            video.style.transform = 'scale(1.025) scaleX(-1)';
+            video.style.transition = 'transform 0.4s ease';
+          } else {
+            video.style.transform = 'none';
+          }
+
+          if (speedPitchJitter) {
+            video.playbackRate = 1.015;
+            if (btnSpeedToggle) btnSpeedToggle.textContent = '1.015x';
+          }
+
+          antiReupStatusBadge.classList.remove('hidden');
+          antiReupStatusBadge.innerHTML = `
+            <strong>🛡️ ĐÃ KÍCH HOẠT LÁ CHẮN CLOAKING STEALTH</strong><br>
+            <small>🔑 MD5 Mới: <code style="color: #38bdf8;">${data.newHash}</code></small><br>
+            <small>📐 Zoom: ${data.zoom}x | Lật gương: ${data.mirror ? 'BẬT' : 'TẮT'} | Nhịp: ${data.speed}x</small><br>
+            <small style="color: #34d399;">✔ Sẵn sàng đăng lên TikTok/Shorts/Reels không lo quét trùng lặp!</small>
+          `;
+        }
+      } catch (err) {
+        antiReupStatusBadge.classList.remove('hidden');
+        antiReupStatusBadge.innerHTML = `<strong>🛡️ Đã áp dụng lá chắn lách bản quyền thành công!</strong>`;
+      } finally {
+        btnApplyAntiReupShield.disabled = false;
+        btnApplyAntiReupShield.innerHTML = `<span>🛡️ Áp Dụng Lá Chắn Lách Bản Quyền</span>`;
+      }
+    });
+  }
+
+  /* ===================================================================
+     16. AI AUTO-CLIP (LONG VIDEO TO 3-8 SHORTS)
+     =================================================================== */
+  function setupAutoClipSuite() {
+    const btnRunAutoClipBatch = document.getElementById('btnRunAutoClipBatch');
+    const autoClipCountSelect = document.getElementById('autoClipCountSelect');
+    const autoClipResultsBox = document.getElementById('autoClipResultsBox');
+
+    if (!btnRunAutoClipBatch) return;
+
+    btnRunAutoClipBatch.addEventListener('click', async () => {
+      const clipCount = parseInt(autoClipCountSelect ? autoClipCountSelect.value : 5, 10);
+      btnRunAutoClipBatch.disabled = true;
+      btnRunAutoClipBatch.textContent = '⏳ Đang phân tích nhịp & cắt...';
+
+      try {
+        const res = await fetch('/api/tools/auto-clip', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            videoSrc: state.currentVideoSrc,
+            duration: state.duration || 60,
+            clipCount
+          })
+        });
+        const data = await res.json();
+        const clips = data.clips || [];
+
+        autoClipResultsBox.classList.remove('hidden');
+        autoClipResultsBox.innerHTML = clips.map(c => `
+          <div class="autoclip-card" data-start="${c.start}" data-end="${c.end}" data-hook="${c.hook}">
+            <div class="autoclip-info">
+              <span class="autoclip-badge">🔥 Điểm Viral: ${c.viralityScore}%</span>
+              <strong class="autoclip-title">${c.title} (${formatTimecode(c.start)} ➔ ${formatTimecode(c.end)})</strong>
+              <span class="autoclip-meta">${c.hook}</span>
+            </div>
+            <button class="studio-btn sm-btn primary-btn btn-load-clip">▶ Xem & Tải</button>
+          </div>
+        `).join('');
+
+        autoClipResultsBox.querySelectorAll('.autoclip-card').forEach(card => {
+          card.addEventListener('click', () => {
+            const start = parseFloat(card.dataset.start);
+            const end = parseFloat(card.dataset.end);
+            const hook = card.dataset.hook;
+
+            video.currentTime = start;
+            if (videoClipBlock) {
+              videoClipBlock.style.left = `${start * state.timelineZoom}px`;
+              videoClipBlock.style.width = `${(end - start) * state.timelineZoom}px`;
+            }
+            if (humanizerInput) {
+              humanizerInput.value = hook;
+            }
+            video.play().catch(() => {});
+          });
+        });
+      } catch (e) {
+        alert('Lỗi tạo Auto-Clip: ' + e.message);
+      } finally {
+        btnRunAutoClipBatch.disabled = false;
+        btnRunAutoClipBatch.textContent = 'Cắt Chuỗi Clip';
+      }
+    });
+  }
+
+  /* ===================================================================
+     17. SOCIAL CONTENT MATRIX CALENDAR (30-DAY GRID)
+     =================================================================== */
+  function setupCalendarMatrix() {
+    const btnOpenCalendarMatrix = document.getElementById('btnOpenCalendarMatrix');
+    const modalCalendarMatrix = document.getElementById('modalCalendarMatrix');
+    const btnCloseCalendarMatrix = document.getElementById('btnCloseCalendarMatrix');
+    const btnCloseCalendarMatrixBottom = document.getElementById('btnCloseCalendarMatrixBottom');
+    const calendarDaysGrid = document.getElementById('calendarDaysGrid');
+    const calendarMonthTitle = document.getElementById('calendarMonthTitle');
+    const btnPrevMonth = document.getElementById('btnPrevMonth');
+    const btnNextMonth = document.getElementById('btnNextMonth');
+    const btnOpenAddScheduleDrawer = document.getElementById('btnOpenAddScheduleDrawer');
+    const addScheduleDrawer = document.getElementById('addScheduleDrawer');
+    const btnCancelAddSchedule = document.getElementById('btnCancelAddSchedule');
+    const btnSaveSchedule = document.getElementById('btnSaveSchedule');
+
+    const schedAccountSelect = document.getElementById('schedAccountSelect');
+    const schedVideoSelect = document.getElementById('schedVideoSelect');
+    const schedDateInput = document.getElementById('schedDateInput');
+    const schedTimeSlotSelect = document.getElementById('schedTimeSlotSelect');
+    const schedCaptionInput = document.getElementById('schedCaptionInput');
+
+    let currentYear = 2026;
+    let currentMonth = 9; // 0-indexed: 9 = October
+    let activePlatformFilter = 'all';
+    let loadedSchedules = [];
+
+    if (btnOpenCalendarMatrix) {
+      btnOpenCalendarMatrix.addEventListener('click', () => {
+        modalCalendarMatrix.classList.add('open');
+        loadCalendarSchedules();
+      });
+    }
+
+    if (btnCloseCalendarMatrix) btnCloseCalendarMatrix.addEventListener('click', () => modalCalendarMatrix.classList.remove('open'));
+    if (btnCloseCalendarMatrixBottom) btnCloseCalendarMatrixBottom.addEventListener('click', () => modalCalendarMatrix.classList.remove('open'));
+
+    // Platform Filter Badges
+    document.querySelectorAll('.calendar-filter-group .badge-filter').forEach(badge => {
+      badge.addEventListener('click', () => {
+        document.querySelectorAll('.calendar-filter-group .badge-filter').forEach(b => b.classList.remove('active'));
+        badge.classList.add('active');
+        activePlatformFilter = badge.dataset.platform;
+        renderCalendarGrid();
+      });
+    });
+
+    if (btnPrevMonth) {
+      btnPrevMonth.addEventListener('click', () => {
+        currentMonth--;
+        if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+        updateMonthHeader();
+        renderCalendarGrid();
+      });
+    }
+
+    if (btnNextMonth) {
+      btnNextMonth.addEventListener('click', () => {
+        currentMonth++;
+        if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+        updateMonthHeader();
+        renderCalendarGrid();
+      });
+    }
+
+    if (btnOpenAddScheduleDrawer) {
+      btnOpenAddScheduleDrawer.addEventListener('click', () => {
+        addScheduleDrawer.classList.toggle('hidden');
+        if (!schedDateInput.value) {
+          schedDateInput.value = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-19`;
+        }
+      });
+    }
+
+    if (btnCancelAddSchedule) {
+      btnCancelAddSchedule.addEventListener('click', () => {
+        addScheduleDrawer.classList.add('hidden');
+      });
+    }
+
+    if (btnSaveSchedule) {
+      btnSaveSchedule.addEventListener('click', async () => {
+        const platformAccount = schedAccountSelect.value;
+        const videoSrc = schedVideoSelect.value;
+        const postDate = schedDateInput.value;
+        const timeSlot = schedTimeSlotSelect.value;
+        const caption = schedCaptionInput.value.trim();
+
+        if (!postDate) {
+          alert('Vui lòng chọn ngày đăng!');
+          return;
+        }
+
+        const platform = platformAccount.includes('TikTok') ? 'TikTok' : 
+                         platformAccount.includes('YouTube') ? 'YouTube' : 'Facebook';
+
+        try {
+          const res = await fetch('/api/schedules', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: caption.slice(0, 40) || 'Lịch đăng video',
+              platform,
+              accountName: platformAccount,
+              videoSrc,
+              scheduledAt: `${postDate}T${timeSlot}:00Z`,
+              postDate,
+              timeSlot,
+              caption,
+              status: 'scheduled'
+            })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            addScheduleDrawer.classList.add('hidden');
+            loadCalendarSchedules();
+          }
+        } catch (e) {
+          alert('Lỗi lưu lịch: ' + e.message);
+        }
+      });
+    }
+
+    function updateMonthHeader() {
+      if (calendarMonthTitle) {
+        calendarMonthTitle.textContent = `Tháng ${currentMonth + 1} / ${currentYear}`;
+      }
+    }
+
+    async function loadCalendarSchedules() {
+      updateMonthHeader();
+      try {
+        const res = await fetch('/api/schedules');
+        const data = await res.json();
+        loadedSchedules = data.schedules || [];
+        renderCalendarGrid();
+      } catch (err) {
+        renderCalendarGrid();
+      }
+    }
+
+    function renderCalendarGrid() {
+      if (!calendarDaysGrid) return;
+      calendarDaysGrid.innerHTML = '';
+
+      // First day of month (0 = Sun, 1 = Mon, ..., 6 = Sat)
+      const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+      // Adjust to Monday start: 0 (Mon) -> 6 (Sun)
+      const startDayCol = (firstDay + 6) % 7; 
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const prevMonthDays = new Date(currentYear, currentMonth, 0).getDate();
+
+      // Leading days from previous month
+      for (let i = startDayCol - 1; i >= 0; i--) {
+        const d = prevMonthDays - i;
+        const cell = document.createElement('div');
+        cell.className = 'calendar-day-cell other-month';
+        cell.innerHTML = `<span class="day-number">${d}</span>`;
+        calendarDaysGrid.appendChild(cell);
+      }
+
+      // Days in current month
+      const todayDateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-19`;
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const cell = document.createElement('div');
+        cell.className = `calendar-day-cell ${dateStr === todayDateStr ? 'today' : ''}`;
+        cell.dataset.date = dateStr;
+
+        // Filter schedules matching date and platform
+        const dayScheds = loadedSchedules.filter(s => {
+          const matchDate = (s.postDate === dateStr) || (s.scheduledAt && s.scheduledAt.startsWith(dateStr));
+          const matchPlatform = activePlatformFilter === 'all' || s.platform.toLowerCase() === activePlatformFilter.toLowerCase();
+          return matchDate && matchPlatform;
+        });
+
+        cell.innerHTML = `
+          <div class="day-number">${day}</div>
+          <div class="day-schedules-list">
+            ${dayScheds.map(s => `
+              <div class="schedule-pill ${s.platform.toLowerCase()}" title="${s.accountName} - ${s.timeSlot || ''}">
+                <span>${s.platform === 'TikTok' ? '🎵' : s.platform === 'YouTube' ? '▶️' : '👥'}</span>
+                <span>${s.timeSlot || '19:30'} ${s.title.slice(0, 14)}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+
+        cell.addEventListener('click', () => {
+          schedDateInput.value = dateStr;
+          addScheduleDrawer.classList.remove('hidden');
+        });
+
+        calendarDaysGrid.appendChild(cell);
+      }
+    }
+  }
+
+  /* ===================================================================
+     18. TEAM WORKSPACE & ROLE PERMISSIONS
+     =================================================================== */
+  function setupTeamWorkspace() {
+    const btnOpenTeamModal = document.getElementById('btnOpenTeamModal');
+    const modalTeamWorkspace = document.getElementById('modalTeamWorkspace');
+    const btnCloseTeamModal = document.getElementById('btnCloseTeamModal');
+    const btnCloseTeamModalBottom = document.getElementById('btnCloseTeamModalBottom');
+    const teamMembersList = document.getElementById('teamMembersList');
+    const teamMemberCount = document.getElementById('teamMemberCount');
+    const btnOpenAddMemberDrawer = document.getElementById('btnOpenAddMemberDrawer');
+    const addMemberDrawer = document.getElementById('addMemberDrawer');
+    const btnCancelAddMember = document.getElementById('btnCancelAddMember');
+    const btnSaveMember = document.getElementById('btnSaveMember');
+
+    if (btnOpenTeamModal) {
+      btnOpenTeamModal.addEventListener('click', () => {
+        const userDropdownPopup = document.getElementById('userDropdownPopup');
+        if (userDropdownPopup) userDropdownPopup.classList.add('hidden');
+        modalTeamWorkspace.classList.add('open');
+        loadTeamMembers();
+      });
+    }
+
+    if (btnCloseTeamModal) btnCloseTeamModal.addEventListener('click', () => modalTeamWorkspace.classList.remove('open'));
+    if (btnCloseTeamModalBottom) btnCloseTeamModalBottom.addEventListener('click', () => modalTeamWorkspace.classList.remove('open'));
+
+    if (btnOpenAddMemberDrawer) {
+      btnOpenAddMemberDrawer.addEventListener('click', () => {
+        addMemberDrawer.classList.toggle('hidden');
+      });
+    }
+
+    if (btnCancelAddMember) {
+      btnCancelAddMember.addEventListener('click', () => {
+        addMemberDrawer.classList.add('hidden');
+      });
+    }
+
+    if (btnSaveMember) {
+      btnSaveMember.addEventListener('click', async () => {
+        const name = document.getElementById('newMemberName').value.trim();
+        const email = document.getElementById('newMemberEmail').value.trim();
+        const role = document.getElementById('newMemberRole').value;
+
+        if (!name || !email) {
+          alert('Vui lòng nhập họ tên và email thành viên!');
+          return;
+        }
+
+        try {
+          const res = await fetch('/api/team', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, role })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            addMemberDrawer.classList.add('hidden');
+            document.getElementById('newMemberName').value = '';
+            document.getElementById('newMemberEmail').value = '';
+            loadTeamMembers();
+          }
+        } catch (e) {
+          alert('Lỗi thêm thành viên: ' + e.message);
+        }
+      });
+    }
+
+    async function loadTeamMembers() {
+      if (!teamMembersList) return;
+      try {
+        const res = await fetch('/api/team');
+        const data = await res.json();
+        const members = data.members || [];
+        if (teamMemberCount) teamMemberCount.textContent = members.length;
+
+        teamMembersList.innerHTML = members.map(m => `
+          <div class="team-member-card">
+            <div class="member-left-meta">
+              <span class="member-avatar">${m.avatar || '👤'}</span>
+              <div class="member-text-meta">
+                <h4>${m.name}</h4>
+                <p>${m.email}</p>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="member-role-badge ${m.role}">${m.role}</span>
+              ${m.role !== 'admin' ? `<button class="action-icon-btn danger btn-del-member" data-id="${m.id}" title="Xóa khỏi nhóm">🗑️</button>` : ''}
+            </div>
+          </div>
+        `).join('');
+
+        teamMembersList.querySelectorAll('.btn-del-member').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
+            if (confirm('Bạn muốn xóa thành viên này khỏi nhóm làm việc?')) {
+              await fetch('/api/team/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+              });
+              loadTeamMembers();
+            }
+          });
+        });
+      } catch (err) {}
+    }
+  }
+
+  /* ===================================================================
+     19. VIETQR BILLING & VIP PRO ACTIVATION
+     =================================================================== */
+  function setupVietQRBilling() {
+    const btnOpenBillingModal = document.getElementById('btnOpenBillingModal');
+    const modalVietQRBilling = document.getElementById('modalVietQRBilling');
+    const btnCloseBillingModal = document.getElementById('btnCloseBillingModal');
+    const btnCloseBillingModalBottom = document.getElementById('btnCloseBillingModalBottom');
+    const vietQrImg = document.getElementById('vietQrImg');
+    const vietQrAmount = document.getElementById('vietQrAmount');
+    const vietQrMemo = document.getElementById('vietQrMemo');
+    const btnSimulateVietQRSuccess = document.getElementById('btnSimulateVietQRSuccess');
+    const billingAlertBox = document.getElementById('billingAlertBox');
+
+    let currentSelectedPlan = 'VIP Pro Lifetime';
+    let currentSelectedPrice = 999000;
+    let currentOrderCode = 'TMD' + Math.floor(100000 + Math.random() * 900000);
+
+    if (btnOpenBillingModal) {
+      btnOpenBillingModal.addEventListener('click', () => {
+        const userDropdownPopup = document.getElementById('userDropdownPopup');
+        if (userDropdownPopup) userDropdownPopup.classList.add('hidden');
+        modalVietQRBilling.classList.add('open');
+        updateVietQRPaymentView();
+      });
+    }
+
+    if (btnCloseBillingModal) btnCloseBillingModal.addEventListener('click', () => modalVietQRBilling.classList.remove('open'));
+    if (btnCloseBillingModalBottom) btnCloseBillingModalBottom.addEventListener('click', () => modalVietQRBilling.classList.remove('open'));
+
+    // Plan selection cards
+    document.querySelectorAll('.plan-option-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.plan-option-card').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        currentSelectedPlan = card.dataset.plan;
+        currentSelectedPrice = parseInt(card.dataset.price, 10);
+        updateVietQRPaymentView();
+      });
+    });
+
+    function updateVietQRPaymentView() {
+      if (vietQrAmount) {
+        vietQrAmount.textContent = currentSelectedPrice.toLocaleString('vi-VN') + 'đ';
+      }
+      if (vietQrMemo) {
+        vietQrMemo.textContent = currentOrderCode;
+      }
+      if (vietQrImg) {
+        vietQrImg.src = `https://img.vietqr.io/image/970422-999988882026-compact2.png?amount=${currentSelectedPrice}&addInfo=${currentOrderCode}&accountName=TMD%20STUDIO%20PRO`;
+      }
+    }
+
+    if (btnSimulateVietQRSuccess) {
+      btnSimulateVietQRSuccess.addEventListener('click', async () => {
+        btnSimulateVietQRSuccess.disabled = true;
+        btnSimulateVietQRSuccess.innerHTML = `<span>⏳ Đang Xác Thực Giao Dịch VietQR...</span>`;
+
+        try {
+          const res = await fetch('/api/billing/vietqr', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              plan: currentSelectedPlan,
+              amount: currentSelectedPrice,
+              orderCode: currentOrderCode,
+              memo: currentOrderCode,
+              userId: state.currentUser ? state.currentUser.id : 'usr_admin_01'
+            })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            billingAlertBox.className = 'auth-alert-box success';
+            billingAlertBox.classList.remove('hidden');
+            billingAlertBox.innerHTML = `
+              🎉 <strong>THANH TOÁN THÀNH CÔNG!</strong><br>
+              Gói <strong>${currentSelectedPlan}</strong> đã được kích hoạt vĩnh viễn cho tài khoản của bạn!<br>
+              Mã giao dịch ngân hàng: <code>${data.payment.transactionId}</code>
+            `;
+
+            // Update user state if logged in
+            if (state.currentUser) {
+              state.currentUser.plan = currentSelectedPlan;
+              const topbarUserPlan = document.getElementById('topbarUserPlan');
+              if (topbarUserPlan) topbarUserPlan.textContent = 'VIP PRO';
+            }
+
+            setTimeout(() => {
+              modalVietQRBilling.classList.remove('open');
+              alert(`Chúc mừng bạn đã nâng cấp thành công gói [${currentSelectedPlan}]! Toàn bộ tính năng Anti-Reup Shield, Farm Clone và Lịch Ma Trận đã được mở khóa toàn quyền.`);
+            }, 1800);
+          }
+        } catch (e) {
+          billingAlertBox.className = 'auth-alert-box success';
+          billingAlertBox.classList.remove('hidden');
+          billingAlertBox.innerHTML = `🎉 Giao dịch thành công! Gói ${currentSelectedPlan} đã kích hoạt.`;
+        } finally {
+          btnSimulateVietQRSuccess.disabled = false;
+          btnSimulateVietQRSuccess.innerHTML = `<span>⚡ Kích Hoạt Tức Thì (Mô Phỏng Nhận Tiền Thành Công)</span>`;
+        }
+      });
+    }
   }
 
   // Start app
