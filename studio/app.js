@@ -147,6 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupConcatBridge();
     setupProSuite();
     setupMegaSuiteModule();
+    setupLiveStudioModule();
     setupModals();
     loadActiveVideo();
     drawSimulatedWaveform();
@@ -4077,12 +4078,1083 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (e) {}
     }
 
+    // 11. Video Globalization
+    const btnMegaRunGlobalize = document.getElementById('btnMegaRunGlobalize');
+    const megaSelectGlobalLang = document.getElementById('megaSelectGlobalLang');
+    const megaGlobalizeOutput = document.getElementById('megaGlobalizeOutput');
+
+    if (btnMegaRunGlobalize) {
+      btnMegaRunGlobalize.addEventListener('click', async () => {
+        const targetLangCode = megaSelectGlobalLang.value;
+        try {
+          const res = await fetch('/api/enterprise/globalize/process', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ script: humanizerInput ? humanizerInput.value : '', targetLangCode })
+          });
+          const data = await res.json();
+          if (data.ok && megaGlobalizeOutput) {
+            megaGlobalizeOutput.innerHTML = `
+              <div style="color: #fff; font-weight: 700; margin-bottom: 6px;">${data.marketFlag} ${data.targetLanguage} (Ước tính: ${data.estimatedRPM})</div>
+              <div style="background: rgba(15, 23, 42, 0.7); padding: 8px; border-radius: 4px; font-style: italic; margin-bottom: 8px;">"${escapeHtml(data.translatedScript)}"</div>
+              <div style="color: #10b981; font-weight: 700;">💰 Doanh thu tiềm năng (1M views): ${data.estimatedMonthlyRevenue1MViews}</div>
+            `;
+          }
+        } catch (e) {
+          alert('Lỗi dịch: ' + e.message);
+        }
+      });
+    }
+
+    // 12. Stem Separator
+    const btnMegaSeparateStems = document.getElementById('btnMegaSeparateStems');
+    const megaStemStatus = document.getElementById('megaStemStatus');
+    const btnMegaReplaceBgm = document.getElementById('btnMegaReplaceBgm');
+    const megaSelectSafeBgm = document.getElementById('megaSelectSafeBgm');
+    const megaStemAlertBox = document.getElementById('megaStemAlertBox');
+
+    if (btnMegaSeparateStems) {
+      btnMegaSeparateStems.addEventListener('click', async () => {
+        try {
+          const res = await fetch('/api/enterprise/stem/separate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ duration: state.duration || 60 })
+          });
+          const data = await res.json();
+          if (data.ok && megaStemStatus) {
+            megaStemStatus.innerHTML = `
+              ✅ Đã tách stem thành công: Vocal [${data.stems.vocalTrack.clarity}] | BGM: ${data.stems.backgroundMusic.status}
+            `;
+          }
+        } catch (e) {
+          alert('Lỗi tách stems: ' + e.message);
+        }
+      });
+    }
+
+    if (btnMegaReplaceBgm) {
+      btnMegaReplaceBgm.addEventListener('click', async () => {
+        try {
+          const res = await fetch('/api/enterprise/stem/replace-sound', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ safeBgmId: megaSelectSafeBgm.value })
+          });
+          const data = await res.json();
+          if (data.ok && megaStemAlertBox) {
+            megaStemAlertBox.className = 'pub-status-box success';
+            megaStemAlertBox.innerHTML = `🎉 ${escapeHtml(data.status)}`;
+            megaStemAlertBox.classList.remove('hidden');
+          }
+        } catch (e) {
+          alert('Lỗi đổi sound: ' + e.message);
+        }
+      });
+    }
+
+    // 13. Retention Predictor
+    const btnMegaAnalyzeRetention = document.getElementById('btnMegaAnalyzeRetention');
+    const megaRetentionResults = document.getElementById('megaRetentionResults');
+
+    if (btnMegaAnalyzeRetention) {
+      btnMegaAnalyzeRetention.addEventListener('click', async () => {
+        try {
+          const res = await fetch('/api/enterprise/retention/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ script: humanizerInput ? humanizerInput.value : '', duration: state.duration || 60 })
+          });
+          const data = await res.json();
+          if (data.ok && megaRetentionResults) {
+            megaRetentionResults.classList.remove('hidden');
+            megaRetentionResults.innerHTML = `
+              <div class="analytics-kpi-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 12px;">
+                <div class="kpi-card"><div class="kpi-title">Điểm Hook 3s Đầu</div><div class="kpi-val" style="color: #f59e0b;">${data.hookScore}/100</div></div>
+                <div class="kpi-card"><div class="kpi-title">Tốc Độ Nói (WPM)</div><div class="kpi-val">${data.wordsPerMinute} wpm</div><div class="kpi-delta">${data.wpmAssessment}</div></div>
+                <div class="kpi-card"><div class="kpi-title">Tỷ Lệ Xem Hết Dự Kiến</div><div class="kpi-val" style="color: #10b981;">${data.predictedCompletionRate}</div></div>
+              </div>
+              <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 8px 12px; border-radius: var(--radius-sm); font-size: 11px;">
+                ⚠️ <strong>Cảnh Báo Điểm Rơi Giữ Chân:</strong> ${data.dangerZones[0].advice}
+              </div>
+            `;
+          }
+        } catch (e) {
+          alert('Lỗi phân tích: ' + e.message);
+        }
+      });
+    }
+
+    // 14. Clickbait Thumbnail MrBeast
+    const btnMegaGenerateThumbnails = document.getElementById('btnMegaGenerateThumbnails');
+    const megaThumbnailsGrid = document.getElementById('megaThumbnailsGrid');
+
+    if (btnMegaGenerateThumbnails) {
+      btnMegaGenerateThumbnails.addEventListener('click', async () => {
+        try {
+          const res = await fetch('/api/enterprise/thumbnail/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ videoTitle: state.currentVideoTitle })
+          });
+          const data = await res.json();
+          if (data.ok && megaThumbnailsGrid) {
+            megaThumbnailsGrid.innerHTML = data.templates.map((t) => `
+              <div class="broll-thumb-card" style="border-color: ${t.borderGlow};">
+                <img src="${t.previewImg}" class="broll-thumb-img" alt="${t.name}">
+                <div class="broll-thumb-meta">
+                  <span class="status-pill active" style="background: ${t.borderGlow}33; color: ${t.borderGlow}; font-size: 9px;">${t.badgeText}</span>
+                  <div class="broll-thumb-title" style="margin-top: 4px;">${escapeHtml(t.name)}</div>
+                  <div style="font-size: 9px; color: var(--text-muted);">${t.faceScale}</div>
+                  <button class="studio-btn primary-btn sm-btn full-btn" style="margin-top: 6px;" onclick="alert('Đã chọn thumbnail [${escapeHtml(t.name)}] làm ảnh bìa của video!')">⚡ Dùng Ảnh Bìa Này</button>
+                </div>
+              </div>
+            `).join('');
+          }
+        } catch (e) {
+          alert('Lỗi thumbnail: ' + e.message);
+        }
+      });
+    }
+
+    // 15. 3D Props
+    async function loadPropsData() {
+      try {
+        const res = await fetch('/api/enterprise/product3d/props');
+        const data = await res.json();
+        const list = document.getElementById('megaPropsCatalogList');
+        if (data.ok && list) {
+          list.innerHTML = data.props.map((p) => `
+            <div class="mega-card">
+              <div style="font-weight: 700; color: #fff; font-size: 12px;">${escapeHtml(p.title)}</div>
+              <div style="font-size: 10px; color: var(--accent-cyan); margin: 2px 0;">Nhãn hàng: ${p.brand}</div>
+              <div style="font-size: 9px; color: var(--text-muted);">${p.placementType}</div>
+              <button class="studio-btn secondary-btn sm-btn full-btn" style="margin-top: 8px;" onclick="insertProp3D('${p.id}')">
+                🥫 Ghép 3D Vào Giây Thứ 5
+              </button>
+            </div>
+          `).join('');
+        }
+      } catch (e) {}
+    }
+
+    window.insertProp3D = async (propId) => {
+      try {
+        const res = await fetch('/api/enterprise/product3d/insert', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ propId, timestamp: 5.0 })
+        });
+        const data = await res.json();
+        const box = document.getElementById('megaPropStatusBox');
+        if (box) {
+          box.className = 'pub-status-box success';
+          box.innerHTML = `✨ ${escapeHtml(data.status)} (${data.blendingAlgorithm})`;
+          box.classList.remove('hidden');
+        }
+      } catch (e) {}
+    };
+
+    // 16. Render Farm
+    async function loadRenderFarmData() {
+      try {
+        const res = await fetch('/api/enterprise/renderfarm/nodes');
+        const data = await res.json();
+        const grid = document.getElementById('megaRenderFarmGrid');
+        if (data.ok && grid) {
+          grid.innerHTML = data.nodes.map((n) => `
+            <div class="phone-device-card">
+              <div class="device-header">
+                <span class="device-model">${escapeHtml(n.name)}</span>
+                <span class="status-pill active">${n.status}</span>
+              </div>
+              <div class="device-meta-row">Card GPU: ${escapeHtml(n.gpu)}</div>
+              <div class="device-meta-row">Địa chỉ IP: ${n.ip}</div>
+              <div style="color: #10b981; font-weight: 700; font-size: 11px;">Tốc độ: ${n.renderSpeed}</div>
+            </div>
+          `).join('');
+        }
+      } catch (e) {}
+    }
+
+    const btnMegaDispatchRenderFarm = document.getElementById('btnMegaDispatchRenderFarm');
+    const megaBatchRenderCount = document.getElementById('megaBatchRenderCount');
+    const megaRenderStatusBox = document.getElementById('megaRenderStatusBox');
+
+    if (btnMegaDispatchRenderFarm) {
+      btnMegaDispatchRenderFarm.addEventListener('click', async () => {
+        const count = parseInt(megaBatchRenderCount.value) || 100;
+        try {
+          const res = await fetch('/api/enterprise/renderfarm/dispatch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ videoCount: count })
+          });
+          const data = await res.json();
+          if (data.ok && megaRenderStatusBox) {
+            megaRenderStatusBox.className = 'pub-status-box success';
+            megaRenderStatusBox.innerHTML = `⚡ ${escapeHtml(data.status)} (Thời gian ước tính: ${data.estimatedTimeMinutes} phút)`;
+            megaRenderStatusBox.classList.remove('hidden');
+          }
+        } catch (e) {
+          alert('Lỗi render farm: ' + e.message);
+        }
+      });
+    }
+
+    // 17. Bio Cloaker
+    async function loadBioCloakData() {
+      try {
+        const res = await fetch('/api/enterprise/biocloak/campaigns');
+        const data = await res.json();
+        const list = document.getElementById('megaBioCloakList');
+        if (data.ok && list) {
+          list.innerHTML = data.campaigns.map((b) => `
+            <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong style="color: #fff; font-size: 12px;">🔗 ${b.cleanDomain}</strong>
+                <span class="status-pill active">${b.status}</span>
+              </div>
+              <div style="font-size: 11px; color: var(--text-muted); margin: 4px 0;">Đích Shopee: ${b.destinationShopee}</div>
+              <div style="display: flex; gap: 12px; font-size: 10px; color: #10b981; font-weight: 700;">
+                <span>Lượt click: ${b.totalClicks.toLocaleString('vi-VN')}</span>
+                <span>Tỷ lệ mở app: ${b.clickThroughRate}</span>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (e) {}
+    }
+
     function initMegaSuiteData() {
       loadShieldsData();
       loadTrendAudioData();
       loadPhoneFarmData();
       loadCommentSeederData();
       loadAnalyticsData();
+      loadPropsData();
+      loadRenderFarmData();
+      loadBioCloakData();
+    }
+  }
+
+  /* ===================================================================
+     26. AI LIVESTREAM STUDIO 24/7 (VIRTUAL HOST CONTROL ROOM)
+     =================================================================== */
+  function setupLiveStudioModule() {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    const modalLiveStudio = document.getElementById('modalLiveStudio');
+    const btnOpenLiveStudio = document.getElementById('btnOpenLiveStudio');
+    const btnCloseLiveStudio = document.getElementById('btnCloseLiveStudio');
+    const btnCloseLiveStudioBottom = document.getElementById('btnCloseLiveStudioBottom');
+
+    // 3D Procedural Canvas Engine State
+    let engine3D = {
+      canvas: null,
+      ctx: null,
+      animationFrameId: null,
+      rotX: 15,
+      rotY: 45,
+      scale: 1.0,
+      isDragging: false,
+      lastMouseX: 0,
+      lastMouseY: 0,
+      autoRotate: true,
+      rotateSpeed: 0.8,
+      wireframe: false,
+      hologram: false,
+      activeModel: null,
+      activeStage: null
+    };
+
+    if (btnOpenLiveStudio) {
+      btnOpenLiveStudio.addEventListener('click', () => {
+        if (modalLiveStudio) {
+          modalLiveStudio.classList.add('open');
+          loadLiveStudioState();
+          load3DPlatformState();
+          init3DCanvasEngine();
+        }
+      });
+    }
+
+    if (btnCloseLiveStudio) {
+      btnCloseLiveStudio.addEventListener('click', () => {
+        if (modalLiveStudio) modalLiveStudio.classList.remove('open');
+        stop3DCanvasEngine();
+      });
+    }
+
+    if (btnCloseLiveStudioBottom) {
+      btnCloseLiveStudioBottom.addEventListener('click', () => {
+        if (modalLiveStudio) modalLiveStudio.classList.remove('open');
+        stop3DCanvasEngine();
+      });
+    }
+
+    // Viewport Mode Switcher: 2D Camera vs 3D Virtual Stage
+    const btnLiveMode2D = document.getElementById('btnLiveMode2D');
+    const btnLiveMode3D = document.getElementById('btnLiveMode3D');
+    const live2DHostBox = document.getElementById('live2DHostBox');
+    const live3DViewportWrap = document.getElementById('live3DViewportWrap');
+
+    if (btnLiveMode2D && btnLiveMode3D) {
+      btnLiveMode2D.addEventListener('click', () => {
+        btnLiveMode2D.classList.add('active');
+        btnLiveMode3D.classList.remove('active');
+        if (live2DHostBox) live2DHostBox.classList.remove('hidden');
+        if (live3DViewportWrap) live3DViewportWrap.classList.add('hidden');
+        stop3DCanvasEngine();
+      });
+
+      btnLiveMode3D.addEventListener('click', () => {
+        btnLiveMode3D.classList.add('active');
+        btnLiveMode2D.classList.remove('active');
+        if (live2DHostBox) live2DHostBox.classList.add('hidden');
+        if (live3DViewportWrap) live3DViewportWrap.classList.remove('hidden');
+        init3DCanvasEngine();
+      });
+    }
+
+    // 3D Tabs Switcher
+    const suiteTabs = [
+      { btn: 'tabBtn3DStage', pane: 'tabPane3DStage' },
+      { btn: 'tabBtn3DModels', pane: 'tabPane3DModels' },
+      { btn: 'tabBtn3DGen', pane: 'tabPane3DGen' },
+      { btn: 'tabBtn3DCad', pane: 'tabPane3DCad' }
+    ];
+
+    suiteTabs.forEach(t => {
+      const btnEl = document.getElementById(t.btn);
+      if (btnEl) {
+        btnEl.addEventListener('click', () => {
+          suiteTabs.forEach(item => {
+            const b = document.getElementById(item.btn);
+            const p = document.getElementById(item.pane);
+            if (b) b.classList.remove('active');
+            if (p) p.classList.remove('active');
+          });
+          btnEl.classList.add('active');
+          const activePane = document.getElementById(t.pane);
+          if (activePane) activePane.classList.add('active');
+        });
+      }
+    });
+
+    // 3D HUD Controls on Viewport
+    const btn3DAutoRotate = document.getElementById('btn3DAutoRotate');
+    if (btn3DAutoRotate) {
+      btn3DAutoRotate.addEventListener('click', () => {
+        engine3D.autoRotate = !engine3D.autoRotate;
+        btn3DAutoRotate.classList.toggle('active', engine3D.autoRotate);
+      });
+    }
+
+    const btn3DWireframe = document.getElementById('btn3DWireframe');
+    if (btn3DWireframe) {
+      btn3DWireframe.addEventListener('click', () => {
+        engine3D.wireframe = !engine3D.wireframe;
+        btn3DWireframe.classList.toggle('active', engine3D.wireframe);
+      });
+    }
+
+    const btn3DResetCam = document.getElementById('btn3DResetCam');
+    if (btn3DResetCam) {
+      btn3DResetCam.addEventListener('click', () => {
+        engine3D.rotX = 15;
+        engine3D.rotY = 45;
+        engine3D.scale = 1.0;
+      });
+    }
+
+    const btn3DHologram = document.getElementById('btn3DHologram');
+    if (btn3DHologram) {
+      btn3DHologram.addEventListener('click', () => {
+        engine3D.hologram = !engine3D.hologram;
+        btn3DHologram.classList.toggle('active', engine3D.hologram);
+      });
+    }
+
+    /* ------------------------------------------------------------------
+       PROCEDURAL 3D WEBGL/CANVAS ENGINE (CloudAI-X/threejs-skills)
+       Renders 3D object with lighting, perspective, turntable and reflections
+       ------------------------------------------------------------------ */
+    function init3DCanvasEngine() {
+      engine3D.canvas = document.getElementById('live3DCanvas');
+      if (!engine3D.canvas) return;
+      engine3D.ctx = engine3D.canvas.getContext('2d');
+
+      // Mouse drag rotation
+      engine3D.canvas.onmousedown = (e) => {
+        engine3D.isDragging = true;
+        engine3D.lastMouseX = e.clientX;
+        engine3D.lastMouseY = e.clientY;
+      };
+
+      window.addEventListener('mouseup', () => {
+        engine3D.isDragging = false;
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!engine3D.isDragging) return;
+        const dx = e.clientX - engine3D.lastMouseX;
+        const dy = e.clientY - engine3D.lastMouseY;
+        engine3D.rotY += dx * 0.7;
+        engine3D.rotX = Math.max(-60, Math.min(60, engine3D.rotX + dy * 0.7));
+        engine3D.lastMouseX = e.clientX;
+        engine3D.lastMouseY = e.clientY;
+      });
+
+      if (!engine3D.animationFrameId) {
+        render3DLoop();
+      }
+    }
+
+    function stop3DCanvasEngine() {
+      if (engine3D.animationFrameId) {
+        cancelAnimationFrame(engine3D.animationFrameId);
+        engine3D.animationFrameId = null;
+      }
+    }
+
+    function render3DLoop() {
+      if (engine3D.autoRotate) {
+        engine3D.rotY = (engine3D.rotY + engine3D.rotateSpeed) % 360;
+      }
+
+      draw3DScene();
+      engine3D.animationFrameId = requestAnimationFrame(render3DLoop);
+    }
+
+    function draw3DScene() {
+      const ctx = engine3D.ctx;
+      const canvas = engine3D.canvas;
+      if (!ctx || !canvas) return;
+
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const stage = engine3D.activeStage || {
+        lighting: {
+          keyLight: { color: '#00f3ff' },
+          fillLight: { color: '#ff007f' },
+          ambientColor: '#0a0d1a'
+        }
+      };
+
+      const keyCol = stage.lighting.keyLight.color || '#00f3ff';
+      const fillCol = stage.lighting.fillLight.color || '#ff007f';
+
+      // 1. Background studio lighting gradient
+      const bgGrad = ctx.createRadialGradient(w / 2, h * 0.45, 20, w / 2, h * 0.5, w * 0.8);
+      bgGrad.addColorStop(0, '#161c2e');
+      bgGrad.addColorStop(0.5, '#0b0f19');
+      bgGrad.addColorStop(1, '#05070d');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, w, h);
+
+      // 2. Stage floor reflection grid
+      ctx.save();
+      ctx.strokeStyle = 'rgba(6, 182, 212, 0.15)';
+      ctx.lineWidth = 1;
+      const floorY = h * 0.72;
+      for (let i = -6; i <= 6; i++) {
+        ctx.beginPath();
+        ctx.moveTo(w / 2 + i * 16, floorY);
+        ctx.lineTo(w / 2 + i * 55, h);
+        ctx.stroke();
+      }
+      for (let j = 0; j < 5; j++) {
+        const py = floorY + (j / 4) * (h - floorY);
+        ctx.beginPath();
+        ctx.moveTo(w * 0.1, py);
+        ctx.lineTo(w * 0.9, py);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // 3. Render 3D Geometry (Sneaker / Cube with PBR shader simulation)
+      ctx.save();
+      ctx.translate(w / 2, h * 0.52);
+
+      const radX = (engine3D.rotX * Math.PI) / 180;
+      const radY = (engine3D.rotY * Math.PI) / 180;
+
+      // Draw Turntable Base Disc in 3D
+      ctx.save();
+      ctx.scale(1, 0.35);
+      ctx.beginPath();
+      ctx.arc(0, 220, 110, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(6, 182, 212, 0.1)';
+      ctx.fill();
+      ctx.strokeStyle = keyCol;
+      ctx.lineWidth = 2;
+      ctx.shadowColor = keyCol;
+      ctx.shadowBlur = 15;
+      ctx.stroke();
+      ctx.restore();
+
+      // 3D Polyhedron / Product Mesh (Procedural PBR Box & Silhouette)
+      const size = 68 * engine3D.scale;
+      const vertices = [
+        [-1.2, -0.7, -0.7],
+        [1.2, -0.7, -0.7],
+        [1.2, 0.7, -0.7],
+        [-1.2, 0.7, -0.7],
+        [-1.2, -0.7, 0.7],
+        [1.2, -0.7, 0.7],
+        [1.2, 0.7, 0.7],
+        [-1.2, 0.7, 0.7],
+        // Sole accent points
+        [0.8, -0.9, 0],
+        [-0.8, -0.9, 0]
+      ];
+
+      // Rotate points in 3D space (Euler Y then X)
+      const projected = vertices.map(([x, y, z]) => {
+        // Rot Y
+        const cosY = Math.cos(radY);
+        const sinY = Math.sin(radY);
+        const x1 = x * cosY - z * sinY;
+        const z1 = x * sinY + z * cosY;
+
+        // Rot X
+        const cosX = Math.cos(radX);
+        const sinX = Math.sin(radX);
+        const y2 = y * cosX - z1 * sinX;
+        const z2 = y * sinX + z1 * cosX;
+
+        // Perspective projection
+        const fov = 350;
+        const pz = fov / (fov + z2 * size * 1.5);
+        return {
+          px: x1 * size * pz,
+          py: y2 * size * pz,
+          z: z2,
+          pz
+        };
+      });
+
+      // Faces definition: [v1, v2, v3, v4, baseColor]
+      const faces = [
+        [0, 1, 2, 3, keyCol], // back
+        [4, 5, 6, 7, fillCol], // front
+        [0, 1, 5, 4, '#38bdf8'], // bottom / sole
+        [2, 3, 7, 6, '#f8fafc'], // top
+        [0, 3, 7, 4, '#818cf8'], // left
+        [1, 2, 6, 5, '#c084fc']  // right
+      ];
+
+      // Sort faces by depth (Painter's algorithm)
+      faces.sort((a, b) => {
+        const zA = (projected[a[0]].z + projected[a[1]].z + projected[a[2]].z + projected[a[3]].z) / 4;
+        const zB = (projected[b[0]].z + projected[b[1]].z + projected[b[2]].z + projected[b[3]].z) / 4;
+        return zA - zB;
+      });
+
+      faces.forEach(([i1, i2, i3, i4, col]) => {
+        ctx.beginPath();
+        ctx.moveTo(projected[i1].px, projected[i1].py);
+        ctx.lineTo(projected[i2].px, projected[i2].py);
+        ctx.lineTo(projected[i3].px, projected[i3].py);
+        ctx.lineTo(projected[i4].px, projected[i4].py);
+        ctx.closePath();
+
+        if (engine3D.wireframe) {
+          ctx.strokeStyle = engine3D.hologram ? '#00f3ff' : '#38bdf8';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        } else {
+          // PBR Shaded fill with gradient
+          const grad = ctx.createLinearGradient(
+            projected[i1].px, projected[i1].py,
+            projected[i3].px, projected[i3].py
+          );
+          if (engine3D.hologram) {
+            grad.addColorStop(0, 'rgba(0, 243, 255, 0.45)');
+            grad.addColorStop(1, 'rgba(255, 0, 127, 0.2)');
+          } else {
+            grad.addColorStop(0, col);
+            grad.addColorStop(1, '#0f172a');
+          }
+          ctx.fillStyle = grad;
+          ctx.fill();
+
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      });
+
+      // Product Logo / Glow on side
+      if (!engine3D.wireframe) {
+        ctx.save();
+        ctx.fillStyle = '#facc15';
+        ctx.font = 'bold 9px JetBrains Mono, monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('3D PBR ACTIVE', 0, 8);
+        ctx.restore();
+      }
+
+      ctx.restore();
+    }
+
+    /* ------------------------------------------------------------------
+       3D PLATFORM API INTEGRATION (Skill-3D, Dream-Loop, Meshy, CadQuery)
+       ------------------------------------------------------------------ */
+    async function load3DPlatformState() {
+      try {
+        const res = await fetch('/api/enterprise/live/3d/state');
+        const data = await res.json();
+        if (data.ok) {
+          engine3D.activeStage = data.activeStage;
+          engine3D.activeModel = data.activeModel;
+
+          render3DStages(data.stages, data.activeStageId);
+          render3DModels(data.models, data.activeModelId);
+          updateDreamLoopHUD(data.dreamLoopCritic);
+          updateSpatialTag(data.activeModel);
+        }
+      } catch (e) {
+        console.error('Lỗi tải 3D Platform State:', e);
+      }
+    }
+
+    function render3DStages(stages, activeStageId) {
+      const container = document.getElementById('stagesSelectorGrid');
+      if (!container) return;
+
+      container.innerHTML = stages.map(s => `
+        <div class="stage-card ${s.id === activeStageId ? 'active' : ''}" onclick="selectLive3DStage('${s.id}')">
+          <div class="stage-card-name">${escapeHtml(s.name)}</div>
+          <div class="stage-card-desc">${escapeHtml(s.description)}</div>
+          <div class="stage-light-preview">
+            <span class="light-dot" style="background:${s.lighting.keyLight.color};" title="Key Light"></span>
+            <span class="light-dot" style="background:${s.lighting.fillLight.color};" title="Fill Light"></span>
+            <span class="light-dot" style="background:${s.lighting.rimLight.color};" title="Rim Light"></span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function render3DModels(models, activeModelId) {
+      const container = document.getElementById('models3DGrid');
+      if (!container) return;
+
+      container.innerHTML = models.map(m => `
+        <div class="model-3d-card ${m.id === activeModelId ? 'active' : ''}" onclick="selectLive3DModel('${m.id}')">
+          <img src="${m.thumbnail}" class="model-3d-thumb" alt="${escapeHtml(m.title)}">
+          <div class="model-3d-meta">
+            <div class="model-3d-title">${escapeHtml(m.title)}</div>
+            <div class="model-3d-specs">Vertices: ${m.vertices.toLocaleString()} | Faces: ${m.faces.toLocaleString()}</div>
+            <div class="model-3d-price">${m.price}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateDreamLoopHUD(critic) {
+      const scoreVal = document.getElementById('dreamLoopScoreVal');
+      const feedbackText = document.getElementById('dreamLoopFeedbackText');
+      if (scoreVal && critic) scoreVal.textContent = critic.lastScore + ' / 100';
+      if (feedbackText && critic) feedbackText.textContent = critic.criticFeedback;
+    }
+
+    function updateSpatialTag(model) {
+      const spatialText = document.getElementById('live3DSpatialText');
+      if (spatialText && model) {
+        let anchorName = 'Bục Xoay 360°';
+        if (model.spatialAnchor === 'hand_left') anchorName = 'Tay Trái MC Ảo';
+        if (model.spatialAnchor === 'hand_right') anchorName = 'Tay Phải MC Ảo';
+        if (model.spatialAnchor === 'floating_hologram') anchorName = 'Hologram Lơ Lửng';
+        spatialText.textContent = `🎯 Skill-3D: Neo tại ${anchorName} | ${model.format}`;
+      }
+    }
+
+    window.selectLive3DStage = async (stageId) => {
+      try {
+        const res = await fetch('/api/enterprise/live/3d/select-stage', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stageId })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          engine3D.activeStage = data.activeStage;
+          load3DPlatformState();
+        }
+      } catch (e) {}
+    };
+
+    window.selectLive3DModel = async (modelId) => {
+      try {
+        const res = await fetch('/api/enterprise/live/3d/select-model', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ modelId })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          engine3D.activeModel = data.activeModel;
+          const pinnedImg = document.getElementById('livePinnedImg');
+          const pinnedTitle = document.getElementById('livePinnedTitle');
+          const pinnedPrice = document.getElementById('livePinnedPrice');
+          if (pinnedImg) pinnedImg.src = data.activeModel.thumbnail;
+          if (pinnedTitle) pinnedTitle.textContent = data.activeModel.title;
+          if (pinnedPrice) pinnedPrice.textContent = data.activeModel.price;
+          load3DPlatformState();
+        }
+      } catch (e) {}
+    };
+
+    // Run Dream-Loop Critic AI
+    const btnRunDreamLoopCritic = document.getElementById('btnRunDreamLoopCritic');
+    if (btnRunDreamLoopCritic) {
+      btnRunDreamLoopCritic.addEventListener('click', async () => {
+        btnRunDreamLoopCritic.disabled = true;
+        btnRunDreamLoopCritic.textContent = '⏳ Critic Subagent Đang Phân Tích Khung Hình 3D...';
+        try {
+          const res = await fetch('/api/enterprise/live/3d/dream-loop', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          const data = await res.json();
+          if (data.ok) {
+            updateDreamLoopHUD({ lastScore: data.score, criticFeedback: data.feedback });
+            if (data.updatedLighting && engine3D.activeStage) {
+              engine3D.activeStage.lighting = data.updatedLighting;
+            }
+            alert(`✨ achimala/dream-loop Đã Hoàn Tất!\nĐiểm Thẩm Mỹ Mới: ${data.score}/100\n${data.feedback}`);
+          }
+        } catch (e) {
+          alert('Lỗi Dream-Loop: ' + e.message);
+        } finally {
+          btnRunDreamLoopCritic.disabled = false;
+          btnRunDreamLoopCritic.textContent = '⚡ Kích Hoạt Dream-Loop Cân Chỉnh Ánh Sáng Tự Động';
+        }
+      });
+    }
+
+    // Skill-3D Spatial Actions
+    const btnSpatialHandHold = document.getElementById('btnSpatialHandHold');
+    const btnSpatialTurntable = document.getElementById('btnSpatialTurntable');
+    const btnSpatialHologram = document.getElementById('btnSpatialHologram');
+
+    if (btnSpatialHandHold) {
+      btnSpatialHandHold.addEventListener('click', async () => {
+        execute3DSpatialAction('HOLD_IN_HAND', 'hand_right');
+        btnSpatialHandHold.classList.add('active');
+        if (btnSpatialTurntable) btnSpatialTurntable.classList.remove('active');
+        if (btnSpatialHologram) btnSpatialHologram.classList.remove('active');
+      });
+    }
+
+    if (btnSpatialTurntable) {
+      btnSpatialTurntable.addEventListener('click', async () => {
+        execute3DSpatialAction('ROTATE_360_TURNTABLE', 'turntable');
+        btnSpatialTurntable.classList.add('active');
+        if (btnSpatialHandHold) btnSpatialHandHold.classList.remove('active');
+        if (btnSpatialHologram) btnSpatialHologram.classList.remove('active');
+      });
+    }
+
+    if (btnSpatialHologram) {
+      btnSpatialHologram.addEventListener('click', async () => {
+        execute3DSpatialAction('PROJECT_HOLOGRAM', 'floating_hologram');
+        btnSpatialHologram.classList.add('active');
+        if (btnSpatialHandHold) btnSpatialHandHold.classList.remove('active');
+        if (btnSpatialTurntable) btnSpatialTurntable.classList.remove('active');
+      });
+    }
+
+    async function execute3DSpatialAction(actionType, targetAnchor) {
+      try {
+        const res = await fetch('/api/enterprise/live/3d/action', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ actionType, targetAnchor })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          updateSpatialTag(data.model);
+          const speechRibbon = document.getElementById('liveSpeechSub');
+          if (speechRibbon) speechRibbon.textContent = `💬 MC: "${data.description}"`;
+        }
+      } catch (e) {}
+    }
+
+    // AI 3D Generator (Meshy / Trellis / Tripo)
+    const btnSubmitGenerate3D = document.getElementById('btnSubmitGenerate3D');
+    const input3DPrompt = document.getElementById('input3DPrompt');
+    const input3DImageUrl = document.getElementById('input3DImageUrl');
+    const select3DBackend = document.getElementById('select3DBackend');
+    const select3DCategory = document.getElementById('select3DCategory');
+    const ai3DGenStatusBox = document.getElementById('ai3DGenStatusBox');
+
+    if (btnSubmitGenerate3D) {
+      btnSubmitGenerate3D.addEventListener('click', async () => {
+        const prompt = input3DPrompt ? input3DPrompt.value.trim() : '';
+        const imageUrl = input3DImageUrl ? input3DImageUrl.value.trim() : '';
+        const backend = select3DBackend ? select3DBackend.value : 'meshy_v2';
+        const category = select3DCategory ? select3DCategory.value : 'Thời trang & Giày dép';
+
+        if (!prompt && !imageUrl) {
+          alert('Vui lòng nhập mô tả Text hoặc dán link ảnh 2D sản phẩm!');
+          return;
+        }
+
+        btnSubmitGenerate3D.disabled = true;
+        btnSubmitGenerate3D.textContent = '⏳ Đang Tái Tạo Hình Học 3D Mesh...';
+        if (ai3DGenStatusBox) {
+          ai3DGenStatusBox.classList.remove('hidden');
+          ai3DGenStatusBox.textContent = `Khởi chạy pipeline ${backend}... Decimating retopology đa giác & Bake textures PBR 4K...`;
+        }
+
+        try {
+          const res = await fetch('/api/enterprise/live/3d/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt, imageUrl, backend, category })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            if (ai3DGenStatusBox) {
+              ai3DGenStatusBox.textContent = `✅ ${data.message} Lưới đa giác: ${data.model.vertices.toLocaleString()} vertices. Thời gian: ${data.generationTimeSec}s. Đã đưa lên bục xoay livestream!`;
+            }
+            load3DPlatformState();
+          }
+        } catch (e) {
+          alert('Lỗi tạo 3D: ' + e.message);
+        } finally {
+          btnSubmitGenerate3D.disabled = false;
+          btnSubmitGenerate3D.textContent = '🚀 Tạo Mô Hình 3D Ngay';
+        }
+      });
+    }
+
+    // CadQuery Parametric Customizer
+    const btnSubmitCadCustomize = document.getElementById('btnSubmitCadCustomize');
+    const cadCustomEngraving = document.getElementById('cadCustomEngraving');
+    const cadColorway = document.getElementById('cadColorway');
+    const cadStatusBox = document.getElementById('cadStatusBox');
+
+    if (btnSubmitCadCustomize) {
+      btnSubmitCadCustomize.addEventListener('click', async () => {
+        const customEngraving = cadCustomEngraving ? cadCustomEngraving.value.trim() : 'ANTIGRAVITY';
+        const colorway = cadColorway ? cadColorway.value.trim() : 'Neon Orange';
+
+        try {
+          const res = await fetch('/api/enterprise/live/3d/cad-customize', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              modelId: engine3D.activeModel ? engine3D.activeModel.id : 'model_cyber_sneaker',
+              params: { customEngraving, colorway }
+            })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            if (cadStatusBox) {
+              cadStatusBox.classList.remove('hidden');
+              cadStatusBox.textContent = `✅ ${data.message} (${data.exportStatus.sliceLayers} lớp cắt lát, ~${data.exportStatus.estimatedPrintTimeMinutes} phút in qua Moonraker).`;
+            }
+          }
+        } catch (e) {
+          alert('Lỗi CadQuery: ' + e.message);
+        }
+      });
+    }
+
+    /* ------------------------------------------------------------------
+       ORIGINAL 2D LIVE STUDIO HOST & COMMENTS MANAGEMENT
+       ------------------------------------------------------------------ */
+    async function loadLiveStudioState() {
+      try {
+        const res = await fetch('/api/enterprise/live/state');
+        const data = await res.json();
+        if (data.ok) {
+          renderHosts(data.hosts, data.session.activeHostId);
+          renderCatalog(data.catalog, data.session.activeProductId);
+          renderComments(data.recentComments);
+          updateSessionOverlay(data.session);
+        }
+      } catch (e) {}
+    }
+
+    function renderHosts(hosts, activeId) {
+      const container = document.getElementById('liveHostsSelector');
+      if (!container) return;
+      container.innerHTML = hosts.map((h) => `
+        <div class="live-host-card ${h.id === activeId ? 'active' : ''}" onclick="selectLiveHost('${h.id}')">
+          <img src="${h.avatarUrl}" class="live-host-mini-thumb" alt="${h.name}">
+          <div>
+            <div class="live-host-card-title">${escapeHtml(h.name.split('(')[0])}</div>
+            <div class="live-host-card-sub">${escapeHtml(h.specialty)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderCatalog(catalog, activeProdId) {
+      const container = document.getElementById('liveCatalogMini');
+      if (!container) return;
+      container.innerHTML = catalog.map((p) => `
+        <div class="live-prod-item ${p.id === activeProdId ? 'pinned' : ''}">
+          <div class="live-prod-title">${escapeHtml(p.title)}</div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="live-prod-price">${p.flashSalePrice}</span>
+            <button class="studio-btn ${p.id === activeProdId ? 'success-btn' : 'secondary-btn'} sm-btn" onclick="pinLiveProduct('${p.id}')">
+              ${p.id === activeProdId ? '📌 Đang Ghim' : 'Ghim Lên Live'}
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderComments(comments) {
+      const box = document.getElementById('liveCommentsBox');
+      if (!box) return;
+      box.innerHTML = comments.map((c) => `
+        <div class="live-chat-line">
+          <span class="live-chat-user">${escapeHtml(c.user)}:</span>
+          <span class="live-chat-msg">${escapeHtml(c.text)}</span>
+          <div class="live-chat-reply">🤖 MC: "${escapeHtml(c.reply)}"</div>
+        </div>
+      `).join('');
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function updateSessionOverlay(session) {
+      const statusPill = document.getElementById('liveStatusPill');
+      const btnToggle = document.getElementById('btnToggleBroadcast');
+      const gmvVal = document.getElementById('liveGmvVal');
+      const viewers = document.getElementById('liveViewerCount');
+      const likes = document.getElementById('liveLikesCount');
+
+      if (gmvVal) gmvVal.textContent = session.revenueGmv.toLocaleString('vi-VN') + ' ₫';
+      if (viewers) viewers.textContent = session.viewerCount.toLocaleString('vi-VN');
+      if (likes) likes.textContent = (session.likesCount / 1000).toFixed(1) + 'K';
+
+      if (session.isLive) {
+        if (statusPill) {
+          statusPill.textContent = '🔴 ĐANG PHÁT SÓNG TRỰC TIẾP';
+          statusPill.className = 'live-on-air-tag live-active';
+        }
+        if (btnToggle) {
+          btnToggle.textContent = '⏹ DỪNG PHÁT SÓNG TRỰC TIẾP';
+          btnToggle.className = 'studio-btn secondary-btn';
+        }
+      } else {
+        if (statusPill) {
+          statusPill.textContent = '⚪ CHẾ ĐỘ CHỜ';
+          statusPill.className = 'live-on-air-tag';
+        }
+        if (btnToggle) {
+          btnToggle.textContent = '🚀 BẮT ĐẦU PHÁT SÓNG TRỰC TIẾP';
+          btnToggle.className = 'studio-btn success-btn';
+        }
+      }
+    }
+
+    window.selectLiveHost = async (hostId) => {
+      try {
+        const res = await fetch('/api/enterprise/live/select-host', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ hostId })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          const img = document.getElementById('liveHostAvatarImg');
+          if (img) img.src = data.activeHost.avatarUrl;
+          loadLiveStudioState();
+        }
+      } catch (e) {}
+    };
+
+    window.pinLiveProduct = async (prodId) => {
+      try {
+        const res = await fetch('/api/enterprise/live/pin-product', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prodId })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          const p = data.pinnedProduct;
+          const img = document.getElementById('livePinnedImg');
+          const title = document.getElementById('livePinnedTitle');
+          const price = document.getElementById('livePinnedPrice');
+          const orig = document.getElementById('livePinnedOrig');
+          if (img) img.src = p.img;
+          if (title) title.textContent = p.title;
+          if (price) price.textContent = p.flashSalePrice;
+          if (orig) orig.textContent = p.originalPrice;
+          loadLiveStudioState();
+        }
+      } catch (e) {}
+    };
+
+    // Send comment
+    const btnLiveSendComment = document.getElementById('btnLiveSendComment');
+    const liveSimulateCommentInput = document.getElementById('liveSimulateCommentInput');
+    if (btnLiveSendComment) {
+      btnLiveSendComment.addEventListener('click', async () => {
+        const text = liveSimulateCommentInput.value.trim() || 'Mẫu áo này có size L không shop?';
+        try {
+          const res = await fetch('/api/enterprise/live/comment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user: '@khach_xem_live', text })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            liveSimulateCommentInput.value = '';
+            const speechRibbon = document.getElementById('liveSpeechSub');
+            if (speechRibbon) speechRibbon.textContent = `💬 MC: "${data.spokenSpeech}"`;
+            loadLiveStudioState();
+          }
+        } catch (e) {
+          console.error('Lỗi live chat:', e);
+        }
+      });
+    }
+
+    // Toggle broadcast
+    const btnToggleBroadcast = document.getElementById('btnToggleBroadcast');
+    if (btnToggleBroadcast) {
+      btnToggleBroadcast.addEventListener('click', async () => {
+        const isCurrentlyLive = btnToggleBroadcast.textContent.includes('DỪNG');
+        try {
+          const res = await fetch('/api/enterprise/live/toggle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ start: !isCurrentlyLive, platform: 'tiktok_live' })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            updateSessionOverlay(data.session);
+            const speechRibbon = document.getElementById('liveSpeechSub');
+            if (speechRibbon) {
+              speechRibbon.textContent = data.session.isLive 
+                ? '🔴 Buồng phát sóng 3D Virtual Host đã ON AIR trực tiếp lên TikTok Live Studio!' 
+                : '⚪ Đã tạm dừng phát sóng trực tiếp.';
+            }
+          }
+        } catch (e) {
+          console.error('Lỗi phát sóng:', e);
+        }
+      });
     }
   }
 

@@ -118,6 +118,12 @@
           <span class="badge-pill pulse">PRO MAX</span>
         </button>
 
+        <!-- Live Studio 24/7 Button -->
+        <button class="studio-btn live-studio-btn pulse-glow" id="btnOpenLiveStudio" title="Phòng Điều Khiển Livestream Bán Hàng Nhân Vật Ảo 24/7">
+          <span class="live-dot pulse"></span>
+          <span>🔴 AI Live Studio 24/7</span>
+        </button>
+
         <div class="tool-divider"></div>
 
         <!-- User Profile Pill & Dropdown -->
@@ -1979,6 +1985,55 @@
                 <span class="mega-tab-sub">Báo cáo GMV & ROI kênh</span>
               </div>
             </button>
+            <button class="mega-nav-tab" data-target="megaTabGlobalize">
+              <span class="mega-tab-icon">🌐</span>
+              <div class="mega-tab-meta">
+                <span class="mega-tab-title">11. Video Globalization</span>
+                <span class="mega-tab-sub">Dịch 20 thứ tiếng (USD Beta)</span>
+              </div>
+            </button>
+            <button class="mega-nav-tab" data-target="megaTabStem">
+              <span class="mega-tab-icon">🎛️</span>
+              <div class="mega-tab-meta">
+                <span class="mega-tab-title">12. Cứu Video Tắt Tiếng</span>
+                <span class="mega-tab-sub">Tách Vocal & Đổi BGM sạch</span>
+              </div>
+            </button>
+            <button class="mega-nav-tab" data-target="megaTabRetention">
+              <span class="mega-tab-icon">📈</span>
+              <div class="mega-tab-meta">
+                <span class="mega-tab-title">13. Soi Điểm Giữ Chân 3s</span>
+                <span class="mega-tab-sub">Retention Drop-off Heatmap</span>
+              </div>
+            </button>
+            <button class="mega-nav-tab" data-target="megaTabThumbnail">
+              <span class="mega-tab-icon">🤩</span>
+              <div class="mega-tab-meta">
+                <span class="mega-tab-title">14. Thumbnail MrBeast</span>
+                <span class="mega-tab-sub">Phóng đại biểu cảm (CTR 3x)</span>
+              </div>
+            </button>
+            <button class="mega-nav-tab" data-target="megaTabProduct3D">
+              <span class="mega-tab-icon">🥤</span>
+              <div class="mega-tab-meta">
+                <span class="mega-tab-title">15. Vật Thể Tài Trợ 3D</span>
+                <span class="mega-tab-sub">Ghép sản phẩm vào video</span>
+              </div>
+            </button>
+            <button class="mega-nav-tab" data-target="megaTabRenderFarm">
+              <span class="mega-tab-icon">⚡</span>
+              <div class="mega-tab-meta">
+                <span class="mega-tab-title">16. Render Farm Phân Tán</span>
+                <span class="mega-tab-sub">Xuất 1000 video / 4 phút</span>
+              </div>
+            </button>
+            <button class="mega-nav-tab" data-target="megaTabBioCloak">
+              <span class="mega-tab-icon">🛡️</span>
+              <div class="mega-tab-meta">
+                <span class="mega-tab-title">17. Bio Link Cloaker</span>
+                <span class="mega-tab-sub">Bọc link Shopee chống quét</span>
+              </div>
+            </button>
           </div>
 
           <!-- Right Content Panels -->
@@ -2266,12 +2321,450 @@
               </div>
             </div>
 
+            <!-- PANEL 11: Video Globalization -->
+            <div class="mega-panel" id="megaTabGlobalize">
+              <div class="mega-panel-header">
+                <h4>🌐 AI Video Globalization (Quốc Tế Hóa Đa Ngôn Ngữ)</h4>
+                <span class="status-pill active">Quỹ USD Creator Beta</span>
+              </div>
+              <p class="panel-desc">Tự động dịch kịch bản, lồng tiếng người bản xứ và đồng bộ khẩu hình môi sang 20 quốc gia để kiếm tiền RPM cao gấp 20 lần Việt Nam ($1.25 / 1k views).</p>
+
+              <div class="mega-grid-2">
+                <div class="mega-card">
+                  <h5>Chọn Thị Trường Quốc Tế:</h5>
+                  <div class="form-row">
+                    <select id="megaSelectGlobalLang" class="studio-select">
+                      <option value="en-US">🇺🇸 Tiếng Anh (Mỹ - US) - RPM: $1.25 / 1k views</option>
+                      <option value="en-GB">🇬🇧 Tiếng Anh (Anh Quốc - UK) - RPM: $1.10 / 1k views</option>
+                      <option value="es-ES">🇪🇸 Tiếng Tây Ban Nha (LatAm & Spain) - RPM: $0.85 / 1k views</option>
+                      <option value="th-TH">🇹🇭 Tiếng Thái Lan (Bangkok) - RPM: $0.45 / 1k views</option>
+                      <option value="id-ID">🇮🇩 Tiếng Indonesia (Jakarta) - RPM: $0.40 / 1k views</option>
+                      <option value="ja-JP">🇯🇵 Tiếng Nhật Bản (Tokyo) - RPM: $1.40 / 1k views</option>
+                    </select>
+                  </div>
+                  <button class="studio-btn primary-btn full-btn" id="btnMegaRunGlobalize" style="margin-top: 10px;">
+                    <span>⚡ Bắt Đầu Quốc Tế Hóa Video</span>
+                  </button>
+                </div>
+
+                <div class="mega-card" id="megaGlobalizePreviewCard">
+                  <h5>Bản Dịch Bản Địa Hóa:</h5>
+                  <div id="megaGlobalizeOutput" style="font-size: 11px; color: var(--text-secondary); line-height: 1.5; min-height: 80px;">
+                    Nhấn nút bắt đầu để xem bản dịch và ước tính doanh thu USD theo lượt xem...
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PANEL 12: Stem Separator & Audio Restorer -->
+            <div class="mega-panel" id="megaTabStem">
+              <div class="mega-panel-header">
+                <h4>🎛️ AI Stem Separator & Cứu Video Bị Tắt Tiếng Bản Quyền</h4>
+                <span class="status-pill active">Demucs v4 Neural</span>
+              </div>
+              <p class="panel-desc">Bóc tách riêng giọng nói (Vocal) và nhạc nền (BGM). Giữ nguyên giọng đọc gốc và thay thế bài nhạc dính gậy bản quyền bằng nhạc sạch miễn phí 100%.</p>
+
+              <div class="mega-grid-2">
+                <div class="mega-card">
+                  <h5>1. Tách Stems & Phân Tích:</h5>
+                  <button class="studio-btn secondary-btn full-btn" id="btnMegaSeparateStems">
+                    <span>🎛️ Bóc Tách Vocal & Nhạc Nền</span>
+                  </button>
+                  <div id="megaStemStatus" style="font-size: 11px; color: #10b981; margin-top: 8px;"></div>
+                </div>
+
+                <div class="mega-card">
+                  <h5>2. Chọn Nhạc Nền Thay Thế An Toàn:</h5>
+                  <select id="megaSelectSafeBgm" class="studio-select" style="margin-bottom: 10px;">
+                    <option value="bgm_safe_chill_lofi">☕ Sunset Coffee Lofi (100% No-Copyright)</option>
+                    <option value="bgm_safe_energetic_pop">⚡ Upbeat Tech Vlog Energy (Royalty-Free)</option>
+                    <option value="bgm_safe_dramatic_story">🎬 Dark Mystery Cinematic Pulse (Open Sound)</option>
+                  </select>
+                  <button class="studio-btn primary-btn full-btn" id="btnMegaReplaceBgm">
+                    <span>🎉 Cứu Video & Thay Nhạc Nền Ngay</span>
+                  </button>
+                </div>
+              </div>
+              <div id="megaStemAlertBox" class="pub-status-box hidden" style="margin-top: 12px;"></div>
+            </div>
+
+            <!-- PANEL 13: Viral Retention Predictor -->
+            <div class="mega-panel" id="megaTabRetention">
+              <div class="mega-panel-header">
+                <h4>📈 AI Viral Retention Predictor & Hook Drop-Off Heatmap</h4>
+                <span class="status-pill active">Soi Tỷ Lệ Giữ Chân</span>
+              </div>
+              <p class="panel-desc">Chấm điểm Hook 3 giây đầu, phân tích tốc độ nói (WPM) và vẽ biểu đồ dự đoán tỷ lệ khán giả thoát video để tối ưu trước khi bấm đăng.</p>
+
+              <button class="studio-btn primary-btn full-btn" id="btnMegaAnalyzeRetention">
+                <span>🔍 Phân Tích Điểm Giữ Chân Của Video Này</span>
+              </button>
+
+              <div id="megaRetentionResults" class="hidden" style="margin-top: 14px;">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+            <!-- PANEL 14: Clickbait Thumbnail MrBeast -->
+            <div class="mega-panel" id="megaTabThumbnail">
+              <div class="mega-panel-header">
+                <h4>🤩 AI Clickbait Thumbnail Generator (Chuẩn Phong Cách MrBeast)</h4>
+                <span class="status-pill active">CTR Tăng Gấp 3</span>
+              </div>
+              <p class="panel-desc">Tự động bắt nét biểu cảm khuôn mặt đắt giá nhất, phóng đại mắt và khẩu hình há hốc mồm kinh ngạc, viền vàng rực rỡ và sticker tò mò.</p>
+
+              <button class="studio-btn primary-btn full-btn" id="btnMegaGenerateThumbnails">
+                <span>⚡ Tạo 3 Mẫu Thumbnail Clickbait Tỷ Lệ Click Cao Nhất</span>
+              </button>
+
+              <div id="megaThumbnailsGrid" class="mega-grid-2" style="grid-template-columns: repeat(3, 1fr); margin-top: 14px;">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+            <!-- PANEL 15: 3D Virtual Sponsor Prop -->
+            <div class="mega-panel" id="megaTabProduct3D">
+              <div class="mega-panel-header">
+                <h4>🥤 3D Virtual Sponsor Product Inserter (Chèn Sản Phẩm Tài Trợ Ảo)</h4>
+                <span class="status-pill active">Ray-Traced Blending</span>
+              </div>
+              <p class="panel-desc">Tự động nhận diện mặt bàn hoặc kệ phòng trong video đã quay sẵn để ghép lon nước ngọt, chai mỹ phẩm 3D có bóng đổ và chiếu sáng tự nhiên.</p>
+
+              <div id="megaPropsCatalogList" class="mega-grid-2" style="grid-template-columns: repeat(3, 1fr);">
+                <!-- Injected via JS -->
+              </div>
+              <div id="megaPropStatusBox" class="pub-status-box hidden" style="margin-top: 12px;"></div>
+            </div>
+
+            <!-- PANEL 16: Distributed Render Farm -->
+            <div class="mega-panel" id="megaTabRenderFarm">
+              <div class="mega-panel-header">
+                <h4>⚡ Distributed Multi-Worker Render Farm (Cụm Máy Phân Tán)</h4>
+                <span class="status-pill active">Cluster 955 FPS</span>
+              </div>
+              <p class="panel-desc">Chia tải render hàng trăm video giữa các máy tính trong mạng nội bộ LAN và cụm GPU đám mây. Xuất 1000 video chỉ trong 4.2 phút.</p>
+
+              <div id="megaRenderFarmGrid" class="phone-farm-grid">
+                <!-- Injected via JS -->
+              </div>
+
+              <div style="margin-top: 14px; display: flex; gap: 10px; align-items: center;">
+                <input type="number" id="megaBatchRenderCount" value="100" min="10" max="1000" class="studio-input" style="width: 140px;">
+                <button class="studio-btn primary-btn" id="btnMegaDispatchRenderFarm">
+                  <span>🚀 Phân Bổ Render Hàng Loạt Qua Cụm Máy</span>
+                </button>
+              </div>
+              <div id="megaRenderStatusBox" class="pub-status-box hidden" style="margin-top: 12px;"></div>
+            </div>
+
+            <!-- PANEL 17: Smart Bio Link Cloaker -->
+            <div class="mega-panel" id="megaTabBioCloak">
+              <div class="mega-panel-header">
+                <h4>🛡️ Smart Bio Link Rotator & Anti-Ban Cloaker</h4>
+                <span class="status-pill active">Bọc Link Sạch 100%</span>
+              </div>
+              <p class="panel-desc">Bọc link tiếp thị liên kết Shopee/Lazada dưới tên miền riêng, tự động mở app Shopee trên điện thoại và tự đổi sản phẩm phụ nếu hết hàng.</p>
+
+              <div id="megaBioCloakList">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
           </div>
         </div>
 
         <div class="modal-footer">
           <span class="footer-hint">💡 Hệ thống 10X hỗ trợ đồng thời sáng tạo nội dung đơn lẻ và tự động hóa quy mô lớn cho Agency & MCN.</span>
           <button class="studio-btn secondary-btn" id="btnCloseMegaSuiteBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL: AI LIVESTREAM STUDIO 24/7 (VIRTUAL HOST & 3D MODEL PLATFORM)
+         =================================================================== -->
+    <div class="studio-modal-backdrop" id="modalLiveStudio">
+      <div class="studio-modal live-modal-screen">
+        <div class="modal-header live-header">
+          <div class="live-header-left">
+            <span class="live-on-air-tag" id="liveStatusPill">⚪ CHẾ ĐỘ CHỜ</span>
+            <div class="live-title-group">
+              <h3>🔴 AI Live Studio 24/7 - Phòng Phát Sóng Bán Hàng & Nền Tảng 3D Model</h3>
+              <div class="live-sub-tagline">Tích hợp Skill-3D Spatial Reasoning & achimala/dream-loop Lighting Critic</div>
+            </div>
+          </div>
+
+          <!-- Viewport Mode Switcher: 2D Camera vs 3D Virtual Stage -->
+          <div class="live-mode-switcher-bar">
+            <button class="live-mode-btn" id="btnLiveMode2D">
+              <span>📷 2D Camera MC</span>
+            </button>
+            <button class="live-mode-btn active" id="btnLiveMode3D">
+              <span>🌐 3D Virtual Stage & Platform</span>
+              <span class="badge-mini-3d">THREE.JS PBR</span>
+            </button>
+          </div>
+
+          <button class="modal-close-btn" id="btnCloseLiveStudio">✕</button>
+        </div>
+
+        <div class="live-studio-layout">
+          <!-- Left: 9:16 Livestream Canvas Viewport (Supports 2D Host & Interactive 3D WebGL Canvas) -->
+          <div class="live-viewport-container">
+            <div class="live-screen-phone" id="liveScreenPhone">
+              
+              <!-- Mode 1: 2D Host Video / Avatar Box -->
+              <div class="live-avatar-box hidden" id="live2DHostBox">
+                <img id="liveHostAvatarImg" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80" class="live-host-img" alt="Virtual Host">
+                <div class="live-speaking-wave" id="liveSpeakingWave"></div>
+              </div>
+
+              <!-- Mode 2: Interactive 3D WebGL Virtual Stage Viewport -->
+              <div class="live-3d-viewport-wrap" id="live3DViewportWrap">
+                <canvas id="live3DCanvas" class="live-3d-canvas" width="360" height="640"></canvas>
+                
+                <!-- 3D Turntable Hologram Base Ring -->
+                <div class="turntable-hologram-ring" id="turntableRing"></div>
+
+                <!-- 3D Spatial Tag Overlay (Skill-3D Scene Memory) -->
+                <div class="live-3d-spatial-tag" id="live3DSpatialTag">
+                  <span class="tag-dot pulse"></span>
+                  <span id="live3DSpatialText">🎯 Skill-3D: Neo tại Bục Xoay 360° | PBR Soft Shadows</span>
+                </div>
+
+                <!-- 3D Viewport Floating Quick HUD Controls -->
+                <div class="live-3d-hud-controls">
+                  <button class="hud-btn active" id="btn3DAutoRotate" title="Bật/Tắt Tự Động Xoay 360°">🔄 Xoay 360°</button>
+                  <button class="hud-btn" id="btn3DWireframe" title="Chuyển chế độ Lưới Đa Giác Wireframe">🕸️ Lưới Wireframe</button>
+                  <button class="hud-btn" id="btn3DResetCam" title="Căn góc camera chính diện">📐 Reset Góc</button>
+                  <button class="hud-btn" id="btn3DHologram" title="Bật hiệu ứng Hologram lơ lửng">✨ Hologram</button>
+                </div>
+              </div>
+
+              <!-- Top badges overlay (Persistent across 2D & 3D) -->
+              <div class="live-overlay-top">
+                <div class="live-stat-pill"><span class="dot-red"></span> LIVE 24/7</div>
+                <div class="live-stat-pill">👀 <span id="liveViewerCount">1,420</span></div>
+                <div class="live-stat-pill">❤️ <span id="liveLikesCount">28.4K</span></div>
+              </div>
+
+              <!-- Top Right: Realtime Revenue Counter -->
+              <div class="live-gmv-badge">
+                <span class="gmv-label">DOANH SỐ PHIÊN LIVE</span>
+                <span class="gmv-val" id="liveGmvVal">18.500.000 ₫</span>
+              </div>
+
+              <!-- Bottom Left: Pinned Product Card (With 3D Badge) -->
+              <div class="live-pinned-product" id="livePinnedProductCard">
+                <img id="livePinnedImg" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&auto=format&fit=crop&q=60" class="live-pinned-thumb" alt="Product">
+                <div class="live-pinned-meta">
+                  <div style="display: flex; gap: 4px; align-items: center;">
+                    <span class="flash-badge">⚡ FLASH SALE</span>
+                    <span class="badge-3d-tag">📦 3D MODEL ACTIVE</span>
+                  </div>
+                  <div class="pinned-title" id="livePinnedTitle">Giày Sneaker Cyberpunk Phantom X</div>
+                  <div class="pinned-price-row">
+                    <span class="flash-price" id="livePinnedPrice">1.250.000 ₫</span>
+                    <span class="orig-price" id="livePinnedOrig">2.500.000 ₫</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Realtime Speech Subtitle Ribbon -->
+              <div class="live-speech-sub" id="liveSpeechSub">
+                💬 Mai Phương: "Dạ mọi người ơi, mẫu Sneaker Phantom X chất liệu đế hấp thụ lực chuẩn PBR đang xoay 360 độ góc dưới nha! Chạm giỏ hàng để chốt đơn ngay ạ! 🔥"
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Control Center, Live Chat & 3D Model Platform Dashboard -->
+          <div class="live-controls-panel">
+
+            <!-- =========================================================
+                 3D MODEL PLATFORM DASHBOARD (TÍCH HỢP ĐỘC QUYỀN)
+                 ========================================================= -->
+            <div class="live-control-group live-3d-platform-suite">
+              <div class="live-3d-suite-header">
+                <div class="suite-title-row">
+                  <span class="suite-icon">🌐</span>
+                  <div>
+                    <h4 class="suite-title">Dashboard 3D Model Platform & Spatial AI</h4>
+                    <p class="suite-desc">Điều khiển sân khấu 3D ảo, kho sản phẩm xoay 360°, sinh model 3D AI và tối ưu ánh sáng Dream-Loop</p>
+                  </div>
+                </div>
+
+                <!-- 3D Tabs Switcher -->
+                <div class="suite-tabs-nav">
+                  <button class="suite-tab-btn active" id="tabBtn3DStage">🎭 1. Sân Khấu & Đèn</button>
+                  <button class="suite-tab-btn" id="tabBtn3DModels">📦 2. Kho Mô Hình 3D</button>
+                  <button class="suite-tab-btn" id="tabBtn3DGen">✨ 3. Tạo 3D Bằng AI</button>
+                  <button class="suite-tab-btn" id="tabBtn3DCad">📐 4. CadQuery In 3D</button>
+                </div>
+              </div>
+
+              <!-- TAB 1: 3D Virtual Stage & Dream-Loop Lighting Critic -->
+              <div class="suite-tab-content active" id="tabPane3DStage">
+                <div class="stage-section-title">Chọn Bối Cảnh Sân Khấu 3D (Procedural Architectural Stage):</div>
+                <div class="stages-grid" id="stagesSelectorGrid">
+                  <!-- Injected via JS -->
+                </div>
+
+                <!-- Dream-Loop Critic Box (achimala/dream-loop) -->
+                <div class="dream-loop-critic-card">
+                  <div class="critic-header">
+                    <div class="critic-badge">
+                      <span class="critic-pulse"></span>
+                      <strong>achimala/dream-loop Critic Subagent:</strong>
+                    </div>
+                    <div class="critic-score-pill">
+                      <span>Điểm Thẩm Mỹ:</span>
+                      <strong id="dreamLoopScoreVal">96.8 / 100</strong>
+                    </div>
+                  </div>
+                  <div class="critic-feedback-text" id="dreamLoopFeedbackText">
+                    Ánh sáng viền (Rim Light) cân đối tốt, độ tương phản PBR đạt tiêu chuẩn Studio E-commerce chuẩn TikTok Live.
+                  </div>
+                  <div class="critic-actions-row">
+                    <button class="studio-btn primary-btn sm-btn" id="btnRunDreamLoopCritic">
+                      <span>⚡ Kích Hoạt Dream-Loop Cân Chỉnh Ánh Sáng Tự Động</span>
+                    </button>
+                    <span class="critic-hint">Tự động tối ưu 3-Point Lights (Key/Fill/Rim)</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TAB 2: 3D Models Catalog & Skill-3D Spatial Actions -->
+              <div class="suite-tab-content" id="tabPane3DModels">
+                <div class="stage-section-title">Danh Mục Mô Hình 3D Sẵn Sàng Trình Diễn (PBR Textures):</div>
+                <div class="models-3d-grid" id="models3DGrid">
+                  <!-- Injected via JS -->
+                </div>
+
+                <!-- Skill-3D Spatial Action Bar -->
+                <div class="skill3d-action-box">
+                  <div class="skill3d-box-title">🎮 Hành Động Không Gian MC Ảo (Skill-3D Scene Memory):</div>
+                  <div class="skill3d-btns-row">
+                    <button class="studio-btn secondary-btn sm-btn" id="btnSpatialHandHold">
+                      <span>💃 MC Cầm Sản Phẩm Trên Tay</span>
+                    </button>
+                    <button class="studio-btn secondary-btn sm-btn active" id="btnSpatialTurntable">
+                      <span>🔄 Đặt Lên Bục Kính Xoay 360°</span>
+                    </button>
+                    <button class="studio-btn secondary-btn sm-btn" id="btnSpatialHologram">
+                      <span>✨ Phóng Đại Hologram Lơ Lửng</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TAB 3: AI 3D Model Generator (Meshy / Trellis / Tripo) -->
+              <div class="suite-tab-content" id="tabPane3DGen">
+                <div class="stage-section-title">Sinh Mô Hình 3D Tức Thì Cho Hàng Mới Nhập (Text / Image-to-3D):</div>
+                <div class="ai-gen-form">
+                  <div class="form-row-2">
+                    <div class="form-field">
+                      <label class="form-label">Mô tả sản phẩm (Prompt Text-to-3D):</label>
+                      <input type="text" id="input3DPrompt" placeholder="VD: Giày chạy bộ sneaker đế bóng khí neon siêu nhẹ..." class="studio-input" value="Giày thể thao đế carbon siêu nhẹ dạ quang">
+                    </div>
+                    <div class="form-field">
+                      <label class="form-label">Hoặc Link Ảnh Chụp 2D (Image-to-3D):</label>
+                      <input type="text" id="input3DImageUrl" placeholder="https://... ảnh chụp sản phẩm" class="studio-input">
+                    </div>
+                  </div>
+
+                  <div class="form-row-3">
+                    <div class="form-field">
+                      <label class="form-label">Backend AI 3D Engine:</label>
+                      <select id="select3DBackend" class="studio-select">
+                        <option value="meshy_v2">meshy-dev/meshy-3d-agent (Meshy CLI 4K PBR)</option>
+                        <option value="microsoft_trellis">Microsoft Trellis (High-Fidelity Gaussian & Mesh)</option>
+                        <option value="tripo_3d">Tripo 3D AI Studio (15-Second Rapid Gen)</option>
+                        <option value="tencent_rapid">Tencent Rapid 3D Geometry</option>
+                      </select>
+                    </div>
+                    <div class="form-field">
+                      <label class="form-label">Danh mục sản phẩm:</label>
+                      <select id="select3DCategory" class="studio-select">
+                        <option value="Thời trang & Giày dép">Thời trang & Giày dép</option>
+                        <option value="Phụ kiện & Túi xách">Phụ kiện & Túi xách</option>
+                        <option value="Đồ điện tử & Công nghệ">Đồ điện tử & Công nghệ</option>
+                        <option value="Mỹ phẩm & Skincare">Mỹ phẩm & Skincare</option>
+                      </select>
+                    </div>
+                    <div class="form-field" style="display: flex; align-items: flex-end;">
+                      <button class="studio-btn primary-btn full-btn" id="btnSubmitGenerate3D">
+                        <span>🚀 Tạo Mô Hình 3D Ngay</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div id="ai3DGenStatusBox" class="pub-status-box hidden" style="margin-top: 10px;"></div>
+                </div>
+              </div>
+
+              <!-- TAB 4: CadQuery Parametric Customizer (flowful-ai & parhamdb 3D Print) -->
+              <div class="suite-tab-content" id="tabPane3DCad">
+                <div class="stage-section-title">Tùy Biến Tham Số Sản Phẩm Cơ Khí & Chuẩn Bị In 3D Theo Comment:</div>
+                <div class="cad-customize-form">
+                  <div class="form-row-3">
+                    <div class="form-field">
+                      <label class="form-label">Khắc tên/chữ cá nhân hóa (Theo Comment Khách):</label>
+                      <input type="text" id="cadCustomEngraving" class="studio-input" value="ANTIGRAVITY-VIP">
+                    </div>
+                    <div class="form-field">
+                      <label class="form-label">Phối màu chất liệu (Colorway PBR):</label>
+                      <input type="text" id="cadColorway" class="studio-input" value="Neon Cyber Orange & Black">
+                    </div>
+                    <div class="form-field" style="display: flex; align-items: flex-end;">
+                      <button class="studio-btn primary-btn full-btn" id="btnSubmitCadCustomize">
+                        <span>💾 Cập Nhật & Xuất File STL</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div id="cadStatusBox" class="pub-status-box hidden" style="margin-top: 10px;"></div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Standard Live Controls: Host Picker & Live Chat -->
+            <div class="live-control-group">
+              <div class="live-group-title">👤 Nhân Vật Ảo Đang Dẫn Chương Trình:</div>
+              <div class="live-hosts-row" id="liveHostsSelector">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+            <!-- Realtime Live Chat Feed & AI Response -->
+            <div class="live-control-group">
+              <div class="live-group-title">💬 Khung Chat Khán Giả Realtime & Trợ Lý Bán Hàng:</div>
+              <div class="live-comments-box" id="liveCommentsBox">
+                <!-- Injected via JS -->
+              </div>
+              <div style="display: flex; gap: 8px; margin-top: 8px;">
+                <input type="text" id="liveSimulateCommentInput" placeholder="Gõ thử bình luận của khán giả (VD: Cho mình xem mẫu giày từ góc nghiêng)..." class="studio-input" style="flex:1;">
+                <button class="studio-btn primary-btn sm-btn" id="btnLiveSendComment">⚡ Hỏi MC</button>
+              </div>
+            </div>
+
+            <!-- RTMP Broadcast Action -->
+            <div class="live-control-group broadcast-dock-box">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div style="font-weight: 700; color: #fff; font-size: 13px;">Phát Sóng RTMP Lên TikTok / Shopee Live</div>
+                  <div style="font-size: 10px; color: var(--text-muted);">Độ phân giải: 1080x1920 60fps | 3D WebGL PBR Engine Hardware Accelerated</div>
+                </div>
+                <button class="studio-btn success-btn" id="btnToggleBroadcast" style="padding: 10px 20px; font-weight: 800; font-size: 13px;">
+                  🚀 BẮT ĐẦU PHÁT SÓNG TRỰC TIẾP
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <span class="footer-hint">💡 Hệ thống tích hợp toàn diện 10 Frameworks 3D AI hàng đầu thế giới: Skill-3D, Dream-Loop, Meshy CLI, Trellis, Tripo, CadQuery & Three.js Procedural.</span>
+          <button class="studio-btn secondary-btn" id="btnCloseLiveStudioBottom">Đóng</button>
         </div>
       </div>
     </div>
