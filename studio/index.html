@@ -124,6 +124,13 @@
           <span>🔴 AI Live Studio 24/7</span>
         </button>
 
+        <!-- AI Text-to-Video Cinema Studio Button -->
+        <button class="studio-btn ai-cinema-btn pulse-glow" id="btnOpenAiVideoStudio" title="Xưởng Phim & Video AI Tự Động (Sora 2, Veo 3, Kling 2.5, Runway, Luma, Pika, Seedance, Muse.ai)">
+          <span class="cinema-icon pulse">🎬</span>
+          <span>AI Text-to-Video Studio</span>
+          <span class="badge-mini-3d" style="background: linear-gradient(135deg, #a855f7, #ec4899); color: #fff;">SORA 2 & VEO 3</span>
+        </button>
+
         <div class="tool-divider"></div>
 
         <!-- User Profile Pill & Dropdown -->
@@ -2104,6 +2111,13 @@
                 <span class="mega-tab-sub">Biên lãi ròng & Thuế sàn</span>
               </div>
             </button>
+            <button class="mega-nav-tab" data-target="megaTabAiVideoCinema">
+              <span class="mega-tab-icon">🎬</span>
+              <div class="mega-tab-meta">
+                <span class="mega-tab-title">28. AI Text-to-Video Cinema</span>
+                <span class="mega-tab-sub">Sora 2, Veo 3, Kling, Runway</span>
+              </div>
+            </button>
           </div>
 
           <!-- Right Content Panels -->
@@ -3056,6 +3070,97 @@
               </div>
             </div>
 
+            <!-- PANEL 28: AI Text-to-Video Multi-Engine Cinema Studio -->
+            <div class="mega-panel" id="megaTabAiVideoCinema">
+              <div class="mega-panel-header">
+                <h4>🎬 AI Text-to-Video Cinema Studio & Multi-Agent Director</h4>
+                <span class="status-pill active">Sora 2 • Veo 3 • Kling 2.5 • Runway</span>
+              </div>
+              <p class="panel-desc">Sản xuất phim hoạt hình 3D Pixar, phim ngắn drama điện ảnh và TVC quảng cáo từ câu lệnh với 8 siêu AI video hàng đầu thế giới kết hợp kỹ năng đạo diễn góc máy tự động.</p>
+
+              <div class="mega-card" style="margin-bottom: 12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <h5 class="mega-card-title" style="margin:0;">1. Phòng Chiếu & Xưởng Phim Chuyên Sâu (Full Cinema Studio):</h5>
+                  <button class="studio-btn primary-btn sm-btn" id="btnLaunchFullCinemaModal">
+                    <span>🎬 Mở Studio Điện Ảnh Chuyên Nghiệp (Full Studio)</span>
+                  </button>
+                </div>
+                <p style="font-size:11px; color:var(--text-muted); margin: 6px 0 0 0;">Truy cập giao diện xưởng phim đầy đủ với Storyboard đa phân cảnh, bộ mở rộng prompt điện ảnh và xuất phim 4K 60fps.</p>
+              </div>
+
+              <!-- Quick Video Generator Inside Panel 28 -->
+              <div class="mega-card" style="margin-bottom: 12px;">
+                <h5 class="mega-card-title">2. Tạo Nhanh Video AI Tại Đây:</h5>
+                <div class="form-row-2">
+                  <div class="form-field">
+                    <label class="form-label">Chọn Thể Loại Video:</label>
+                    <select id="quickAiVideoGenre" class="studio-select">
+                      <option value="animated_short">🎬 Phim Hoạt Hình 3D Pixar / Anime</option>
+                      <option value="commercial_ad">🛍️ Video Quảng Cáo TVC E-Commerce</option>
+                      <option value="cinematic_drama">🎥 Phim Ngắn / Drama Điện Ảnh</option>
+                      <option value="scifi_cyberpunk">🌌 Viễn Tưởng & Cyberpunk 2099</option>
+                      <option value="viral_storytelling">🎙️ Kể Chuyện Thu Hút Triệu View</option>
+                    </select>
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label">Chọn AI Video Engine:</label>
+                    <select id="quickAiVideoEngine" class="studio-select">
+                      <option value="kling_ai_25">⚡ Kling AI 2.5 Master (Vật lý chuyển động mượt)</option>
+                      <option value="openai_sora_2">🌌 OpenAI Sora 2.0 Cinema (Hollywood 4K)</option>
+                      <option value="google_veo_3">💎 Google DeepMind Veo 3 (Nhất quán & Âm thanh)</option>
+                      <option value="runway_gen3">🎬 Runway Gen-3 Alpha Director (Camera Control)</option>
+                      <option value="luma_dream_2">🪐 Luma Dream Machine 2.0 (Ray-Tracing siêu tốc)</option>
+                      <option value="pika_20">💥 Pika 2.0 Pikaffects (Biến hình & nổ)</option>
+                      <option value="seedance_25">🎵 ByteDance Seedance 2.5 (TikTok 9:16)</option>
+                      <option value="muse_ai">🧠 Muse.ai (Tự động phụ đề & chapters)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-field" style="margin-top: 8px;">
+                  <label class="form-label">Mô tả cảnh quay / Câu lệnh (Prompt):</label>
+                  <textarea id="quickAiVideoPrompt" class="studio-textarea" rows="3" placeholder="Nhập ý tưởng video của bạn..."></textarea>
+                </div>
+
+                <div class="form-row-3" style="margin-top: 8px;">
+                  <div class="form-field">
+                    <label class="form-label">Góc Máy (Camera Motion):</label>
+                    <select id="quickAiCameraMotion" class="studio-select">
+                      <option value="dolly_in">Dolly In (Tiến dần vào chủ thể)</option>
+                      <option value="orbit_360">Orbit 360° (Xoay tròn vật thể)</option>
+                      <option value="drone_fpv">Drone FPV (Góc nhìn flycam lao nhanh)</option>
+                      <option value="pan_horizontal">Pan Ngang (Quét từ trái sang phải)</option>
+                      <option value="low_angle_hero">Low Angle (Góc thấp tôn vinh uy quyền)</option>
+                      <option value="static_cinematic">Static Cinema (Ống kính cố định chuẩn rạp)</option>
+                    </select>
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label">Tỉ Lệ Khung Hình:</label>
+                    <select id="quickAiAspectRatio" class="studio-select">
+                      <option value="16:9">💻 16:9 Ngang (YouTube, Cinema)</option>
+                      <option value="9:16">📱 9:16 Dọc (TikTok, Shorts, Reels)</option>
+                      <option value="2.39:1">🎬 2.39:1 CinemaScope (Điện ảnh)</option>
+                    </select>
+                  </div>
+                  <div class="form-field" style="display:flex; align-items:flex-end;">
+                    <button class="studio-btn primary-btn full-btn" id="btnQuickGenerateAiVideo">
+                      <span>🚀 Render Video AI Ngay</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div id="quickAiVideoResultBox" class="pub-status-box hidden" style="margin-top: 10px;"></div>
+              </div>
+
+              <!-- Gallery Preview in Tab 28 -->
+              <div class="mega-card">
+                <h5 class="mega-card-title">3. Thư Viện Video AI Mới Sinh:</h5>
+                <div class="cinema-gallery-grid" id="quickAiVideoGalleryGrid">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -3717,6 +3822,195 @@
         <div class="modal-footer">
           <span class="footer-hint">💡 Hệ thống tích hợp toàn diện 10 Frameworks 3D AI hàng đầu thế giới: Skill-3D, Dream-Loop, Meshy CLI, Trellis, Tripo, CadQuery & Three.js Procedural.</span>
           <button class="studio-btn secondary-btn" id="btnCloseLiveStudioBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL: AI TEXT-TO-VIDEO CINEMATIC STUDIO & MULTI-AGENT DIRECTOR
+         (Sora 2, Veo 3, Kling 2.5, Runway, Luma, Pika, Seedance, Muse.ai)
+         =================================================================== -->
+    <div class="studio-modal-backdrop" id="modalAiVideoStudio">
+      <div class="studio-modal cinema-modal-screen">
+        <div class="modal-header cinema-header">
+          <div class="cinema-header-left">
+            <span class="cinema-badge">HOLLYWOOD AI 2026</span>
+            <div class="cinema-title-group">
+              <h3>🎬 AI Text-to-Video Cinematic Studio & Multi-Agent Director</h3>
+              <div class="cinema-sub-tagline">Hệ thống tạo phim & video quảng cáo tự động tích hợp OpenAI Sora 2.0, Google Veo 3, Kling AI 2.5, Runway Gen-3, Luma 2.0, Pika 2.0, Seedance 2.5 & Muse.ai</div>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseAiVideoStudio">✕</button>
+        </div>
+
+        <div class="cinema-studio-layout">
+          <!-- LEFT: Director Control Room -->
+          <div class="cinema-director-panel">
+            <!-- Mode Nav: Prompt-to-Video vs Storyboard Multi-Scene -->
+            <div class="cinema-mode-nav">
+              <button class="cinema-mode-btn active" id="btnModePromptToVideo">
+                <span>✍️ 1. Câu Lệnh Đơn (Prompt-to-Video)</span>
+              </button>
+              <button class="cinema-mode-btn" id="btnModeStoryboard">
+                <span>📋 2. Kịch Bản Đa Phân Cảnh (Multi-Scene Storyboard)</span>
+              </button>
+            </div>
+
+            <!-- MODE 1: PROMPT TO VIDEO -->
+            <div class="cinema-mode-view active" id="viewModePromptToVideo">
+              <!-- Genre Selector -->
+              <div class="cinema-section-title">1. Chọn Thể Loại Phim & Video:</div>
+              <div class="cinema-genres-grid" id="cinemaGenresGrid">
+                <!-- Injected via JS -->
+              </div>
+
+              <!-- Engine Cards Selector -->
+              <div class="cinema-section-title" style="margin-top: 12px;">2. Chọn Siêu Trí Tuệ Nhân Tạo Sinh Video (Generative Video Engine):</div>
+              <div class="cinema-engines-grid" id="cinemaEnginesGrid">
+                <!-- Injected via JS -->
+              </div>
+
+              <!-- Prompt Input with AI Expander -->
+              <div class="cinema-section-title" style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <span>3. Mô Tả Ý Tưởng / Câu Lệnh (Prompt):</span>
+                <button class="studio-btn secondary-btn sm-btn" id="btnAiExpandPrompt">
+                  <span>✨ Phù Thủy AI: Mở Rộng Prompt Điện Ảnh & Góc Máy</span>
+                </button>
+              </div>
+              <textarea id="inputCinemaPrompt" class="studio-textarea cinema-textarea" rows="3" placeholder="Nhập câu lệnh của bạn (VD: Một chú rồng nhỏ tập bay giữa thung lũng mây bồng bềnh, phong cách hoạt hình 3D Pixar, 8k PBR)..."></textarea>
+              <div id="cinemaExpandedPromptBox" class="expanded-prompt-box hidden">
+                <div class="expanded-prompt-header">
+                  <span>✨ Prompt Điện Ảnh Đã Tối Ưu Tự Động:</span>
+                  <button class="copy-mini-btn" id="btnApplyExpandedPrompt">Áp Dụng</button>
+                </div>
+                <div class="expanded-prompt-text" id="cinemaExpandedPromptText"></div>
+              </div>
+
+              <!-- Technical & Camera Parameters -->
+              <div class="form-row-4" style="margin-top: 10px;">
+                <div class="form-field">
+                  <label class="form-label">Chuyển Động Camera:</label>
+                  <select id="selectCinemaCamera" class="studio-select">
+                    <!-- Injected via JS -->
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Tỉ Lệ Khung Hình:</label>
+                  <select id="selectCinemaAspect" class="studio-select">
+                    <option value="16:9">💻 16:9 Ngang (YouTube, Cinema)</option>
+                    <option value="9:16">📱 9:16 Dọc (TikTok, Shorts, Reels)</option>
+                    <option value="1:1">⬛ 1:1 Vuông (Feed, Ads)</option>
+                    <option value="2.39:1">🎬 2.39:1 CinemaScope (Điện ảnh)</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Độ Phân Giải:</label>
+                  <select id="selectCinemaQuality" class="studio-select">
+                    <option value="4K">4K UHD 60fps (Master PBR)</option>
+                    <option value="1080p">1080p Full HD (Chuẩn)</option>
+                  </select>
+                </div>
+                <div class="form-field" style="display:flex; align-items:flex-end;">
+                  <button class="studio-btn primary-btn glow-btn full-btn" id="btnStartGenerateVideo" style="height:38px;">
+                    <span>🚀 KÍCH HOẠT GENERATE VIDEO AI</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Progress Bar -->
+              <div id="cinemaProgressBox" class="cinema-progress-box hidden" style="margin-top: 10px;">
+                <div class="progress-title-row">
+                  <span id="cinemaProgressStepText">Đang khởi tạo Latent Diffusion Space...</span>
+                  <span id="cinemaProgressPercentText">0%</span>
+                </div>
+                <div class="progress-bar-track">
+                  <div class="progress-bar-fill" id="cinemaProgressBarFill" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <div id="cinemaResultStatusBox" class="pub-status-box hidden" style="margin-top: 10px;"></div>
+            </div>
+
+            <!-- MODE 2: MULTI-SCENE STORYBOARD -->
+            <div class="cinema-mode-view" id="viewModeStoryboard">
+              <div class="cinema-section-title">Phân Cảnh Kịch Bản Phim Ngắn Đa Phân Cảnh (Multi-Scene Storyboard Director):</div>
+              <p class="panel-desc" style="margin-bottom: 8px;">Tự động phân tách 1 câu chuyện dài thành 4 cảnh quay hoàn chỉnh (Establishing ➔ Action ➔ Climax ➔ Outro), sinh video từng cảnh và ghép nối thành bộ phim đồng nhất.</p>
+
+              <div class="form-field">
+                <label class="form-label">Cốt Truyện Phim / Kịch Bản Tổng Thể:</label>
+                <textarea id="inputStoryboardScript" class="studio-textarea" rows="3" placeholder="Nhập cốt truyện (VD: Một phi hành gia phát hiện di tích cổ xưa trên sao Hỏa phát ra tín hiệu cứu hộ lạ lùng)..."></textarea>
+              </div>
+
+              <div style="display: flex; gap: 8px; margin-top: 8px;">
+                <button class="studio-btn secondary-btn sm-btn" id="btnGenerateStoryboardScenes">
+                  <span>📋 Phân Tách 4 Cảnh Quay Tự Động</span>
+                </button>
+                <button class="studio-btn primary-btn sm-btn glow-btn" id="btnRenderFullStoryboardMovie">
+                  <span>🎬 Render & Ghép Nối Phim Hoàn Chỉnh (20s)</span>
+                </button>
+              </div>
+
+              <div class="storyboard-scenes-container" id="storyboardScenesContainer" style="margin-top: 12px;">
+                <!-- Injected via JS -->
+              </div>
+              <div id="storyboardStatusBox" class="pub-status-box hidden" style="margin-top: 10px;"></div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Screening Room & Video Vault -->
+          <div class="cinema-screening-panel">
+            <div class="screening-title-row">
+              <span class="screening-icon">🍿</span>
+              <div>
+                <h4 style="margin:0; font-size:13px; color:#fff;">Phòng Chiếu Phim & Kiểm Tra Chất Lượng (Screening Room)</h4>
+                <div style="font-size:10px; color:var(--text-muted);">Trực quan hóa thành phẩm trước khi xuất bản hoặc đưa vào dòng biên tập Timeline</div>
+              </div>
+            </div>
+
+            <!-- Video Player Preview Frame -->
+            <div class="cinema-screen-viewport" id="cinemaScreenViewport">
+              <img id="cinemaHeroPoster" src="https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&auto=format&fit=crop&q=80" alt="Video Screening" class="cinema-hero-img">
+              <div class="cinema-play-overlay" id="cinemaPlayOverlay">
+                <span class="play-triangle">▶</span>
+              </div>
+              <div class="cinema-badge-overlay" id="cinemaResolutionOverlay">4K UHD • 60 FPS • DOLBY ATMOS</div>
+            </div>
+
+            <!-- Video Meta & Fast Actions -->
+            <div class="cinema-video-meta-box">
+              <div class="cinema-meta-title" id="cinemaVideoTitle">Phim Ngắn: Chú Rồng Mây Tìm Mẹ (4K Pixar 3D)</div>
+              <div class="cinema-meta-sub" id="cinemaVideoSub">Engine: Kling AI 2.5 Master | Tỉ lệ: 16:9 | Thời lượng: 12 giây | Kháng Content ID: 100%</div>
+              
+              <div class="cinema-actions-row">
+                <button class="studio-btn success-btn sm-btn" id="btnInsertClipToEditorTimeline">
+                  <span>📥 Chèn Vào Timeline TMD Studio Pro Ngay</span>
+                </button>
+                <button class="studio-btn secondary-btn sm-btn" id="btnDownloadCurrentAiVideo">
+                  <span>⬇ Tải MP4</span>
+                </button>
+                <button class="studio-btn secondary-btn sm-btn" id="btnRegenerateVariant">
+                  <span>🔄 Tạo Biến Thể Mới</span>
+                </button>
+              </div>
+              <div id="timelineInsertNotice" class="pub-status-box hidden" style="margin-top: 8px;"></div>
+            </div>
+
+            <!-- Video Gallery Vault -->
+            <div class="cinema-vault-box">
+              <div class="vault-header">
+                <strong>🎞️ Kho Phim & Video AI Đã Tạo (AI Video Vault):</strong>
+                <span class="badge-mini-3d" id="galleryCountBadge">3 VIDEO</span>
+              </div>
+              <div class="cinema-gallery-scroll" id="cinemaGalleryScroll">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer cinema-footer">
+          <span class="footer-hint">💡 Hệ thống kết nối đa mô hình (Multi-Engine Orchestrator): OpenAI Sora 2.0, Google DeepMind Veo 3, Kuaishou Kling 2.5, Runway Gen-3 Alpha, Luma 2.0, Pika 2.0, ByteDance Seedance 2.5 & Muse.ai.</span>
+          <button class="studio-btn secondary-btn" id="btnCloseAiVideoStudioBottom">Đóng</button>
         </div>
       </div>
     </div>

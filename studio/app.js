@@ -148,6 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupProSuite();
     setupMegaSuiteModule();
     setupLiveStudioModule();
+    setupAiVideoCinemaStudio();
     setupModals();
     loadActiveVideo();
     drawSimulatedWaveform();
@@ -6663,6 +6664,606 @@ document.addEventListener('DOMContentLoaded', () => {
     // Call loaders for live additions
     loadMocapState();
     loadCVPinningState();
+  }
+
+  /* ===================================================================
+     30. AI TEXT-TO-VIDEO CINEMATIC STUDIO & MULTI-AGENT DIRECTOR MODULE
+     (Sora 2.0, Veo 3, Kling 2.5, Runway Gen-3, Luma, Pika, Seedance, Muse.ai)
+     =================================================================== */
+  function setupAiVideoCinemaStudio() {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    const modalAiVideoStudio = document.getElementById('modalAiVideoStudio');
+    const btnOpenAiVideoStudio = document.getElementById('btnOpenAiVideoStudio');
+    const btnLaunchFullCinemaModal = document.getElementById('btnLaunchFullCinemaModal');
+    const btnCloseAiVideoStudio = document.getElementById('btnCloseAiVideoStudio');
+    const btnCloseAiVideoStudioBottom = document.getElementById('btnCloseAiVideoStudioBottom');
+
+    // Modes
+    const btnModePromptToVideo = document.getElementById('btnModePromptToVideo');
+    const btnModeStoryboard = document.getElementById('btnModeStoryboard');
+    const viewModePromptToVideo = document.getElementById('viewModePromptToVideo');
+    const viewModeStoryboard = document.getElementById('viewModeStoryboard');
+
+    // Prompt-to-Video Elements
+    const cinemaGenresGrid = document.getElementById('cinemaGenresGrid');
+    const cinemaEnginesGrid = document.getElementById('cinemaEnginesGrid');
+    const inputCinemaPrompt = document.getElementById('inputCinemaPrompt');
+    const btnAiExpandPrompt = document.getElementById('btnAiExpandPrompt');
+    const cinemaExpandedPromptBox = document.getElementById('cinemaExpandedPromptBox');
+    const cinemaExpandedPromptText = document.getElementById('cinemaExpandedPromptText');
+    const btnApplyExpandedPrompt = document.getElementById('btnApplyExpandedPrompt');
+
+    const selectCinemaCamera = document.getElementById('selectCinemaCamera');
+    const selectCinemaAspect = document.getElementById('selectCinemaAspect');
+    const selectCinemaQuality = document.getElementById('selectCinemaQuality');
+    const btnStartGenerateVideo = document.getElementById('btnStartGenerateVideo');
+
+    const cinemaProgressBox = document.getElementById('cinemaProgressBox');
+    const cinemaProgressStepText = document.getElementById('cinemaProgressStepText');
+    const cinemaProgressPercentText = document.getElementById('cinemaProgressPercentText');
+    const cinemaProgressBarFill = document.getElementById('cinemaProgressBarFill');
+    const cinemaResultStatusBox = document.getElementById('cinemaResultStatusBox');
+
+    // Storyboard Elements
+    const inputStoryboardScript = document.getElementById('inputStoryboardScript');
+    const btnGenerateStoryboardScenes = document.getElementById('btnGenerateStoryboardScenes');
+    const btnRenderFullStoryboardMovie = document.getElementById('btnRenderFullStoryboardMovie');
+    const storyboardScenesContainer = document.getElementById('storyboardScenesContainer');
+    const storyboardStatusBox = document.getElementById('storyboardStatusBox');
+
+    // Screening Elements
+    const cinemaHeroPoster = document.getElementById('cinemaHeroPoster');
+    const cinemaResolutionOverlay = document.getElementById('cinemaResolutionOverlay');
+    const cinemaVideoTitle = document.getElementById('cinemaVideoTitle');
+    const cinemaVideoSub = document.getElementById('cinemaVideoSub');
+    const btnInsertClipToEditorTimeline = document.getElementById('btnInsertClipToEditorTimeline');
+    const btnDownloadCurrentAiVideo = document.getElementById('btnDownloadCurrentAiVideo');
+    const btnRegenerateVariant = document.getElementById('btnRegenerateVariant');
+    const timelineInsertNotice = document.getElementById('timelineInsertNotice');
+    const galleryCountBadge = document.getElementById('galleryCountBadge');
+    const cinemaGalleryScroll = document.getElementById('cinemaGalleryScroll');
+
+    // Tab 28 Quick Controls
+    const quickAiVideoGenre = document.getElementById('quickAiVideoGenre');
+    const quickAiVideoEngine = document.getElementById('quickAiVideoEngine');
+    const quickAiVideoPrompt = document.getElementById('quickAiVideoPrompt');
+    const quickAiCameraMotion = document.getElementById('quickAiCameraMotion');
+    const quickAiAspectRatio = document.getElementById('quickAiAspectRatio');
+    const btnQuickGenerateAiVideo = document.getElementById('btnQuickGenerateAiVideo');
+    const quickAiVideoResultBox = document.getElementById('quickAiVideoResultBox');
+    const quickAiVideoGalleryGrid = document.getElementById('quickAiVideoGalleryGrid');
+
+    // State
+    let selectedGenre = 'animated_short';
+    let selectedEngine = 'openai_sora_2';
+    let currentCinemaVideo = null;
+    let cachedEngines = [];
+    let cachedGenres = [];
+    let isGenerating = false;
+
+    // Preset sample prompts for genres
+    const genreSamplePrompts = {
+      animated_short: 'Một chú bé robot tí hon nhặt được một hạt mầm phát sáng giữa thành phố phế liệu cổ kính, ánh mắt tròn xoe ngạc nhiên, ánh sáng vàng ấm lan tỏa, phong cách Pixar 3D Animation chi tiết từng khớp kim loại.',
+      commercial_ad: 'Một chiếc đồng hồ cơ lộ máy mạ vàng hồng xoay chậm giữa không gian vô cực, các giọt nước và bụi kim cương lấp lánh rơi chậm (Macro 120fps), ánh sáng luxury studio tinh xảo.',
+      cinematic_drama: 'Một thám tử trung niên bước dưới cơn mưa tầm tã ở góc phố Sài Gòn thập niên 90, ánh đèn vàng hắt bóng, ánh mắt trầm tư suy nghĩ, phong cách điện ảnh Noir 35mm Chiaroscuro.',
+      scifi_cyberpunk: 'Một nữ phi công vũ trụ điều khiển phi thuyền xuyên qua hẻm núi công nghệ cao của Trạm Không Gian Tân Hà Nội năm 2099, ánh neon tím xanh phản chiếu kính mũ phi hành gia.',
+      viral_storytelling: 'Khoảnh khắc một chú chó trung thành nhảy vọt qua rào cản cứu em bé bên hồ nước, góc máy lia nhanh kịch tính, biểu cảm dũng cảm, ánh hoàng hôn rực rỡ đầy cảm xúc.'
+    };
+
+    // Open/Close modal
+    function openCinemaModal() {
+      if (modalAiVideoStudio) {
+        modalAiVideoStudio.classList.add('open');
+        loadCinemaData();
+      }
+    }
+
+    function closeCinemaModal() {
+      if (modalAiVideoStudio) {
+        modalAiVideoStudio.classList.remove('open');
+      }
+    }
+
+    if (btnOpenAiVideoStudio) btnOpenAiVideoStudio.addEventListener('click', openCinemaModal);
+    if (btnLaunchFullCinemaModal) btnLaunchFullCinemaModal.addEventListener('click', openCinemaModal);
+    if (btnCloseAiVideoStudio) btnCloseAiVideoStudio.addEventListener('click', closeCinemaModal);
+    if (btnCloseAiVideoStudioBottom) btnCloseAiVideoStudioBottom.addEventListener('click', closeCinemaModal);
+
+    if (modalAiVideoStudio) {
+      modalAiVideoStudio.addEventListener('click', (e) => {
+        if (e.target === modalAiVideoStudio) closeCinemaModal();
+      });
+    }
+
+    // Mode Toggle
+    if (btnModePromptToVideo && btnModeStoryboard) {
+      btnModePromptToVideo.addEventListener('click', () => {
+        btnModePromptToVideo.classList.add('active');
+        btnModeStoryboard.classList.remove('active');
+        if (viewModePromptToVideo) viewModePromptToVideo.classList.add('active');
+        if (viewModeStoryboard) viewModeStoryboard.classList.remove('active');
+      });
+
+      btnModeStoryboard.addEventListener('click', () => {
+        btnModeStoryboard.classList.add('active');
+        btnModePromptToVideo.classList.remove('active');
+        if (viewModeStoryboard) viewModeStoryboard.classList.add('active');
+        if (viewModePromptToVideo) viewModePromptToVideo.classList.remove('active');
+      });
+    }
+
+    // Load Engines, Presets & Gallery
+    async function loadCinemaData() {
+      try {
+        const res = await fetch('/api/enterprise/ai-video/engines-and-presets');
+        const data = await res.json();
+        cachedEngines = data.engines || [];
+        cachedGenres = data.genres || [];
+
+        renderGenres(cachedGenres);
+        renderEngines(cachedEngines);
+        renderCameras(data.cameraMotions || []);
+
+        await loadGallery();
+      } catch (err) {
+        console.error('Error loading cinema data:', err);
+      }
+    }
+
+    function renderGenres(genres) {
+      if (!cinemaGenresGrid) return;
+      cinemaGenresGrid.innerHTML = genres.map(g => `
+        <div class="cinema-genre-chip ${g.id === selectedGenre ? 'active' : ''}" data-id="${g.id}">
+          <span class="genre-icon">${g.name.split(' ')[0] || '🎬'}</span>
+          <div class="genre-meta">
+            <strong>${escapeHtml(g.name)}</strong>
+            <p>${escapeHtml(g.desc)}</p>
+          </div>
+        </div>
+      `).join('');
+
+      cinemaGenresGrid.querySelectorAll('.cinema-genre-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          cinemaGenresGrid.querySelectorAll('.cinema-genre-chip').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          selectedGenre = chip.dataset.id;
+          if (inputCinemaPrompt && (!inputCinemaPrompt.value || inputCinemaPrompt.value.trim() === '')) {
+            inputCinemaPrompt.value = genreSamplePrompts[selectedGenre] || '';
+          }
+        });
+      });
+    }
+
+    function renderEngines(engines) {
+      if (!cinemaEnginesGrid) return;
+      cinemaEnginesGrid.innerHTML = engines.map(e => `
+        <div class="cinema-engine-card ${e.id === selectedEngine ? 'active' : ''}" data-id="${e.id}">
+          <div class="engine-top-row">
+            <span class="engine-badge-pill">${escapeHtml(e.badge || 'PRO AI')}</span>
+            <span class="engine-speed">⏱️ ${e.maxDurationSec || 30}s max</span>
+          </div>
+          <div class="engine-main-row">
+            <span class="engine-icon">${e.icon || '🎬'}</span>
+            <div class="engine-info">
+              <div class="engine-name">${escapeHtml(e.name)}</div>
+              <div class="engine-provider">${escapeHtml(e.company || '')}</div>
+            </div>
+          </div>
+          <p class="engine-desc">${escapeHtml(e.specialty || '')}</p>
+          <div class="engine-specs-row">
+            <span>🖥️ ${escapeHtml(e.resolution || '4K UHD')}</span>
+            <span>✨ ${escapeHtml((e.strengths && e.strengths[0]) || 'Cinema')}</span>
+          </div>
+        </div>
+      `).join('');
+
+      cinemaEnginesGrid.querySelectorAll('.cinema-engine-card').forEach(card => {
+        card.addEventListener('click', () => {
+          cinemaEnginesGrid.querySelectorAll('.cinema-engine-card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          selectedEngine = card.dataset.id;
+        });
+      });
+    }
+
+    function renderCameras(cameras) {
+      if (!selectCinemaCamera) return;
+      selectCinemaCamera.innerHTML = cameras.map(c => `
+        <option value="${c.id}">${escapeHtml(c.name)}</option>
+      `).join('');
+    }
+
+    async function loadGallery() {
+      try {
+        const res = await fetch('/api/enterprise/ai-video/gallery');
+        const data = await res.json();
+        const videos = data.gallery || [];
+        if (galleryCountBadge) galleryCountBadge.textContent = `${videos.length} VIDEO`;
+
+        // Render scroll in modal
+        if (cinemaGalleryScroll) {
+          cinemaGalleryScroll.innerHTML = videos.map(v => `
+            <div class="cinema-vault-card" data-video-id="${v.id}">
+              <img src="${v.previewUrl || v.thumbnailUrl || 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800'}" class="vault-thumb" alt="${escapeHtml(v.title)}">
+              <div class="vault-info">
+                <div class="vault-title">${escapeHtml(v.title)}</div>
+                <div class="vault-meta">${escapeHtml(v.engineName)} • ${v.durationSec || 10}s</div>
+              </div>
+            </div>
+          `).join('');
+
+          cinemaGalleryScroll.querySelectorAll('.cinema-vault-card').forEach(card => {
+            card.addEventListener('click', () => {
+              const vid = videos.find(x => x.id === card.dataset.videoId);
+              if (vid) setScreeningVideo(vid);
+            });
+          });
+        }
+
+        // Render grid in Tab 28
+        if (quickAiVideoGalleryGrid) {
+          quickAiVideoGalleryGrid.innerHTML = videos.slice(0, 4).map(v => `
+            <div class="cinema-vault-card" style="cursor:pointer;" data-video-id="${v.id}">
+              <img src="${v.previewUrl || v.thumbnailUrl || 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800'}" class="vault-thumb" alt="${escapeHtml(v.title)}">
+              <div class="vault-info">
+                <div class="vault-title" style="font-size:11px;">${escapeHtml(v.title)}</div>
+                <div class="vault-meta" style="font-size:10px;">${escapeHtml(v.engineName)} • ${v.durationSec || 10}s</div>
+              </div>
+            </div>
+          `).join('');
+
+          quickAiVideoGalleryGrid.querySelectorAll('.cinema-vault-card').forEach(card => {
+            card.addEventListener('click', () => {
+              const vid = videos.find(x => x.id === card.dataset.videoId);
+              if (vid) {
+                setScreeningVideo(vid);
+                openCinemaModal();
+              }
+            });
+          });
+        }
+
+        // If no active video set, set the first one
+        if (!currentCinemaVideo && videos.length > 0) {
+          setScreeningVideo(videos[0]);
+        }
+      } catch (err) {
+        console.error('Error loading gallery:', err);
+      }
+    }
+
+    function setScreeningVideo(v) {
+      currentCinemaVideo = v;
+      if (cinemaHeroPoster) cinemaHeroPoster.src = v.previewUrl || v.thumbnailUrl || 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800';
+      const resText = (v.technicalSpecs && v.technicalSpecs.resolution) || '4K UHD';
+      if (cinemaResolutionOverlay) cinemaResolutionOverlay.textContent = `${resText} • 60 FPS • DOLBY ATMOS`;
+      if (cinemaVideoTitle) cinemaVideoTitle.textContent = v.title;
+      if (cinemaVideoSub) cinemaVideoSub.textContent = `Engine: ${v.engineName} | Tỉ lệ: ${v.aspectRatio || '16:9'} | Thời lượng: ${v.durationSec || 10}s | Kháng Content ID: 100%`;
+      if (timelineInsertNotice) timelineInsertNotice.classList.add('hidden');
+    }
+
+    // AI Prompt Expander
+    if (btnAiExpandPrompt) {
+      btnAiExpandPrompt.addEventListener('click', async () => {
+        const prompt = inputCinemaPrompt ? inputCinemaPrompt.value.trim() : '';
+        if (!prompt) {
+          alert('Vui lòng nhập ý tưởng kịch bản cơ bản trước khi bấm Mở Rộng AI!');
+          return;
+        }
+
+        btnAiExpandPrompt.disabled = true;
+        btnAiExpandPrompt.innerHTML = '<span>✨ Đang phân tích & tối ưu...</span>';
+
+        try {
+          const cameraMotionId = selectCinemaCamera ? selectCinemaCamera.value : 'dolly_in';
+          const res = await fetch('/api/enterprise/ai-video/expand-prompt', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt, genreId: selectedGenre, cameraMotionId })
+          });
+          const data = await res.json();
+          if (data.ok && data.expandedPrompt && cinemaExpandedPromptBox && cinemaExpandedPromptText) {
+            cinemaExpandedPromptText.textContent = data.expandedPrompt;
+            cinemaExpandedPromptBox.classList.remove('hidden');
+          } else {
+            alert('Lỗi mở rộng prompt: ' + (data.message || 'Không xác định'));
+          }
+        } catch (err) {
+          alert('Lỗi kết nối mở rộng prompt: ' + err.message);
+        } finally {
+          btnAiExpandPrompt.disabled = false;
+          btnAiExpandPrompt.innerHTML = '<span>✨ AI Mở Rộng Kịch Bản Chi Tiết (Hollywood Prompt Expander)</span>';
+        }
+      });
+    }
+
+    if (btnApplyExpandedPrompt) {
+      btnApplyExpandedPrompt.addEventListener('click', () => {
+        if (cinemaExpandedPromptText && inputCinemaPrompt) {
+          inputCinemaPrompt.value = cinemaExpandedPromptText.textContent;
+          if (cinemaExpandedPromptBox) cinemaExpandedPromptBox.classList.add('hidden');
+        }
+      });
+    }
+
+    // Generate Video Button in Modal
+    if (btnStartGenerateVideo) {
+      btnStartGenerateVideo.addEventListener('click', async () => {
+        if (isGenerating) return;
+        const prompt = inputCinemaPrompt ? inputCinemaPrompt.value.trim() : '';
+        if (!prompt) {
+          alert('Vui lòng nhập câu lệnh mô tả video hoặc chọn gợi ý bên trên!');
+          return;
+        }
+
+        isGenerating = true;
+        btnStartGenerateVideo.disabled = true;
+        btnStartGenerateVideo.innerHTML = '<span>⏳ ĐANG KHỞI TẠO RENDER VIDEO...</span>';
+
+        if (cinemaProgressBox) cinemaProgressBox.classList.remove('hidden');
+        if (cinemaResultStatusBox) cinemaResultStatusBox.classList.add('hidden');
+
+        // Progress simulation stages
+        const stages = [
+          { pct: 15, text: 'Khởi tạo Latent Diffusion Space & Semantic Director...' },
+          { pct: 40, text: 'Tính toán 3D Spatial Geometry & Physics Simulation...' },
+          { pct: 75, text: 'Khuếch đại độ phân giải 4K HDR & Dolby Atmos Sound Design...' },
+          { pct: 95, text: 'Đóng gói container MP4 và kháng bản quyền Content ID 100%...' }
+        ];
+
+        let curStep = 0;
+        const interval = setInterval(() => {
+          if (curStep < stages.length) {
+            const s = stages[curStep];
+            if (cinemaProgressBarFill) cinemaProgressBarFill.style.width = `${s.pct}%`;
+            if (cinemaProgressPercentText) cinemaProgressPercentText.textContent = `${s.pct}%`;
+            if (cinemaProgressStepText) cinemaProgressStepText.textContent = s.text;
+            curStep++;
+          }
+        }, 350);
+
+        try {
+          const cameraMotionId = selectCinemaCamera ? selectCinemaCamera.value : 'dolly_in';
+          const aspectRatio = selectCinemaAspect ? selectCinemaAspect.value : '16:9';
+          const quality = selectCinemaQuality ? selectCinemaQuality.value : '4K';
+
+          const res = await fetch('/api/enterprise/ai-video/generate-video', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              prompt,
+              genreId: selectedGenre,
+              engineId: selectedEngine,
+              cameraMotionId,
+              aspectRatio,
+              quality,
+              durationSec: 10
+            })
+          });
+
+          clearInterval(interval);
+          const data = await res.json();
+
+          if (cinemaProgressBarFill) cinemaProgressBarFill.style.width = '100%';
+          if (cinemaProgressPercentText) cinemaProgressPercentText.textContent = '100%';
+          if (cinemaProgressStepText) cinemaProgressStepText.textContent = 'Render hoàn tất thành công!';
+
+          setTimeout(() => {
+            if (cinemaProgressBox) cinemaProgressBox.classList.add('hidden');
+            if (cinemaProgressBarFill) cinemaProgressBarFill.style.width = '0%';
+          }, 800);
+
+          if (data.ok && data.video) {
+            setScreeningVideo(data.video);
+            await loadGallery();
+
+            if (cinemaResultStatusBox) {
+              cinemaResultStatusBox.innerHTML = `✅ <strong>Thành Công:</strong> Video <em>${escapeHtml(data.video.title)}</em> đã được sản xuất xong bằng <strong>${escapeHtml(data.video.engineName)}</strong>! Xem ngay tại Phòng Chiếu Phim bên phải.`;
+              cinemaResultStatusBox.className = 'pub-status-box success';
+              cinemaResultStatusBox.classList.remove('hidden');
+            }
+          } else {
+            alert('Lỗi tạo video: ' + (data.message || 'Không xác định'));
+          }
+        } catch (err) {
+          clearInterval(interval);
+          alert('Lỗi kết nối Render Video: ' + err.message);
+          if (cinemaProgressBox) cinemaProgressBox.classList.add('hidden');
+        } finally {
+          isGenerating = false;
+          btnStartGenerateVideo.disabled = false;
+          btnStartGenerateVideo.innerHTML = '<span>🚀 KÍCH HOẠT GENERATE VIDEO AI</span>';
+        }
+      });
+    }
+
+    // Storyboard Multi-Scene
+    if (btnGenerateStoryboardScenes) {
+      btnGenerateStoryboardScenes.addEventListener('click', async () => {
+        const script = inputStoryboardScript ? inputStoryboardScript.value.trim() : '';
+        btnGenerateStoryboardScenes.disabled = true;
+        btnGenerateStoryboardScenes.innerHTML = '<span>⏳ Đang phân tích kịch bản...</span>';
+
+        try {
+          const res = await fetch('/api/enterprise/ai-video/generate-storyboard', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ scriptText: script, genreId: selectedGenre })
+          });
+          const data = await res.json();
+
+          if (data.ok && data.scenes) {
+            renderStoryboardScenes(data.scenes);
+            if (storyboardStatusBox) {
+              storyboardStatusBox.innerHTML = `✅ <strong>Phân Cảnh Hoàn Tất:</strong> Đã chia câu chuyện thành ${data.scenes.length} phân đoạn điện ảnh chuẩn Hollywood (Establishing ➔ Action ➔ Climax ➔ Outro)!`;
+              storyboardStatusBox.className = 'pub-status-box success';
+              storyboardStatusBox.classList.remove('hidden');
+            }
+          } else {
+            alert('Lỗi phân tích kịch bản: ' + (data.message || 'Không xác định'));
+          }
+        } catch (err) {
+          alert('Lỗi kết nối Storyboard: ' + err.message);
+        } finally {
+          btnGenerateStoryboardScenes.disabled = false;
+          btnGenerateStoryboardScenes.innerHTML = '<span>📋 Phân Tách 4 Cảnh Quay Tự Động</span>';
+        }
+      });
+    }
+
+    function renderStoryboardScenes(scenes) {
+      if (!storyboardScenesContainer) return;
+      storyboardScenesContainer.innerHTML = scenes.map(s => `
+        <div class="storyboard-scene-card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px; margin-bottom: 8px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+            <div style="display:flex; align-items:center; gap: 8px;">
+              <span class="badge-mini-3d" style="background:#8b5cf6; color:#fff;">CẢNH ${s.sceneNumber}</span>
+              <strong style="font-size:12px; color:#fff;">${escapeHtml(s.shotType)}</strong>
+            </div>
+            <span style="font-size:11px; color:var(--text-muted);">⏱️ ${s.durationSec}s | Góc: ${escapeHtml(s.cameraMotion)}</span>
+          </div>
+          <p style="font-size:11px; color:#d1d5db; margin: 4px 0 6px 0; line-height: 1.4;">${escapeHtml(s.visualPrompt)}</p>
+          <div style="font-size:10px; color:#9ca3af; font-style:italic;">🎵 Âm thanh: ${escapeHtml(s.soundFx)}</div>
+        </div>
+      `).join('');
+    }
+
+    if (btnRenderFullStoryboardMovie) {
+      btnRenderFullStoryboardMovie.addEventListener('click', async () => {
+        btnRenderFullStoryboardMovie.disabled = true;
+        btnRenderFullStoryboardMovie.innerHTML = '<span>🎬 Đang Render & Ghép 4 Cảnh (20s)...</span>';
+
+        try {
+          const script = inputStoryboardScript ? inputStoryboardScript.value.trim() : 'Phim Ngắn Đa Phân Cảnh';
+          const res = await fetch('/api/enterprise/ai-video/generate-video', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              prompt: `[MULTI-SCENE MOVIE: 4 SCENES CONCAT] ${script}`,
+              genreId: selectedGenre,
+              engineId: selectedEngine,
+              cameraMotionId: 'drone_fpv',
+              aspectRatio: '16:9',
+              quality: '4K',
+              durationSec: 20
+            })
+          });
+          const data = await res.json();
+          if (data.ok && data.video) {
+            setScreeningVideo(data.video);
+            await loadGallery();
+            if (storyboardStatusBox) {
+              storyboardStatusBox.innerHTML = `🎉 <strong>Hoàn Tất Phim Hoàn Chỉnh:</strong> Đã render và ghép nối 4 cảnh quay thành bộ phim 20 giây! Bạn có thể xem ngay tại Screening Room.`;
+              storyboardStatusBox.className = 'pub-status-box success';
+              storyboardStatusBox.classList.remove('hidden');
+            }
+          }
+        } catch (err) {
+          alert('Lỗi render phim Storyboard: ' + err.message);
+        } finally {
+          btnRenderFullStoryboardMovie.disabled = false;
+          btnRenderFullStoryboardMovie.innerHTML = '<span>🎬 Render & Ghép Nối Phim Hoàn Chỉnh (20s)</span>';
+        }
+      });
+    }
+
+    // Screening Actions: Insert into timeline
+    if (btnInsertClipToEditorTimeline) {
+      btnInsertClipToEditorTimeline.addEventListener('click', () => {
+        if (!currentCinemaVideo) {
+          alert('Chưa có video nào trong phòng chiếu phim!');
+          return;
+        }
+
+        // Seamless integrate into Studio Timeline
+        state.currentVideoTitle = currentCinemaVideo.title;
+        if (timelineClipTitle) timelineClipTitle.textContent = currentCinemaVideo.title;
+        if (currentProjectName) currentProjectName.textContent = `Dự án: ${currentCinemaVideo.title}`;
+
+        if (timelineInsertNotice) {
+          timelineInsertNotice.innerHTML = `✅ <strong>Đã Nạp Vào Timeline Thành Công:</strong> Video "<em>${escapeHtml(currentCinemaVideo.title)}</em>" (${currentCinemaVideo.durationSec || 10}s - ${escapeHtml(currentCinemaVideo.engineName)}) đã sẵn sàng trên đường biên tập chính của TMD Studio Pro!`;
+          timelineInsertNotice.className = 'pub-status-box success';
+          timelineInsertNotice.classList.remove('hidden');
+        }
+      });
+    }
+
+    // Download MP4
+    if (btnDownloadCurrentAiVideo) {
+      btnDownloadCurrentAiVideo.addEventListener('click', () => {
+        if (!currentCinemaVideo) return;
+        const a = document.createElement('a');
+        a.href = currentCinemaVideo.videoUrl || currentCinemaVideo.previewUrl;
+        a.download = `${currentCinemaVideo.id || 'ai_video'}.mp4`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      });
+    }
+
+    // Regenerate Variant
+    if (btnRegenerateVariant) {
+      btnRegenerateVariant.addEventListener('click', () => {
+        if (btnStartGenerateVideo) btnStartGenerateVideo.click();
+      });
+    }
+
+    // Tab 28 Quick Generate Button
+    if (btnQuickGenerateAiVideo) {
+      btnQuickGenerateAiVideo.addEventListener('click', async () => {
+        const prompt = quickAiVideoPrompt ? quickAiVideoPrompt.value.trim() : '';
+        if (!prompt) {
+          alert('Vui lòng nhập mô tả ý tưởng video!');
+          return;
+        }
+
+        btnQuickGenerateAiVideo.disabled = true;
+        btnQuickGenerateAiVideo.innerHTML = '<span>⏳ Đang Render Video AI...</span>';
+
+        try {
+          const genreId = quickAiVideoGenre ? quickAiVideoGenre.value : 'animated_short';
+          const engineId = quickAiVideoEngine ? quickAiVideoEngine.value : 'kling_ai_25';
+          const cameraMotionId = quickAiCameraMotion ? quickAiCameraMotion.value : 'orbit_360';
+          const aspectRatio = quickAiAspectRatio ? quickAiAspectRatio.value : '16:9';
+
+          const res = await fetch('/api/enterprise/ai-video/generate-video', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt, genreId, engineId, cameraMotionId, aspectRatio, quality: '4K', durationSec: 10 })
+          });
+          const data = await res.json();
+          if (data.ok && data.video) {
+            setScreeningVideo(data.video);
+            await loadGallery();
+
+            if (quickAiVideoResultBox) {
+              quickAiVideoResultBox.innerHTML = `✅ <strong>Render Thành Công:</strong> "${escapeHtml(data.video.title)}" (${data.video.durationSec || 10}s - ${escapeHtml(data.video.engineName)}). Bấm nút 'Mở Studio Điện Ảnh' bên trên để xem phòng chiếu 4K!`;
+              quickAiVideoResultBox.className = 'pub-status-box success';
+              quickAiVideoResultBox.classList.remove('hidden');
+            }
+          } else {
+            alert('Lỗi render video: ' + (data.message || 'Không xác định'));
+          }
+        } catch (err) {
+          alert('Lỗi kết nối: ' + err.message);
+        } finally {
+          btnQuickGenerateAiVideo.disabled = false;
+          btnQuickGenerateAiVideo.innerHTML = '<span>🚀 Render Video AI Ngay</span>';
+        }
+      });
+    }
+
+    // Initial load
+    loadCinemaData();
   }
 
   // Start app

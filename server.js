@@ -47,6 +47,7 @@ const webcamMocapStream = require('./modules/webcam_mocap_stream');
 const cvProductPinning = require('./modules/cv_product_pinning');
 const simFarmFingerprint = require('./modules/sim_farm_fingerprint');
 const profitMarginTracker = require('./modules/profit_margin_tracker');
+const aiTextToVideoDirector = require('./modules/ai_text_to_video_director');
 
 const PORT = process.env.PORT || 3000;
 const STUDIO_DIR = path.join(__dirname, 'studio');
@@ -1851,6 +1852,59 @@ const server = http.createServer(async (req, res) => {
     }
     return;
   }
+
+  // 57. AI Text-to-Video Cinematic Studio & Multi-Agent Director
+  if (pathname === '/api/enterprise/ai-video/engines-and-presets' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(aiTextToVideoDirector.getEnginesAndPresets()));
+    return;
+  }
+
+  if (pathname === '/api/enterprise/ai-video/expand-prompt' && req.method === 'POST') {
+    try {
+      const { prompt, genreId, cameraMotionId } = await readJsonBody();
+      const result = aiTextToVideoDirector.expandPromptWithAi(prompt, genreId, cameraMotionId);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  if (pathname === '/api/enterprise/ai-video/generate-storyboard' && req.method === 'POST') {
+    try {
+      const { scriptText, genreId } = await readJsonBody();
+      const result = aiTextToVideoDirector.generateStoryboard(scriptText, genreId);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  if (pathname === '/api/enterprise/ai-video/generate-video' && req.method === 'POST') {
+    try {
+      const params = await readJsonBody();
+      const result = aiTextToVideoDirector.generateVideo(params);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  if (pathname === '/api/enterprise/ai-video/gallery' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(aiTextToVideoDirector.getVideoGallery()));
+    return;
+  }
+
 
 
   let reqPath = pathname === '/' ? '/index.html' : pathname;
