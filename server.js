@@ -54,6 +54,12 @@ const autoMultiPublisher = require('./modules/auto_multi_publisher');
 const digitalHumanStreamer = require('./modules/digital_human_streamer');
 const ecommerceAffiliateBot = require('./modules/ecommerce_affiliate_bot');
 const videoAbTestingMatrix = require('./modules/video_ab_testing_matrix');
+const crmWebhookNotifier = require('./modules/crm_webhook_notifier');
+const viralTrendRadar = require('./modules/viral_trend_radar');
+const liveInteractiveBrain = require('./modules/live_interactive_brain');
+const autopilotPublisher = require('./modules/autopilot_publisher');
+const voiceCloneStudio = require('./modules/voice_clone_studio');
+const virtualStageCompositor = require('./modules/virtual_stage_compositor');
 
 const PORT = process.env.PORT || 3000;
 const STUDIO_DIR = path.join(__dirname, 'studio');
@@ -2027,8 +2033,18 @@ const server = http.createServer(async (req, res) => {
     try {
       const body = await readJsonBody();
       const text = body.commentText || body.comment || '';
+      const result = ecommerceAffiliateBot.processCustomerComment(text, body.customerName);
+      if (result.isOrder && result.order) {
+        crmWebhookNotifier.sendNotification({
+          type: 'COD_ORDER',
+          title: `🔔 ĐƠN HÀNG COD MỚI #${result.order.orderId}`,
+          message: `Khách hàng: ${result.order.customerName} (${result.order.customerPhone})\nSản phẩm: ${result.order.productName}\nSố tiền COD: ${result.order.amount.toLocaleString('vi-VN')}đ\nHoa hồng: +${result.order.commissionEarned.toLocaleString('vi-VN')}đ`,
+          channel: 'Telegram & Zalo OA',
+          payload: result.order
+        });
+      }
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(ecommerceAffiliateBot.processCustomerComment(text, body.customerName)));
+      res.end(JSON.stringify(result));
     } catch (e) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: false, message: e.message }));
@@ -2058,6 +2074,159 @@ const server = http.createServer(async (req, res) => {
       const params = await readJsonBody();
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(videoAbTestingMatrix.generateAbVariants(params)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // --- 1. CRM WEBHOOK NOTIFIER (TELEGRAM & ZALO OA) ---
+  if (pathname === '/api/enterprise/crm-webhook/config' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(crmWebhookNotifier.getConfig()));
+    return;
+  }
+  if (pathname === '/api/enterprise/crm-webhook/config' && req.method === 'POST') {
+    try {
+      const cfg = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(crmWebhookNotifier.updateConfig(cfg)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+  if (pathname === '/api/enterprise/crm-webhook/send-test' && req.method === 'POST') {
+    try {
+      const body = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(crmWebhookNotifier.sendTestNotification(body.channel)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // --- 2. VIRAL TREND RADAR & SCRIPT SCRAPER ---
+  if (pathname === '/api/enterprise/trend-radar/feeds' && req.method === 'GET') {
+    const category = parsedUrl.query?.category || 'all';
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(viralTrendRadar.getTrendingFeeds(category)));
+    return;
+  }
+  if (pathname === '/api/enterprise/trend-radar/humanize-script' && req.method === 'POST') {
+    try {
+      const { trendId, targetRegister } = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(viralTrendRadar.humanizeAndAdaptScript(trendId, targetRegister)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // --- 3. INTERACTIVE LIVE CHATBOT BRAIN ---
+  if (pathname === '/api/enterprise/live-brain/knowledge-base' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(liveInteractiveBrain.getKnowledgeBase()));
+    return;
+  }
+  if (pathname === '/api/enterprise/live-brain/ask-question' && req.method === 'POST') {
+    try {
+      const { question, customerName } = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(liveInteractiveBrain.askQuestion(question, customerName)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+  if (pathname === '/api/enterprise/live-brain/add-faq' && req.method === 'POST') {
+    try {
+      const faqItem = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(liveInteractiveBrain.addFaqItem(faqItem)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // --- 4. AUTO-PILOT BACKGROUND PUBLISHER ---
+  if (pathname === '/api/enterprise/autopilot/status-and-queue' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(autopilotPublisher.getStatusAndQueue()));
+    return;
+  }
+  if (pathname === '/api/enterprise/autopilot/toggle' && req.method === 'POST') {
+    try {
+      const { enable } = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(autopilotPublisher.toggleAutoPilot(enable)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+  if (pathname === '/api/enterprise/autopilot/trigger-now' && req.method === 'POST') {
+    try {
+      const { jobId } = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(autopilotPublisher.triggerPublishNow(jobId)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // --- 5. AI VOICE CLONING STUDIO (ZERO-SHOT RVC / F5-TTS) ---
+  if (pathname === '/api/enterprise/voice-clone/profiles' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(voiceCloneStudio.getProfiles()));
+    return;
+  }
+  if (pathname === '/api/enterprise/voice-clone/create-profile' && req.method === 'POST') {
+    try {
+      const profileData = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(voiceCloneStudio.createVoiceProfile(profileData)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+  if (pathname === '/api/enterprise/voice-clone/synthesize' && req.method === 'POST') {
+    try {
+      const { profileId, text, emotion } = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(voiceCloneStudio.synthesizeClonedVoice(profileId, text, emotion)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // --- 6. AI NEURAL GREEN SCREEN & 3D VIRTUAL STAGES ---
+  if (pathname === '/api/enterprise/virtual-stages/presets' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(virtualStageCompositor.getStagePresets()));
+    return;
+  }
+  if (pathname === '/api/enterprise/virtual-stages/composite' && req.method === 'POST') {
+    try {
+      const params = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(virtualStageCompositor.compositeVirtualStage(params)));
     } catch (e) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: false, message: e.message }));

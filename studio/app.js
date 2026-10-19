@@ -155,6 +155,12 @@ document.addEventListener('DOMContentLoaded', () => {
     setupDigitalHumanModule();
     setupAbTestingModule();
     setupEcommerceBotModule();
+    setupTrendRadarModule();
+    setupVoiceCloneModule();
+    setupVirtualStageModule();
+    setupLiveBrainModule();
+    setupAutopilotModule();
+    setupCrmWebhookModule();
     setupModals();
     loadActiveVideo();
     drawSimulatedWaveform();
@@ -8080,6 +8086,806 @@ document.addEventListener('DOMContentLoaded', () => {
         } finally {
           btnTestBotComment.disabled = false;
           btnTestBotComment.innerHTML = '<span>🤖 Quét Comment & Chốt Đơn</span>';
+        }
+      });
+    }
+  }
+
+  /* ===================================================================
+     35. DOUYIN & TIKTOK VIRAL TREND RADAR & SCRIPT SCRAPER
+     =================================================================== */
+  function setupTrendRadarModule() {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    const modalTrendRadar = document.getElementById('modalTrendRadar');
+    const btnOpenTrendRadarModal = document.getElementById('btnOpenTrendRadarModal');
+    const btnCloseTrendRadarModal = document.getElementById('btnCloseTrendRadarModal');
+    const btnCloseTrendRadarModalBottom = document.getElementById('btnCloseTrendRadarModalBottom');
+    const trendCategoryTabs = document.getElementById('trendCategoryTabs');
+    const trendCardsGrid = document.getElementById('trendCardsGrid');
+    const trendScriptBox = document.getElementById('trendScriptBox');
+
+    let currentCategory = 'all';
+
+    function openModal() {
+      if (modalTrendRadar) {
+        modalTrendRadar.classList.add('open');
+        loadTrends();
+      }
+    }
+
+    function closeModal() {
+      if (modalTrendRadar) modalTrendRadar.classList.remove('open');
+    }
+
+    if (btnOpenTrendRadarModal) btnOpenTrendRadarModal.addEventListener('click', openModal);
+    if (btnCloseTrendRadarModal) btnCloseTrendRadarModal.addEventListener('click', closeModal);
+    if (btnCloseTrendRadarModalBottom) btnCloseTrendRadarModalBottom.addEventListener('click', closeModal);
+
+    if (modalTrendRadar) {
+      modalTrendRadar.addEventListener('click', (e) => {
+        if (e.target === modalTrendRadar) closeModal();
+      });
+    }
+
+    async function loadTrends() {
+      try {
+        const res = await fetch(`/api/enterprise/trend-radar/feeds?category=${currentCategory}`);
+        const data = await res.json();
+        if (data.ok) {
+          if (trendCategoryTabs && Array.isArray(data.categories)) {
+            trendCategoryTabs.innerHTML = data.categories.map(c => `
+              <button class="genre-chip ${c.id === currentCategory ? 'active' : ''}" data-cat="${c.id}">
+                ${escapeHtml(c.name)}
+              </button>
+            `).join('');
+
+            trendCategoryTabs.querySelectorAll('.genre-chip').forEach(btn => {
+              btn.addEventListener('click', () => {
+                currentCategory = btn.getAttribute('data-cat');
+                loadTrends();
+              });
+            });
+          }
+
+          if (trendCardsGrid && Array.isArray(data.trends)) {
+            trendCardsGrid.innerHTML = data.trends.map(t => `
+              <div class="trend-card" data-trend-id="${t.id}">
+                <div class="trend-thumb-box">
+                  <img src="${t.thumbnail}" alt="${escapeHtml(t.title)}" class="trend-thumb-img">
+                  <span class="trend-growth-badge">📈 ${escapeHtml(t.viewsGrowth)}</span>
+                </div>
+                <div style="font-size:12px; font-weight:700; color:#fff;">${escapeHtml(t.title)}</div>
+                <div style="font-size:9px; color:#fbcfe8;">
+                  • Nền tảng: <strong>${escapeHtml(t.platform)}</strong> | Âm thanh: <em>${escapeHtml(t.soundTrack)}</em>
+                </div>
+                <div style="font-size:10px; color:#cbd5e1; background:rgba(0,0,0,0.3); padding:6px; border-radius:4px; border-left:2px solid #ec4899; line-height:1.4;">
+                  "${escapeHtml(t.humanizedViScript.substring(0, 95))}..."
+                </div>
+                <button class="studio-btn primary-btn sm-btn full-btn btn-adapt-trend" data-trend-id="${t.id}">
+                  <span>✨ Bóc Tách & Việt Hóa Kịch Bản</span>
+                </button>
+              </div>
+            `).join('');
+
+            trendCardsGrid.querySelectorAll('.btn-adapt-trend').forEach(btn => {
+              btn.addEventListener('click', async () => {
+                const trendId = btn.getAttribute('data-trend-id');
+                btn.disabled = true;
+                btn.textContent = 'Đang Việt hóa...';
+                try {
+                  const res2 = await fetch('/api/enterprise/trend-radar/humanize-script', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ trendId, targetRegister: 'tiktok' })
+                  });
+                  const data2 = await res2.json();
+                  if (data2.ok && data2.adaptedScript) {
+                    const s = data2.adaptedScript;
+                    if (trendScriptBox) {
+                      trendScriptBox.innerHTML = `
+                        <div style="font-weight:700; color:#ec4899; font-size:13px; margin-bottom:6px;">
+                          🎉 Kịch Bản Viral Trend: ${escapeHtml(s.title)}
+                        </div>
+                        <div style="font-size:11px; color:#cbd5e1; line-height:1.5;">
+                          • <strong>Hook 3 giây đầu:</strong> <em>"${escapeHtml(s.hook3s)}"</em><br>
+                          • <strong>Nội dung kịch bản:</strong> "${escapeHtml(s.fullScript)}"<br>
+                          • <strong>Kêu gọi hành động:</strong> "${escapeHtml(s.callToAction)}"<br>
+                          • <strong>Hashtags đề xuất:</strong> <code>${escapeHtml(s.suggestedHashtags)}</code>
+                        </div>
+                        <div style="margin-top:8px; display:flex; gap:8px;">
+                          <button class="studio-btn success-btn sm-btn" onclick="
+                            const inp = document.getElementById('digitalHumanScriptInput');
+                            if(inp) inp.value = '${escapeHtml(s.fullScript).replace(/'/g, "\\'")}';
+                            document.getElementById('btnCloseTrendRadarModal').click();
+                            document.getElementById('btnOpenDigitalHumanModal').click();
+                          ">
+                            <span>👤 Nạp Sang Người Ảo Digital Human 4K</span>
+                          </button>
+                        </div>
+                      `;
+                      trendScriptBox.className = 'pub-status-box success';
+                      trendScriptBox.classList.remove('hidden');
+                    }
+                  }
+                } catch (e) {
+                  alert('Lỗi: ' + e.message);
+                } finally {
+                  btn.disabled = false;
+                  btn.textContent = '✨ Bóc Tách & Việt Hóa Kịch Bản';
+                }
+              });
+            });
+          }
+        }
+      } catch (e) {
+        console.error('Error loading trends:', e);
+      }
+    }
+  }
+
+  /* ===================================================================
+     36. AI VOICE CLONING 1-CLICK STUDIO (ZERO-SHOT RVC / F5-TTS)
+     =================================================================== */
+  function setupVoiceCloneModule() {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    const modalVoiceClone = document.getElementById('modalVoiceClone');
+    const btnOpenVoiceCloneModal = document.getElementById('btnOpenVoiceCloneModal');
+    const btnCloseVoiceCloneModal = document.getElementById('btnCloseVoiceCloneModal');
+    const btnCloseVoiceCloneModalBottom = document.getElementById('btnCloseVoiceCloneModalBottom');
+    const voiceProfilesGrid = document.getElementById('voiceProfilesGrid');
+    const newVoiceNameInput = document.getElementById('newVoiceNameInput');
+    const newVoiceGenderSelect = document.getElementById('newVoiceGenderSelect');
+    const btnTrainNewVoiceProfile = document.getElementById('btnTrainNewVoiceProfile');
+    const voiceCloneEmotionSelect = document.getElementById('voiceCloneEmotionSelect');
+    const voiceCloneTextInput = document.getElementById('voiceCloneTextInput');
+    const btnSynthesizeVoiceClone = document.getElementById('btnSynthesizeVoiceClone');
+    const voiceCloneResultBox = document.getElementById('voiceCloneResultBox');
+
+    let selectedProfileId = 'voice_custom_owner';
+
+    function openModal() {
+      if (modalVoiceClone) {
+        modalVoiceClone.classList.add('open');
+        loadVoiceProfiles();
+      }
+    }
+
+    function closeModal() {
+      if (modalVoiceClone) modalVoiceClone.classList.remove('open');
+    }
+
+    if (btnOpenVoiceCloneModal) btnOpenVoiceCloneModal.addEventListener('click', openModal);
+    if (btnCloseVoiceCloneModal) btnCloseVoiceCloneModal.addEventListener('click', closeModal);
+    if (btnCloseVoiceCloneModalBottom) btnCloseVoiceCloneModalBottom.addEventListener('click', closeModal);
+
+    if (modalVoiceClone) {
+      modalVoiceClone.addEventListener('click', (e) => {
+        if (e.target === modalVoiceClone) closeModal();
+      });
+    }
+
+    async function loadVoiceProfiles() {
+      try {
+        const res = await fetch('/api/enterprise/voice-clone/profiles');
+        const data = await res.json();
+        if (data.ok && Array.isArray(data.profiles) && voiceProfilesGrid) {
+          voiceProfilesGrid.innerHTML = data.profiles.map(p => {
+            const isSel = p.id === selectedProfileId;
+            return `
+              <div class="voice-profile-card ${isSel ? 'selected' : ''}" data-profile-id="${p.id}">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:16px;">🎙️</span>
+                  <span style="font-size:9px; font-weight:800; color:#10b981; background:rgba(16,185,129,0.15); padding:2px 6px; border-radius:4px;">
+                    ✔ ${escapeHtml(p.similarityScore)}
+                  </span>
+                </div>
+                <div style="font-size:12px; font-weight:700; color:#fff;">${escapeHtml(p.name)}</div>
+                <div style="font-size:10px; color:#c4b5fd;">• Vùng miền: ${escapeHtml(p.accent)}</div>
+                <div style="font-size:9px; color:#cbd5e1;">Mẫu: ${p.sampleDurationSec}s | Cảm xúc: ${p.emotionsSupported.join(', ')}</div>
+              </div>
+            `;
+          }).join('');
+
+          voiceProfilesGrid.querySelectorAll('.voice-profile-card').forEach(card => {
+            card.addEventListener('click', () => {
+              voiceProfilesGrid.querySelectorAll('.voice-profile-card').forEach(c => c.classList.remove('selected'));
+              card.classList.add('selected');
+              selectedProfileId = card.getAttribute('data-profile-id');
+            });
+          });
+        }
+      } catch (e) {
+        console.error('Error loading voice profiles:', e);
+      }
+    }
+
+    if (btnTrainNewVoiceProfile) {
+      btnTrainNewVoiceProfile.addEventListener('click', async () => {
+        const name = newVoiceNameInput ? newVoiceNameInput.value.trim() : '';
+        if (!name) {
+          alert('Vui lòng nhập tên hồ sơ giọng nói!');
+          return;
+        }
+
+        btnTrainNewVoiceProfile.disabled = true;
+        btnTrainNewVoiceProfile.innerHTML = '<span>⏳ Đang huấn luyện...</span>';
+
+        try {
+          const res = await fetch('/api/enterprise/voice-clone/create-profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name,
+              gender: newVoiceGenderSelect ? newVoiceGenderSelect.value : 'male',
+              accent: 'Việt Nam Chuẩn'
+            })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            alert(data.message);
+            if (newVoiceNameInput) newVoiceNameInput.value = '';
+            loadVoiceProfiles();
+          }
+        } catch (e) {
+          alert('Lỗi: ' + e.message);
+        } finally {
+          btnTrainNewVoiceProfile.disabled = false;
+          btnTrainNewVoiceProfile.innerHTML = '<span>⚡ Huấn Luyện Ngay</span>';
+        }
+      });
+    }
+
+    if (btnSynthesizeVoiceClone) {
+      btnSynthesizeVoiceClone.addEventListener('click', async () => {
+        const text = voiceCloneTextInput ? voiceCloneTextInput.value.trim() : '';
+        const emotion = voiceCloneEmotionSelect ? voiceCloneEmotionSelect.value : 'Hào hứng';
+
+        btnSynthesizeVoiceClone.disabled = true;
+        btnSynthesizeVoiceClone.innerHTML = '<span>⏳ Đang tổng hợp giọng nói...</span>';
+
+        try {
+          const res = await fetch('/api/enterprise/voice-clone/synthesize', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              profileId: selectedProfileId,
+              text,
+              emotion
+            })
+          });
+          const data = await res.json();
+          if (data.ok && data.audio) {
+            const a = data.audio;
+            if (voiceCloneResultBox) {
+              voiceCloneResultBox.innerHTML = `
+                <div style="font-weight:700; color:#10b981; font-size:12px; margin-bottom:4px;">
+                  ${escapeHtml(data.message)}
+                </div>
+                <div style="font-size:11px; color:#cbd5e1; line-height:1.5;">
+                  • <strong>Hồ sơ giọng:</strong> ${escapeHtml(a.voiceName)} | <strong>Độ giữ âm sắc:</strong> ${escapeHtml(a.timbrePreservationRate)}<br>
+                  • <strong>Thời lượng:</strong> ${a.durationSec} giây | <strong>Độ trễ xử lý:</strong> ${a.latencyMs}ms<br>
+                  • <strong>File âm thanh:</strong> <code>${escapeHtml(a.audioUrl)}</code> (Sẵn sàng gắn vào Timeline & Digital Human)
+                </div>
+              `;
+              voiceCloneResultBox.className = 'pub-status-box success';
+              voiceCloneResultBox.classList.remove('hidden');
+            }
+          }
+        } catch (e) {
+          alert('Lỗi: ' + e.message);
+        } finally {
+          btnSynthesizeVoiceClone.disabled = false;
+          btnSynthesizeVoiceClone.innerHTML = '<span>🔊 Chuyển Thành Giọng Nói</span>';
+        }
+      });
+    }
+  }
+
+  /* ===================================================================
+     37. AI NEURAL GREEN SCREEN & 3D VIRTUAL STAGES
+     =================================================================== */
+  function setupVirtualStageModule() {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    const modalVirtualStage = document.getElementById('modalVirtualStage');
+    const btnOpenVirtualStageModal = document.getElementById('btnOpenVirtualStageModal');
+    const btnCloseVirtualStageModal = document.getElementById('btnCloseVirtualStageModal');
+    const btnCloseVirtualStageModalBottom = document.getElementById('btnCloseVirtualStageModalBottom');
+    const virtualStagesGrid = document.getElementById('virtualStagesGrid');
+    const stageEdgeSoftness = document.getElementById('stageEdgeSoftness');
+    const stageColorSpill = document.getElementById('stageColorSpill');
+    const stageBokehSelect = document.getElementById('stageBokehSelect');
+    const btnCompositeVirtualStage = document.getElementById('btnCompositeVirtualStage');
+    const virtualStageStatusBox = document.getElementById('virtualStageStatusBox');
+
+    let selectedStageId = 'stage_penthouse_saigon';
+
+    function openModal() {
+      if (modalVirtualStage) {
+        modalVirtualStage.classList.add('open');
+        loadStages();
+      }
+    }
+
+    function closeModal() {
+      if (modalVirtualStage) modalVirtualStage.classList.remove('open');
+    }
+
+    if (btnOpenVirtualStageModal) btnOpenVirtualStageModal.addEventListener('click', openModal);
+    if (btnCloseVirtualStageModal) btnCloseVirtualStageModal.addEventListener('click', closeModal);
+    if (btnCloseVirtualStageModalBottom) btnCloseVirtualStageModalBottom.addEventListener('click', closeModal);
+
+    if (modalVirtualStage) {
+      modalVirtualStage.addEventListener('click', (e) => {
+        if (e.target === modalVirtualStage) closeModal();
+      });
+    }
+
+    async function loadStages() {
+      try {
+        const res = await fetch('/api/enterprise/virtual-stages/presets');
+        const data = await res.json();
+        if (data.ok && Array.isArray(data.stages) && virtualStagesGrid) {
+          virtualStagesGrid.innerHTML = data.stages.map(s => {
+            const isSel = s.id === selectedStageId;
+            return `
+              <div class="virtual-stage-card ${isSel ? 'selected' : ''}" data-stage-id="${s.id}">
+                <img src="${s.backgroundUrl}" alt="${escapeHtml(s.name)}" class="stage-thumb-img">
+                <div style="font-size:11px; font-weight:700; color:#fff;">${escapeHtml(s.name)}</div>
+                <div style="font-size:9px; color:#bae6fd;">• ${escapeHtml(s.category)}</div>
+                <div style="font-size:8px; color:#cbd5e1;">Ánh sáng: ${escapeHtml(s.lightingTone)}</div>
+              </div>
+            `;
+          }).join('');
+
+          virtualStagesGrid.querySelectorAll('.virtual-stage-card').forEach(card => {
+            card.addEventListener('click', () => {
+              virtualStagesGrid.querySelectorAll('.virtual-stage-card').forEach(c => c.classList.remove('selected'));
+              card.classList.add('selected');
+              selectedStageId = card.getAttribute('data-stage-id');
+            });
+          });
+        }
+      } catch (e) {
+        console.error('Error loading virtual stages:', e);
+      }
+    }
+
+    if (btnCompositeVirtualStage) {
+      btnCompositeVirtualStage.addEventListener('click', async () => {
+        btnCompositeVirtualStage.disabled = true;
+        btnCompositeVirtualStage.innerHTML = '<span>⏳ Đang tách nền Neural Matting & Ghép Sân Khấu 3D...</span>';
+
+        try {
+          const res = await fetch('/api/enterprise/virtual-stages/composite', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              stageId: selectedStageId,
+              edgeSoftness: stageEdgeSoftness ? Number(stageEdgeSoftness.value) : 2.5,
+              colorSpillSuppression: stageColorSpill ? Number(stageColorSpill.value) : 85,
+              bokehBlur: stageBokehSelect ? stageBokehSelect.value : 'Medium Bokeh'
+            })
+          });
+          const data = await res.json();
+          if (data.ok && data.composite) {
+            const c = data.composite;
+            if (virtualStageStatusBox) {
+              virtualStageStatusBox.innerHTML = `
+                <div style="font-weight:700; color:#10b981; font-size:12px; margin-bottom:4px;">
+                  ${escapeHtml(data.message)}
+                </div>
+                <div style="font-size:11px; color:#cbd5e1; line-height:1.5;">
+                  • <strong>Sân khấu:</strong> ${escapeHtml(c.stageName)} (${escapeHtml(c.stageCategory)})<br>
+                  • <strong>Hiệu ứng:</strong> Khử ám màu ${c.settingsApplied.colorSpillSuppression} | Độ mờ ${c.settingsApplied.depthBokeh} | Viền ${c.settingsApplied.edgeSoftness}<br>
+                  • <strong>Khung hình:</strong> Đã đồng bộ ánh sáng môi trường rực rỡ lên nhân vật.
+                </div>
+              `;
+              virtualStageStatusBox.className = 'pub-status-box success';
+              virtualStageStatusBox.classList.remove('hidden');
+            }
+          }
+        } catch (e) {
+          alert('Lỗi: ' + e.message);
+        } finally {
+          btnCompositeVirtualStage.disabled = false;
+          btnCompositeVirtualStage.innerHTML = '<span>🪄 ÁP DỤNG GHÉP SÂN KHẤU 3D VÀO VIDEO NGAY</span>';
+        }
+      });
+    }
+  }
+
+  /* ===================================================================
+     38. INTERACTIVE LIVE CHATBOT BRAIN (RAG Q&A FOR LIVESTREAM)
+     =================================================================== */
+  function setupLiveBrainModule() {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    const modalLiveBrain = document.getElementById('modalLiveBrain');
+    const btnOpenLiveBrainModal = document.getElementById('btnOpenLiveBrainModal');
+    const btnCloseLiveBrainModal = document.getElementById('btnCloseLiveBrainModal');
+    const btnCloseLiveBrainModalBottom = document.getElementById('btnCloseLiveBrainModalBottom');
+    const liveBrainFaqGrid = document.getElementById('liveBrainFaqGrid');
+    const liveBrainQuestionInput = document.getElementById('liveBrainQuestionInput');
+    const btnAskLiveBrain = document.getElementById('btnAskLiveBrain');
+    const liveBrainResultBox = document.getElementById('liveBrainResultBox');
+
+    function openModal() {
+      if (modalLiveBrain) {
+        modalLiveBrain.classList.add('open');
+        loadFaqs();
+      }
+    }
+
+    function closeModal() {
+      if (modalLiveBrain) modalLiveBrain.classList.remove('open');
+    }
+
+    if (btnOpenLiveBrainModal) btnOpenLiveBrainModal.addEventListener('click', openModal);
+    if (btnCloseLiveBrainModal) btnCloseLiveBrainModal.addEventListener('click', closeModal);
+    if (btnCloseLiveBrainModalBottom) btnCloseLiveBrainModalBottom.addEventListener('click', closeModal);
+
+    if (modalLiveBrain) {
+      modalLiveBrain.addEventListener('click', (e) => {
+        if (e.target === modalLiveBrain) closeModal();
+      });
+    }
+
+    async function loadFaqs() {
+      try {
+        const res = await fetch('/api/enterprise/live-brain/knowledge-base');
+        const data = await res.json();
+        if (data.ok && Array.isArray(data.faqList) && liveBrainFaqGrid) {
+          liveBrainFaqGrid.innerHTML = data.faqList.map(f => `
+            <div class="live-brain-card">
+              <div style="font-size:12px; font-weight:700; color:#10b981;">📌 ${escapeHtml(f.topic)}</div>
+              <div style="font-size:10px; color:#a7f3d0;">Từ khóa: <code>${escapeHtml(f.keywords.join(', '))}</code></div>
+              <div style="font-size:10px; color:#cbd5e1; background:rgba(0,0,0,0.3); padding:4px 6px; border-radius:4px; margin-top:2px;">
+                "${escapeHtml(f.responseTemplate)}"
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        console.error('Error loading brain faqs:', e);
+      }
+    }
+
+    if (btnAskLiveBrain) {
+      btnAskLiveBrain.addEventListener('click', async () => {
+        const q = liveBrainQuestionInput ? liveBrainQuestionInput.value.trim() : '';
+        if (!q) {
+          alert('Vui lòng nhập câu hỏi thử nghiệm!');
+          return;
+        }
+
+        btnAskLiveBrain.disabled = true;
+        btnAskLiveBrain.innerHTML = '<span>⏳ Đang xử lý...</span>';
+
+        try {
+          const res = await fetch('/api/enterprise/live-brain/ask-question', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              question: q,
+              customerName: 'Khách Hàng TikTok'
+            })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            if (liveBrainResultBox) {
+              liveBrainResultBox.innerHTML = `
+                <div style="font-weight:700; color:#10b981; font-size:12px; margin-bottom:4px;">
+                  🤖 AI Trả Lời Trực Tiếp (Độ trễ: ${data.latencyMs}ms):
+                </div>
+                <div style="font-size:12px; color:#fff; background:rgba(16,185,129,0.15); padding:8px; border-radius:6px; border-left:3px solid #10b981;">
+                  "${escapeHtml(data.answer)}"
+                </div>
+                <div style="font-size:10px; color:#a7f3d0; margin-top:4px;">
+                  • Tín hiệu Viseme Lip-sync: Sẵn sàng phát âm câu trả lời qua Người ảo Digital Human.
+                </div>
+              `;
+              liveBrainResultBox.className = 'pub-status-box success';
+              liveBrainResultBox.classList.remove('hidden');
+            }
+          }
+        } catch (e) {
+          alert('Lỗi: ' + e.message);
+        } finally {
+          btnAskLiveBrain.disabled = false;
+          btnAskLiveBrain.innerHTML = '<span>⚡ Phân Tích & Trả Lời</span>';
+        }
+      });
+    }
+  }
+
+  /* ===================================================================
+     39. AUTO-PILOT BACKGROUND PUBLISHER (KHUNG GIỜ VÀNG FYP)
+     =================================================================== */
+  function setupAutopilotModule() {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    const modalAutopilot = document.getElementById('modalAutopilot');
+    const btnOpenAutopilotModal = document.getElementById('btnOpenAutopilotModal');
+    const btnCloseAutopilotModal = document.getElementById('btnCloseAutopilotModal');
+    const btnCloseAutopilotModalBottom = document.getElementById('btnCloseAutopilotModalBottom');
+    const autopilotStatusText = document.getElementById('autopilotStatusText');
+    const btnToggleAutopilotStatus = document.getElementById('btnToggleAutopilotStatus');
+    const autopilotQueueList = document.getElementById('autopilotQueueList');
+    const autopilotResultBox = document.getElementById('autopilotResultBox');
+
+    function openModal() {
+      if (modalAutopilot) {
+        modalAutopilot.classList.add('open');
+        loadAutopilot();
+      }
+    }
+
+    function closeModal() {
+      if (modalAutopilot) modalAutopilot.classList.remove('open');
+    }
+
+    if (btnOpenAutopilotModal) btnOpenAutopilotModal.addEventListener('click', openModal);
+    if (btnCloseAutopilotModal) btnCloseAutopilotModal.addEventListener('click', closeModal);
+    if (btnCloseAutopilotModalBottom) btnCloseAutopilotModalBottom.addEventListener('click', closeModal);
+
+    if (modalAutopilot) {
+      modalAutopilot.addEventListener('click', (e) => {
+        if (e.target === modalAutopilot) closeModal();
+      });
+    }
+
+    async function loadAutopilot() {
+      try {
+        const res = await fetch('/api/enterprise/autopilot/status-and-queue');
+        const data = await res.json();
+        if (data.ok) {
+          if (autopilotStatusText) {
+            autopilotStatusText.innerHTML = data.isAutoPilotActive
+              ? 'Trạng thái: 🟢 <strong>ĐANG KÍCH HOẠT CHẠY NGẦM 24/7</strong>'
+              : 'Trạng thái: ⚪ <strong>ĐÃ TẠM DỪNG</strong>';
+          }
+
+          if (autopilotQueueList && Array.isArray(data.queue)) {
+            autopilotQueueList.innerHTML = data.queue.map(item => `
+              <div class="autopilot-item-card">
+                <div>
+                  <div style="font-size:12px; font-weight:700; color:#fff;">${escapeHtml(item.videoTitle)}</div>
+                  <div style="font-size:10px; color:#f59e0b;">
+                    ⏰ ${escapeHtml(item.scheduledDate)} - Khung giờ: <strong>${escapeHtml(item.scheduledSlot)}</strong>
+                  </div>
+                  <div style="font-size:9px; color:#cbd5e1;">
+                    Kênh: ${item.channels.join(', ')} | Ngụy trang: ${escapeHtml(item.antiReupProfile)}
+                  </div>
+                </div>
+                <button class="studio-btn primary-btn sm-btn btn-trigger-pub-now" data-job-id="${item.jobId}">
+                  <span>🚀 Đăng Ngay</span>
+                </button>
+              </div>
+            `).join('');
+
+            autopilotQueueList.querySelectorAll('.btn-trigger-pub-now').forEach(btn => {
+              btn.addEventListener('click', async () => {
+                const jobId = btn.getAttribute('data-job-id');
+                btn.disabled = true;
+                btn.textContent = 'Đang đăng...';
+                try {
+                  const res2 = await fetch('/api/enterprise/autopilot/trigger-now', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ jobId })
+                  });
+                  const data2 = await res2.json();
+                  if (data2.ok) {
+                    if (autopilotResultBox) {
+                      autopilotResultBox.innerHTML = `✅ ${escapeHtml(data2.message)}`;
+                      autopilotResultBox.className = 'pub-status-box success';
+                      autopilotResultBox.classList.remove('hidden');
+                    }
+                    loadAutopilot();
+                  }
+                } catch (e) {
+                  alert('Lỗi: ' + e.message);
+                } finally {
+                  btn.disabled = false;
+                  btn.textContent = '🚀 Đăng Ngay';
+                }
+              });
+            });
+          }
+        }
+      } catch (e) {
+        console.error('Error loading autopilot:', e);
+      }
+    }
+
+    if (btnToggleAutopilotStatus) {
+      btnToggleAutopilotStatus.addEventListener('click', async () => {
+        try {
+          const res = await fetch('/api/enterprise/autopilot/toggle', { method: 'POST' });
+          const data = await res.json();
+          if (data.ok) {
+            alert(data.message);
+            loadAutopilot();
+          }
+        } catch (e) {
+          alert('Lỗi: ' + e.message);
+        }
+      });
+    }
+  }
+
+  /* ===================================================================
+     40. REALTIME TELEGRAM & ZALO OA CRM WEBHOOK NOTIFIER
+     =================================================================== */
+  function setupCrmWebhookModule() {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    const modalCrmWebhook = document.getElementById('modalCrmWebhook');
+    const btnOpenCrmWebhookModal = document.getElementById('btnOpenCrmWebhookModal');
+    const btnCloseCrmWebhookModal = document.getElementById('btnCloseCrmWebhookModal');
+    const btnCloseCrmWebhookModalBottom = document.getElementById('btnCloseCrmWebhookModalBottom');
+    const inputTelegramBotToken = document.getElementById('inputTelegramBotToken');
+    const inputTelegramChatId = document.getElementById('inputTelegramChatId');
+    const inputZaloWebhookUrl = document.getElementById('inputZaloWebhookUrl');
+    const btnSaveCrmWebhookConfig = document.getElementById('btnSaveCrmWebhookConfig');
+    const btnSendTestCrmAlert = document.getElementById('btnSendTestCrmAlert');
+    const crmNotificationHistoryList = document.getElementById('crmNotificationHistoryList');
+    const crmWebhookStatusBox = document.getElementById('crmWebhookStatusBox');
+
+    function openModal() {
+      if (modalCrmWebhook) {
+        modalCrmWebhook.classList.add('open');
+        loadConfig();
+      }
+    }
+
+    function closeModal() {
+      if (modalCrmWebhook) modalCrmWebhook.classList.remove('open');
+    }
+
+    if (btnOpenCrmWebhookModal) btnOpenCrmWebhookModal.addEventListener('click', openModal);
+    if (btnCloseCrmWebhookModal) btnCloseCrmWebhookModal.addEventListener('click', closeModal);
+    if (btnCloseCrmWebhookModalBottom) btnCloseCrmWebhookModalBottom.addEventListener('click', closeModal);
+
+    if (modalCrmWebhook) {
+      modalCrmWebhook.addEventListener('click', (e) => {
+        if (e.target === modalCrmWebhook) closeModal();
+      });
+    }
+
+    async function loadConfig() {
+      try {
+        const res = await fetch('/api/enterprise/crm-webhook/config');
+        const data = await res.json();
+        if (data.ok) {
+          if (inputTelegramBotToken) inputTelegramBotToken.value = data.config.telegramBotTokenMasked || '';
+          if (inputTelegramChatId) inputTelegramChatId.value = data.config.telegramChatId || '';
+          if (inputZaloWebhookUrl) inputZaloWebhookUrl.value = data.config.zaloOaWebhookUrl || '';
+
+          if (crmNotificationHistoryList && Array.isArray(data.recentNotifications)) {
+            crmNotificationHistoryList.innerHTML = data.recentNotifications.map(n => `
+              <div class="crm-item-card">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong style="color:#38bdf8;">${escapeHtml(n.title)}</strong>
+                  <span style="font-size:9px; color:#7dd3fc;">${escapeHtml(n.timestamp)}</span>
+                </div>
+                <div style="white-space:pre-line; color:#e2e8f0; margin-top:2px;">${escapeHtml(n.message)}</div>
+              </div>
+            `).join('');
+          }
+        }
+      } catch (e) {
+        console.error('Error loading CRM webhook config:', e);
+      }
+    }
+
+    if (btnSaveCrmWebhookConfig) {
+      btnSaveCrmWebhookConfig.addEventListener('click', async () => {
+        btnSaveCrmWebhookConfig.disabled = true;
+        btnSaveCrmWebhookConfig.textContent = 'Đang lưu...';
+
+        try {
+          const res = await fetch('/api/enterprise/crm-webhook/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              telegramChatId: inputTelegramChatId ? inputTelegramChatId.value : '',
+              zaloOaWebhookUrl: inputZaloWebhookUrl ? inputZaloWebhookUrl.value : ''
+            })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            if (crmWebhookStatusBox) {
+              crmWebhookStatusBox.innerHTML = `✅ ${escapeHtml(data.message)}`;
+              crmWebhookStatusBox.className = 'pub-status-box success';
+              crmWebhookStatusBox.classList.remove('hidden');
+            }
+          }
+        } catch (e) {
+          alert('Lỗi: ' + e.message);
+        } finally {
+          btnSaveCrmWebhookConfig.disabled = false;
+          btnSaveCrmWebhookConfig.textContent = '💾 Lưu Cấu Hình CRM Webhook';
+        }
+      });
+    }
+
+    if (btnSendTestCrmAlert) {
+      btnSendTestCrmAlert.addEventListener('click', async () => {
+        btnSendTestCrmAlert.disabled = true;
+        btnSendTestCrmAlert.textContent = 'Đang bắn tin nhắn...';
+
+        try {
+          const res = await fetch('/api/enterprise/crm-webhook/send-test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ channel: 'all' })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            if (crmWebhookStatusBox) {
+              crmWebhookStatusBox.innerHTML = `🔔 ${escapeHtml(data.message)}`;
+              crmWebhookStatusBox.className = 'pub-status-box success';
+              crmWebhookStatusBox.classList.remove('hidden');
+            }
+            loadConfig();
+          }
+        } catch (e) {
+          alert('Lỗi: ' + e.message);
+        } finally {
+          btnSendTestCrmAlert.disabled = false;
+          btnSendTestCrmAlert.textContent = '⚡ Bắn Thông Báo Thử Nghiệm Ngay';
         }
       });
     }

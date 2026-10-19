@@ -6260,5 +6260,180 @@ body.theme-windows .window-titlebar {
   font-weight: 700;
 }
 
+/* ===================================================================
+   SECTION 33: PHASE 4 ENTERPRISE EXPANSION STYLES
+   =================================================================== */
+
+/* Topbar Buttons */
+.trend-radar-btn {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.18), rgba(168, 85, 247, 0.18)) !important;
+  border: 1px solid rgba(236, 72, 153, 0.5) !important;
+  color: #fbcfe8 !important;
+  box-shadow: 0 0 15px rgba(236, 72, 153, 0.15);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+}
+
+.trend-radar-btn:hover {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.32), rgba(168, 85, 247, 0.32)) !important;
+  border-color: #ec4899 !important;
+  box-shadow: 0 0 25px rgba(236, 72, 153, 0.45);
+  color: #fff !important;
+  transform: translateY(-1px);
+}
+
+.voice-clone-btn {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(59, 130, 246, 0.18)) !important;
+  border: 1px solid rgba(139, 92, 246, 0.5) !important;
+  color: #ddd6fe !important;
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.15);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+}
+
+.voice-clone-btn:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.32), rgba(59, 130, 246, 0.32)) !important;
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 0 25px rgba(139, 92, 246, 0.45);
+  color: #fff !important;
+  transform: translateY(-1px);
+}
+
+/* Trend Radar Cards */
+.trend-card {
+  background: rgba(30, 16, 38, 0.6);
+  border: 1px solid rgba(236, 72, 153, 0.25);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.trend-card:hover {
+  border-color: #ec4899;
+  background: rgba(236, 72, 153, 0.1);
+  transform: translateY(-2px);
+}
+
+.trend-thumb-box {
+  width: 100%;
+  height: 90px;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.trend-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.trend-growth-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  font-size: 8px;
+  font-weight: 800;
+  background: rgba(236, 72, 153, 0.9);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Voice Profile Cards */
+.voice-profile-card {
+  background: rgba(23, 17, 43, 0.7);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.voice-profile-card:hover {
+  border-color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.15);
+}
+
+.voice-profile-card.selected {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+}
+
+/* Virtual Stage Cards */
+.virtual-stage-card {
+  background: rgba(13, 27, 42, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.virtual-stage-card:hover {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.15);
+  transform: translateY(-2px);
+}
+
+.virtual-stage-card.selected {
+  border-color: #38bdf8;
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+}
+
+.stage-thumb-img {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+/* Live Brain FAQ Cards */
+.live-brain-card {
+  background: rgba(17, 24, 39, 0.7);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Autopilot Queue Items */
+.autopilot-item-card {
+  background: rgba(24, 24, 27, 0.75);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* CRM Webhook Items */
+.crm-item-card {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(14, 165, 233, 0.25);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 11px;
+}
+
+
 
 

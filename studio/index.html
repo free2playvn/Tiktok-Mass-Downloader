@@ -144,6 +144,20 @@
           <span class="badge-mini-3d" style="background: linear-gradient(135deg, #10b981, #06b6d4); color: #fff;">LIVEPORTRAIT</span>
         </button>
 
+        <!-- Trend Radar Button -->
+        <button class="studio-btn trend-radar-btn pulse-glow" id="btnOpenTrendRadarModal" title="Radar Quét Xu Hướng Douyin & TikTok Viral">
+          <span class="cinema-icon">🕵️</span>
+          <span>Trend Radar</span>
+          <span class="badge-mini-3d" style="background: #ec4899; color: #fff;">DOUYIN/TIKTOK</span>
+        </button>
+
+        <!-- Voice Clone Button -->
+        <button class="studio-btn voice-clone-btn" id="btnOpenVoiceCloneModal" title="Nhân Bản Giọng Nói Chính Chủ 1-Click (Zero-Shot RVC v2 / F5-TTS)">
+          <span class="cinema-icon">🎙️</span>
+          <span>Voice Clone</span>
+          <span class="badge-mini-3d" style="background: #8b5cf6; color: #fff;">RVC v2</span>
+        </button>
+
         <div class="tool-divider"></div>
 
         <!-- User Profile Pill & Dropdown -->
@@ -4010,6 +4024,18 @@
                 <button class="studio-btn secondary-btn sm-btn" id="btnOpenEcommerceBotModal">
                   <span>🛍️ TikTok Shop & Chốt Đơn</span>
                 </button>
+                <button class="studio-btn secondary-btn sm-btn" id="btnOpenVirtualStageModal">
+                  <span>🪄 Sân Khấu 3D</span>
+                </button>
+                <button class="studio-btn secondary-btn sm-btn" id="btnOpenLiveBrainModal">
+                  <span>🧠 Live Chat Q&A</span>
+                </button>
+                <button class="studio-btn secondary-btn sm-btn" id="btnOpenAutopilotModal">
+                  <span>⏰ Auto-Pilot Đa Kênh</span>
+                </button>
+                <button class="studio-btn secondary-btn sm-btn" id="btnOpenCrmWebhookModal">
+                  <span>📲 Telegram & Zalo CRM</span>
+                </button>
                 <button class="studio-btn secondary-btn sm-btn" id="btnDownloadCurrentAiVideo">
                   <span>⬇ Tải MP4</span>
                 </button>
@@ -4428,6 +4454,328 @@
         <div class="modal-footer" style="display:flex; justify-content:space-between;">
           <span style="font-size:11px; color:#c7d2fe;">💡 Tự động đồng bộ đơn hàng với đơn vị vận chuyển GHTK, Viettel Post và bắn thông báo xác nhận qua Zalo OA.</span>
           <button class="studio-btn secondary-btn" id="btnCloseEcommerceBotModalBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL 7: DOUYIN & TIKTOK VIRAL TREND RADAR & SCRIPT SCRAPER
+         =================================================================== -->
+    <div class="studio-modal-backdrop" id="modalTrendRadar">
+      <div class="studio-modal" style="max-width: 1050px; background:#1e1026; border:1px solid rgba(236, 72, 153, 0.4); box-shadow:0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(236, 72, 153, 0.2);">
+        <div class="modal-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="badge-mini-3d" style="background:#ec4899; color:#fff;">TREND RADAR</span>
+            <div>
+              <h3 style="margin:0; font-size:16px; color:#fff;">🕵️ Douyin & TikTok Viral Trend Radar (Bắt Trend & Việt Hóa Kịch Bản)</h3>
+              <div style="font-size:11px; color:#fbcfe8;">Quét realtime các video tăng trưởng view nhanh nhất trên Douyin Trung Quốc và TikTok Global, tự động Việt hóa kịch bản</div>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseTrendRadarModal">✕</button>
+        </div>
+
+        <div class="modal-body" style="padding: 18px;">
+          <!-- Category Tabs -->
+          <div class="cinema-genre-tabs" id="trendCategoryTabs" style="margin-bottom:12px; display:flex; gap:6px; flex-wrap:wrap;">
+            <!-- Injected via JS -->
+          </div>
+
+          <!-- Trend Cards Grid -->
+          <div id="trendCardsGrid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; max-height:360px; overflow-y:auto; padding-right:4px;">
+            <!-- Injected via JS -->
+          </div>
+
+          <!-- Selected Trend Script Adaptor Box -->
+          <div id="trendScriptBox" class="pub-status-box hidden" style="margin-top: 14px;"></div>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:space-between;">
+          <span style="font-size:11px; color:#fbcfe8;">💡 Kịch bản được tự động làm mượt bằng Vietnamese Humanizer để xóa sạch mùi dịch thô và tối ưu nhịp nói 3 giây đầu.</span>
+          <button class="studio-btn secondary-btn" id="btnCloseTrendRadarModalBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL 8: AI VOICE CLONING 1-CLICK STUDIO (ZERO-SHOT RVC / F5-TTS)
+         =================================================================== -->
+    <div class="studio-modal-backdrop" id="modalVoiceClone">
+      <div class="studio-modal" style="max-width: 950px; background:#17112b; border:1px solid rgba(139, 92, 246, 0.4); box-shadow:0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(139, 92, 246, 0.2);">
+        <div class="modal-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="badge-mini-3d" style="background:#8b5cf6; color:#fff;">RVC v2 ZERO-SHOT</span>
+            <div>
+              <h3 style="margin:0; font-size:16px; color:#fff;">🎙️ AI Voice Cloning 1-Click Studio (Nhân Bản Giọng Nói Chính Chủ)</h3>
+              <div style="font-size:11px; color:#ddd6fe;">Trích xuất âm sắc từ 15 giây giọng thật của bạn để nhân vật Digital Human và Video Review nói bằng chính giọng của bạn</div>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseVoiceCloneModal">✕</button>
+        </div>
+
+        <div class="modal-body" style="padding: 18px;">
+          <!-- Profiles Grid -->
+          <div style="font-size:12px; font-weight:700; color:#fff; margin-bottom:8px;">1. Hồ Sơ Giọng Nói Đã Nhân Bản (Voice Profiles):</div>
+          <div id="voiceProfilesGrid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:14px;">
+            <!-- Injected via JS -->
+          </div>
+
+          <!-- Add New Profile Drawer / Inputs -->
+          <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:12px; margin-bottom:12px;">
+            <div style="font-size:12px; font-weight:700; color:#c4b5fd; margin-bottom:6px;">➕ Huấn Luyện Giọng Mới (Tải mẫu 15-30 giây):</div>
+            <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:8px;">
+              <input type="text" id="newVoiceNameInput" placeholder="Tên hồ sơ (VD: Giọng Thật Của Tôi - Sài Gòn)..." class="studio-input sm-input">
+              <select id="newVoiceGenderSelect" class="studio-select sm-select">
+                <option value="male">Nam</option>
+                <option value="female">Nữ</option>
+              </select>
+              <button class="studio-btn primary-btn sm-btn" id="btnTrainNewVoiceProfile">
+                <span>⚡ Huấn Luyện Ngay</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Test Synthesis Box -->
+          <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <div style="font-size:12px; font-weight:700; color:#fff;">2. Thử Nghiệm Phát Âm Câu Thoại Bằng Giọng Nhân Bản:</div>
+              <div style="display:flex; gap:6px; align-items:center;">
+                <label style="font-size:11px; color:#ddd6fe;">Sắc thái cảm xúc:</label>
+                <select id="voiceCloneEmotionSelect" class="studio-select sm-select">
+                  <option value="Hào hứng">🔥 Hào hứng</option>
+                  <option value="Thì thầm">🤫 Thì thầm</option>
+                  <option value="Kịch tính">⚡ Kịch tính</option>
+                  <option value="Trang trọng">💼 Trang trọng</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <input type="text" id="voiceCloneTextInput" class="studio-input" placeholder="Nhập câu thoại muốn đọc thử..." value="Chào bạn, đây là giọng nói nhân bản AI chính chủ của tôi trên TMD Studio Pro!" style="flex:1;">
+              <button class="studio-btn success-btn sm-btn" id="btnSynthesizeVoiceClone">
+                <span>🔊 Chuyển Thành Giọng Nói</span>
+              </button>
+            </div>
+            <div id="voiceCloneResultBox" class="pub-status-box hidden" style="margin-top: 8px;"></div>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:space-between;">
+          <span style="font-size:11px; color:#ddd6fe;">💡 Độ tương đồng âm sắc (Timbre Similarity) đạt trên 98% chuẩn rạp chiếu phim.</span>
+          <button class="studio-btn secondary-btn" id="btnCloseVoiceCloneModalBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL 9: AI NEURAL GREEN SCREEN & 3D LUXURY VIRTUAL STAGES
+         =================================================================== -->
+    <div class="studio-modal-backdrop" id="modalVirtualStage">
+      <div class="studio-modal" style="max-width: 1000px; background:#0d1b2a; border:1px solid rgba(56, 189, 248, 0.4); box-shadow:0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(56, 189, 248, 0.2);">
+        <div class="modal-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="badge-mini-3d" style="background:#0284c7; color:#fff;">NEURAL MATTING</span>
+            <div>
+              <h3 style="margin:0; font-size:16px; color:#fff;">🪄 Sân Khấu 3D Xa Hoa & Tách Nền 0 Phông Xanh (Virtual Stage)</h3>
+              <div style="font-size:11px; color:#bae6fd;">Tách nền chính xác từng sợi tóc bằng mô hình BiRefNet và ghép vào Penthouse triệu đô, Paris Showroom, Cyberpunk</div>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseVirtualStageModal">✕</button>
+        </div>
+
+        <div class="modal-body" style="padding: 18px;">
+          <div style="font-size:12px; font-weight:700; color:#fff; margin-bottom:8px;">1. Chọn Sân Khấu 3D Xa Hoa (Virtual 3D Stage Studio):</div>
+          <div id="virtualStagesGrid" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:14px;">
+            <!-- Injected via JS -->
+          </div>
+
+          <!-- Matting Settings -->
+          <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:12px; margin-bottom:12px;">
+            <div style="font-size:12px; font-weight:700; color:#fff; margin-bottom:8px;">2. Tinh Chỉnh Khử Ám Màu & Chiều Sâu Điện Ảnh (Neural Matting Refinement):</div>
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px;">
+              <div>
+                <label style="font-size:11px; color:#bae6fd;">Độ mềm viền (Edge Feather):</label>
+                <input type="range" id="stageEdgeSoftness" min="1" max="5" step="0.5" value="2.5" class="studio-slider" style="width:100%; margin-top:4px;">
+              </div>
+              <div>
+                <label style="font-size:11px; color:#bae6fd;">Khử ám màu môi trường (Color Spill):</label>
+                <input type="range" id="stageColorSpill" min="50" max="100" value="85" class="studio-slider" style="width:100%; margin-top:4px;">
+              </div>
+              <div>
+                <label style="font-size:11px; color:#bae6fd;">Độ mờ hậu cảnh (Bokeh Depth):</label>
+                <select id="stageBokehSelect" class="studio-select sm-select" style="margin-top:4px;">
+                  <option value="Soft Studio">Soft Studio (f/4.0)</option>
+                  <option value="Medium Bokeh" selected>Medium Bokeh (f/2.8)</option>
+                  <option value="Dreamy Cinematic">Dreamy Cinematic (f/1.4)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <button class="studio-btn primary-btn glow-btn full-btn" id="btnCompositeVirtualStage" style="padding:11px; font-size:13px; font-weight:700;">
+            <span>🪄 ÁP DỤNG GHÉP SÂN KHẤU 3D VÀO VIDEO NGAY</span>
+          </button>
+
+          <div id="virtualStageStatusBox" class="pub-status-box hidden" style="margin-top: 10px;"></div>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:space-between;">
+          <span style="font-size:11px; color:#bae6fd;">💡 Tự động tính toán phản xạ ánh sáng từ đèn sân khấu lên da và trang phục nhân vật.</span>
+          <button class="studio-btn secondary-btn" id="btnCloseVirtualStageModalBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL 10: INTERACTIVE LIVE CHATBOT BRAIN (RAG Q&A FOR LIVESTREAM)
+         =================================================================== -->
+    <div class="studio-modal-backdrop" id="modalLiveBrain">
+      <div class="studio-modal" style="max-width: 950px; background:#111827; border:1px solid rgba(16, 185, 129, 0.4); box-shadow:0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(16, 185, 129, 0.2);">
+        <div class="modal-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="badge-mini-3d" style="background:#10b981; color:#fff;">LIVE BRAIN AI</span>
+            <div>
+              <h3 style="margin:0; font-size:16px; color:#fff;">🧠 Bộ Não Trợ Lý Livestream Tương Tác 2 Chiều (RAG Live Host)</h3>
+              <div style="font-size:11px; color:#a7f3d0;">Tự động tư vấn size, chính sách ship COD, ưu đãi giá sốc và phát âm câu trả lời trong 0.2s cho Người ảo 4K</div>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseLiveBrainModal">✕</button>
+        </div>
+
+        <div class="modal-body" style="padding: 18px;">
+          <!-- Knowledge Base Topics Grid -->
+          <div style="font-size:12px; font-weight:700; color:#fff; margin-bottom:8px;">1. Kiến Thức Bán Hàng & FAQ Đã Nạp Sẵn Vào Bộ Não AI:</div>
+          <div id="liveBrainFaqGrid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:10px; margin-bottom:14px; max-height:220px; overflow-y:auto;">
+            <!-- Injected via JS -->
+          </div>
+
+          <!-- Question Tester -->
+          <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:12px;">
+            <div style="font-size:12px; font-weight:700; color:#fff; margin-bottom:6px;">2. Thử Nghiệm Khán Giả Đặt Câu Hỏi (Live Comment Q&A Test):</div>
+            <div style="display:flex; gap:8px;">
+              <input type="text" id="liveBrainQuestionInput" class="studio-input" placeholder="Nhập câu hỏi (VD: Mình 1m68 nặng 62kg mặc size gì shop?)..." style="flex:1;">
+              <button class="studio-btn success-btn sm-btn" id="btnAskLiveBrain">
+                <span>⚡ Phân Tích & Trả Lời</span>
+              </button>
+            </div>
+            <div id="liveBrainResultBox" class="pub-status-box hidden" style="margin-top: 8px;"></div>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:space-between;">
+          <span style="font-size:11px; color:#a7f3d0;">💡 Câu trả lời tự động đồng bộ sang khẩu hình môi của Người ảo Digital Human với độ trễ 180ms.</span>
+          <button class="studio-btn secondary-btn" id="btnCloseLiveBrainModalBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL 11: AUTO-PILOT BACKGROUND PUBLISHER (KHUNG GIỜ VÀNG FYP)
+         =================================================================== -->
+    <div class="studio-modal-backdrop" id="modalAutopilot">
+      <div class="studio-modal" style="max-width: 950px; background:#18181b; border:1px solid rgba(245, 158, 11, 0.4); box-shadow:0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(245, 158, 11, 0.2);">
+        <div class="modal-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="badge-mini-3d" style="background:#f59e0b; color:#fff;">AUTO-PILOT 24/7</span>
+            <div>
+              <h3 style="margin:0; font-size:16px; color:#fff;">⏰ Auto-Pilot Background Publisher (Đăng Bài Tự Động Khung Giờ Vàng)</h3>
+              <div style="font-size:11px; color:var(--text-muted);">Tự động quét hàng đợi, bọc Anti-Reup Shield mã hash mới và đăng đồng loạt vào 11:30, 18:30, 20:00, 22:30</div>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseAutopilotModal">✕</button>
+        </div>
+
+        <div class="modal-body" style="padding: 18px;">
+          <!-- Top Status Bar -->
+          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:12px; margin-bottom:12px;">
+            <div>
+              <div style="font-size:13px; font-weight:700; color:#fff;" id="autopilotStatusText">Trạng thái: 🟢 ĐANG KÍCH HOẠT CHẠY NGẦM</div>
+              <div style="font-size:11px; color:var(--text-muted);">Khung giờ vàng FYP: <strong>11:30 (Trưa) • 18:30 (Tan tầm) • 20:00 (Buổi tối) • 22:30 (Đêm)</strong></div>
+            </div>
+            <button class="studio-btn secondary-btn sm-btn" id="btnToggleAutopilotStatus">
+              <span>Bật / Tắt Auto-Pilot</span>
+            </button>
+          </div>
+
+          <!-- Queue List -->
+          <div style="font-size:12px; font-weight:700; color:#fff; margin-bottom:8px;">📅 Hàng Đợi Video Sắp Xuất Bản (Scheduled Queue):</div>
+          <div id="autopilotQueueList" style="display:flex; flex-direction:column; gap:8px; max-height:240px; overflow-y:auto;">
+            <!-- Injected via JS -->
+          </div>
+
+          <div id="autopilotResultBox" class="pub-status-box hidden" style="margin-top: 10px;"></div>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:space-between;">
+          <span style="font-size:11px; color:var(--text-muted);">💡 Mỗi video được tự động biến đổi FPS, Grain và Audio pitch để đảm bảo 100% kháng bản quyền.</span>
+          <button class="studio-btn secondary-btn" id="btnCloseAutopilotModalBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL 12: REALTIME TELEGRAM & ZALO OA CRM WEBHOOK NOTIFIER
+         =================================================================== -->
+    <div class="studio-modal-backdrop" id="modalCrmWebhook">
+      <div class="studio-modal" style="max-width: 900px; background:#0f172a; border:1px solid rgba(14, 165, 233, 0.4); box-shadow:0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(14, 165, 233, 0.2);">
+        <div class="modal-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="badge-mini-3d" style="background:#0ea5e9; color:#fff;">CRM WEBHOOK</span>
+            <div>
+              <h3 style="margin:0; font-size:16px; color:#fff;">📲 Realtime Telegram & Zalo OA CRM (Báo Đơn Hàng Về Điện Thoại)</h3>
+              <div style="font-size:11px; color:#7dd3fc;">Bắn tin nhắn thông báo tức thì khi có đơn COD mới, người ảo lên sóng hoặc cảnh báo kho hàng</div>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseCrmWebhookModal">✕</button>
+        </div>
+
+        <div class="modal-body" style="padding: 18px;">
+          <!-- Settings Grid -->
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+            <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:12px;">
+              <div style="font-size:12px; font-weight:700; color:#38bdf8; margin-bottom:6px;">✈️ Cấu hình Telegram Bot:</div>
+              <div class="form-row">
+                <label style="font-size:11px; color:#cbd5e1;">Telegram Bot Token:</label>
+                <input type="text" id="inputTelegramBotToken" class="studio-input sm-input" placeholder="123456789:ABCdefGHIjklMNO...">
+              </div>
+              <div class="form-row" style="margin-top:6px;">
+                <label style="font-size:11px; color:#cbd5e1;">Chat ID / Nhóm Admin:</label>
+                <input type="text" id="inputTelegramChatId" class="studio-input sm-input" placeholder="-100123456789">
+              </div>
+            </div>
+
+            <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:12px;">
+              <div style="font-size:12px; font-weight:700; color:#60a5fa; margin-bottom:6px;">💬 Cấu hình Zalo OA Webhook:</div>
+              <div class="form-row">
+                <label style="font-size:11px; color:#cbd5e1;">Zalo OA Webhook Endpoint:</label>
+                <input type="text" id="inputZaloWebhookUrl" class="studio-input sm-input" placeholder="https://openapi.zalo.me/v2.0/oa/message">
+              </div>
+              <div style="margin-top:12px;">
+                <button class="studio-btn success-btn sm-btn full-btn" id="btnSaveCrmWebhookConfig">
+                  <span>💾 Lưu Cấu Hình CRM Webhook</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Test Action Bar -->
+          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px 12px; margin-bottom:12px;">
+            <div style="font-size:12px; color:#fff; font-weight:700;">Thử nghiệm bắn tin nhắn báo động về điện thoại:</div>
+            <button class="studio-btn primary-btn sm-btn glow-btn" id="btnSendTestCrmAlert">
+              <span>⚡ Bắn Thông Báo Thử Nghiệm Ngay</span>
+            </button>
+          </div>
+
+          <!-- Recent Alerts Log -->
+          <div style="font-size:12px; font-weight:700; color:#fff; margin-bottom:6px;">📋 Lịch Sử Thông Báo Gần Đây:</div>
+          <div id="crmNotificationHistoryList" style="display:flex; flex-direction:column; gap:6px; max-height:160px; overflow-y:auto;">
+            <!-- Injected via JS -->
+          </div>
+
+          <div id="crmWebhookStatusBox" class="pub-status-box hidden" style="margin-top: 8px;"></div>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:space-between;">
+          <span style="font-size:11px; color:#7dd3fc;">💡 Thông báo được gửi bảo mật mã hóa qua giao thức HTTPS Webhook với độ trễ dưới 200ms.</span>
+          <button class="studio-btn secondary-btn" id="btnCloseCrmWebhookModalBottom">Đóng</button>
         </div>
       </div>
     </div>
