@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TMD Studio Pro - Video Editor & Vietnamese Humanizer</title>
+  <meta name="description" content="Studio biên tập video TikTok chuyên nghiệp và công cụ Việt hóa, làm mượt văn phong theo chuẩn vietnamese-humanizer.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-mac">
+  <div id="app-root" class="desktop-frame">
+    
+    <!-- Desktop Window Header (macOS / Windows Toggleable) -->
+    <header class="window-titlebar" id="windowTitlebar">
+      <!-- macOS Traffic Lights -->
+      <div class="window-controls mac-controls" id="macControls">
+        <span class="traffic-light close-btn" title="Đóng"></span>
+        <span class="traffic-light min-btn" title="Thu nhỏ"></span>
+        <span class="traffic-light max-btn" title="Phóng to"></span>
+      </div>
+
+      <!-- Center App Title & Status -->
+      <div class="window-title-block">
+        <div class="app-badge">
+          <span class="badge-icon">🎬</span>
+          <span class="badge-name">TMD Studio Pro</span>
+          <span class="badge-version">v3.2 AI</span>
+        </div>
+        <div class="project-indicator">
+          <span class="dot-online"></span>
+          <span id="currentProjectName">Dự án: Nhạc Nghe Đi Xe (Viet Mix 2025)</span>
+        </div>
+      </div>
+
+      <!-- Right Window Utilities & OS Style Switcher -->
+      <div class="window-right-actions">
+        <!-- OS Mode Switcher -->
+        <div class="os-toggle-group">
+          <button class="os-btn active" id="btnMacMode" title="Chuyển giao diện kiểu macOS"> Mac</button>
+          <button class="os-btn" id="btnWinMode" title="Chuyển giao diện kiểu Windows 11">⊞ Windows</button>
+        </div>
+
+        <!-- Windows Control Buttons (Visible in Windows mode) -->
+        <div class="window-controls win-controls" id="winControls">
+          <button class="win-btn" title="Thu nhỏ">🗕</button>
+          <button class="win-btn" title="Phóng to">🗖</button>
+          <button class="win-btn win-close" title="Đóng">✕</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Top Action Toolbar -->
+    <nav class="studio-topbar">
+      <div class="topbar-left">
+        <!-- Aspect Ratio Switcher -->
+        <div class="aspect-ratio-selector">
+          <span class="selector-label">Tỉ lệ khung:</span>
+          <button class="ratio-btn active" data-ratio="9:16">📱 9:16 TikTok</button>
+          <button class="ratio-btn" data-ratio="16:9">💻 16:9 Ngang</button>
+          <button class="ratio-btn" data-ratio="1:1">⬛ 1:1 Vuông</button>
+          <button class="ratio-btn" data-ratio="4:5">🖼️ 4:5 Dọc</button>
+        </div>
+
+        <div class="tool-divider"></div>
+
+        <!-- Video Filter Quick Selector -->
+        <div class="filter-selector">
+          <span class="selector-label">Bộ lọc màu:</span>
+          <select id="videoFilterSelect" class="studio-select">
+            <option value="none">Chuẩn (Gốc)</option>
+            <option value="vibrant">Rực rỡ (TikTok Pop)</option>
+            <option value="cinematic">Điện ảnh (Teal & Orange)</option>
+            <option value="noir">Đen trắng (Noir)</option>
+            <option value="warm">Hoàng hôn ấm (Warm)</option>
+            <option value="cyber">Cyberpunk Neon</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <!-- Undo / Redo -->
+        <button class="topbar-icon-btn" id="btnUndo" title="Hoàn tác (Ctrl+Z)">↩ Hoàn tác</button>
+        <button class="topbar-icon-btn" id="btnRedo" title="Làm lại (Ctrl+Y)">↪ Làm lại</button>
+
+        <div class="tool-divider"></div>
+
+        <!-- Import TikTok Modal Button -->
+        <button class="studio-btn secondary-btn" id="btnOpenImportModal">
+          <span>⬇ Tải từ TikTok</span>
+        </button>
+
+        <!-- Export Modal Button -->
+        <button class="studio-btn primary-btn glow-btn" id="btnOpenExportModal">
+          <span>⚡ Xuất Video & Phụ Đề</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Studio Main Workspace (3-Column Layout) -->
+    <main class="studio-workspace">
+      
+      <!-- LEFT COLUMN: Media Library & Subtitle Inspector -->
+      <aside class="studio-sidebar left-panel">
+        <div class="panel-tabs">
+          <button class="tab-btn active" data-target="panelMedia">📁 Media (TikTok)</button>
+          <button class="tab-btn" data-target="panelSubtitles">💬 Danh sách phụ đề</button>
+        </div>
+
+        <!-- TAB 1: Media Library -->
+        <div class="tab-content active" id="panelMedia">
+          <div class="panel-section-header">
+            <h3>Video đã tải (@nhacnghedixe)</h3>
+            <button class="icon-refresh-btn" id="btnRefreshMedia" title="Làm mới thư viện">🔄</button>
+          </div>
+
+          <div class="media-list" id="mediaListContainer">
+            <!-- Dynamic Video Items injected via JS -->
+            <div class="media-card active" data-src="@nhacnghedixe/7675792462593428756.mp4">
+              <div class="media-thumb">
+                <span class="thumb-badge">863 MB</span>
+                <span class="thumb-icon">▶</span>
+              </div>
+              <div class="media-meta">
+                <h4 class="media-title">NST Viet Mix Vol 4 2025</h4>
+                <p class="media-sub">7675792462593428756.mp4</p>
+                <span class="media-tag">100% No Watermark</span>
+              </div>
+            </div>
+
+            <div class="media-card" data-src="@nhacnghedixe/7696392556535418113.mp4">
+              <div class="media-thumb">
+                <span class="thumb-badge">897 MB</span>
+                <span class="thumb-icon">▶</span>
+              </div>
+              <div class="media-meta">
+                <h4 class="media-title">NONSTOP VIETMIX LỠ YÊU - DJ KENBJN</h4>
+                <p class="media-sub">7696392556535418113.mp4</p>
+                <span class="media-tag">100% No Watermark</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Upload Custom File Dropzone -->
+          <div class="upload-dropzone" id="uploadDropzone">
+            <input type="file" id="localVideoInput" accept="video/mp4,video/webm,video/mov" hidden>
+            <div class="dropzone-content">
+              <span class="upload-icon">☁️</span>
+              <p>Thả video của bạn vào đây hoặc <span class="highlight-link">chọn từ máy tính</span></p>
+              <span class="file-hint">Hỗ trợ MP4, WebM, MOV</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: Subtitles List -->
+        <div class="tab-content" id="panelSubtitles">
+          <div class="panel-section-header">
+            <h3>Timeline Phụ Đề</h3>
+            <button class="studio-btn sm-btn" id="btnAddSubtitleCue">+ Thêm câu</button>
+          </div>
+
+          <div class="subtitles-list" id="subtitlesListContainer">
+            <!-- Dynamic subtitle cue cards -->
+          </div>
+        </div>
+      </aside>
+
+      <!-- CENTER COLUMN: Canvas & Player Viewport -->
+      <section class="studio-canvas-area">
+        <div class="viewport-wrapper">
+          <!-- Video Screen Container (Keeps Aspect Ratio) -->
+          <div class="viewport-screen aspect-9-16" id="viewportScreen">
+            <video id="studioVideo" preload="metadata" playsinline crossorigin="anonymous"></video>
+            <canvas id="studioCanvas"></canvas>
+            
+            <!-- Realtime Subtitle Overlay on Video -->
+            <div id="canvasSubtitleOverlay" class="subtitle-overlay style-yellow-box pos-bottom">
+              <span id="subtitleText">Chào mừng bạn đến với TMD Studio Pro!</span>
+            </div>
+
+            <!-- Playhead center indicator -->
+            <div class="play-indicator-overlay" id="playOverlayIcon">▶</div>
+          </div>
+        </div>
+
+        <!-- Subtitle Styling Bar (Under Canvas) -->
+        <div class="subtitle-style-toolbar">
+          <div class="style-item">
+            <span class="style-label">Kiểu phụ đề:</span>
+            <div class="badge-selector" id="subtitleStylePicker">
+              <button class="style-choice active" data-style="yellow-box">🟡 Chữ vàng nền đen (TikTok)</button>
+              <button class="style-choice" data-style="white-shadow">⚪ Chữ trắng viền đen</button>
+              <button class="style-choice" data-style="karaoke-glow">✨ Karaoke Neon Glow</button>
+              <button class="style-choice" data-style="minimal">📄 Tối giản (Minimal)</button>
+            </div>
+          </div>
+
+          <div class="style-item">
+            <span class="style-label">Cỡ chữ:</span>
+            <input type="range" id="subFontSizeSlider" min="16" max="36" value="22" class="studio-slider">
+            <span id="subFontSizeVal" class="slider-val">22px</span>
+          </div>
+
+          <div class="style-item">
+            <span class="style-label">Vị trí:</span>
+            <select id="subPositionSelect" class="studio-select sm-select">
+              <option value="bottom">Dưới (Chuẩn TikTok)</option>
+              <option value="center">Giữa màn hình</option>
+              <option value="top">Trên cùng</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Player Controls Bar -->
+        <div class="player-controls-bar">
+          <div class="controls-left">
+            <button class="ctrl-btn" id="btnPlayPause" title="Phát / Tạm dừng (Space)">▶</button>
+            <button class="ctrl-btn sm" id="btnStepBack" title="Lùi 1 giây">⏮ 1s</button>
+            <button class="ctrl-btn sm" id="btnStepForward" title="Tiến 1 giây">1s ⏭</button>
+            
+            <!-- Timecode -->
+            <div class="timecode-display">
+              <span id="currentTimeDisplay">00:00.0</span> / <span id="durationDisplay">00:00.0</span>
+            </div>
+          </div>
+
+          <div class="controls-right">
+            <!-- Playback Speed -->
+            <div class="speed-selector">
+              <button class="ctrl-btn sm" id="btnSpeedToggle">1.0x</button>
+            </div>
+
+            <!-- Volume Slider -->
+            <div class="volume-box">
+              <button class="ctrl-btn sm" id="btnMute">🔊</button>
+              <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="1" class="studio-slider vol-slider">
+            </div>
+
+            <!-- Fullscreen -->
+            <button class="ctrl-btn sm" id="btnFullscreen" title="Toàn màn hình">⛶</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN: Vietnamese Humanizer AI Studio -->
+      <aside class="studio-sidebar right-panel">
+        <div class="humanizer-header">
+          <div class="ai-badge-row">
+            <span class="ai-sparkle">✨</span>
+            <span class="ai-title">Vietnamese Humanizer</span>
+            <span class="ai-source">longhang2004</span>
+          </div>
+          <p class="ai-desc">Việt hóa tự nhiên, làm sạch dịch thô & đồng bộ phong cách video.</p>
+        </div>
+
+        <!-- 4 Skills Selector (from longhang2004/vietnamese-humanizer) -->
+        <div class="skill-pills-container">
+          <div class="skill-pill active" data-skill="humanizer-vi" title="Biên tập văn bản khuôn mẫu, cải thiện nhịp điệu">
+            <span class="pill-dot"></span>
+            <span class="pill-text">humanizer-vi</span>
+          </div>
+          <div class="skill-pill active" data-skill="translationese-cleaner-vi" title="Làm sạch văn phong dịch thô, bị động, danh từ hóa">
+            <span class="pill-dot"></span>
+            <span class="pill-text">translationese-cleaner-vi</span>
+          </div>
+          <div class="skill-pill active" data-skill="grammar-checker-vi" title="Kiểm tra chính tả, dấu câu, thanh điệu">
+            <span class="pill-dot"></span>
+            <span class="pill-text">grammar-checker-vi</span>
+          </div>
+          <div class="skill-pill active" data-skill="style-guide-vi" title="Đồng nhất đại từ và phong cách video">
+            <span class="pill-dot"></span>
+            <span class="pill-text">style-guide-vi</span>
+          </div>
+        </div>
+
+        <!-- Tone & Register Selector -->
+        <div class="humanizer-config-row">
+          <div class="config-item">
+            <label>Phong cách (Register):</label>
+            <select id="registerSelect" class="studio-select">
+              <option value="tiktok">📱 TikTok Trendy (mình - các bạn, câu gãy gọn)</option>
+              <option value="storytelling">🎙️ Kể chuyện (tụi mình - bạn, truyền cảm)</option>
+              <option value="review">⭐ Review chân thực (mình - anh em, khách quan)</option>
+              <option value="professional">💼 Chuyên nghiệp (chúng tôi - quý vị, chuẩn mực)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Source Text Input Box -->
+        <div class="text-input-box">
+          <div class="input-header">
+            <label>Văn bản gốc / Bản dịch thô / Kịch bản:</label>
+            <button class="link-action-btn" id="btnLoadVideoCaption">⚡ Lấy tiêu đề video</button>
+          </div>
+          <textarea id="humanizerInput" class="studio-textarea" rows="4" placeholder="Nhập kịch bản, bản dịch thô từ tiếng Anh, hoặc tiêu đề video cần Việt hóa làm mượt..."></textarea>
+          
+          <div class="sample-prompts">
+            <span class="sample-label">Thử mẫu dịch thô:</span>
+            <button class="sample-tag" data-sample="Trong video này chúng ta sẽ cùng tìm hiểu việc thực hiện quá trình tối ưu hóa giúp mở khóa tiềm năng của hệ thống. Nó là rất quan trọng để đưa ra quyết định ở cuối ngày.">Văn mẫu dịch máy</button>
+            <button class="sample-tag" data-sample="1 Tiếng | NONSTOP VIETMIX LỠ YÊU - DJ KENBJN #xuhuong #nhacnghedixe #ilovetiktok #nonstop #nhactroi">Cap TikTok DJ</button>
+          </div>
+        </div>
+
+        <!-- Run Humanizer Button -->
+        <button class="studio-btn primary-btn full-btn" id="btnRunHumanize">
+          <span>✨ Làm Mượt & Việt Hóa (Humanize)</span>
+        </button>
+
+        <!-- Output Tabs (Clean Rewrite, Review Comments, Decisions) -->
+        <div class="output-container">
+          <div class="output-tabs">
+            <button class="out-tab-btn active" data-target="outCleanRewrite">Bản viết lại (clean_rewrite)</button>
+            <button class="out-tab-btn" data-target="outComments">Góp ý biên tập (<span id="commentCount">0</span>)</button>
+            <button class="out-tab-btn" data-target="outDecisions">Lựa chọn từ (<span id="decisionCount">0</span>)</button>
+          </div>
+
+          <!-- TAB 1: Clean Rewrite -->
+          <div class="out-tab-content active" id="outCleanRewrite">
+            <div id="cleanRewriteDisplay" class="clean-rewrite-box">
+              <p class="placeholder-text">Nhấn nút "Làm Mượt & Việt Hóa" để xem bản dịch tự nhiên chuẩn xác...</p>
+            </div>
+            
+            <div class="rewrite-actions">
+              <button class="studio-btn success-btn full-btn" id="btnApplyToTimeline">
+                <span>⚡ Chuyển Thành Phụ Đề Khớp Timeline</span>
+              </button>
+              <button class="studio-btn sm-btn secondary-btn" id="btnCopyCleanText">📋 Sao chép</button>
+            </div>
+          </div>
+
+          <!-- TAB 2: Review Comments -->
+          <div class="out-tab-content" id="outComments">
+            <div class="comments-list" id="commentsListDisplay">
+              <p class="placeholder-text">Chưa có phát hiện sáo rỗng hoặc dịch thô nào.</p>
+            </div>
+          </div>
+
+          <!-- TAB 3: Needs Author Decisions -->
+          <div class="out-tab-content" id="outDecisions">
+            <div class="decisions-list" id="decisionsListDisplay">
+              <p class="placeholder-text">Không có từ ngữ đa nghĩa cần người viết quyết định.</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+    </main>
+
+    <!-- BOTTOM TIMELINE EDITOR -->
+    <footer class="studio-timeline-area">
+      <!-- Timeline Control Bar -->
+      <div class="timeline-toolbar">
+        <div class="tb-left">
+          <span class="tb-title">🎞️ MULTI-TRACK TIMELINE</span>
+          <button class="tb-action-btn" id="btnSplitClip" title="Cắt video tại con trỏ (Ctrl+B)">✂️ Cắt (Split)</button>
+          <button class="tb-action-btn" id="btnDeleteClip" title="Xóa đoạn đã chọn (Del)">🗑️ Xóa</button>
+          <button class="tb-action-btn" id="btnSnapToggle">🧲 Hút dính (Snap)</button>
+        </div>
+
+        <div class="tb-center">
+          <span id="timelinePlayheadTime" class="time-readout">00:00.00</span>
+        </div>
+
+        <div class="tb-right">
+          <span class="zoom-label">Thu phóng:</span>
+          <button class="tb-mini-btn" id="btnZoomOut">-</button>
+          <input type="range" id="timelineZoomSlider" min="20" max="200" value="80" class="studio-slider zoom-slider">
+          <button class="tb-mini-btn" id="btnZoomIn">+</button>
+        </div>
+      </div>
+
+      <!-- Tracks Container -->
+      <div class="timeline-tracks-viewport" id="timelineViewport">
+        <!-- Time Ruler -->
+        <div class="timeline-ruler" id="timelineRuler">
+          <!-- Ticks generated dynamically -->
+        </div>
+
+        <!-- Playhead Indicator Line -->
+        <div class="timeline-playhead" id="timelinePlayhead">
+          <div class="playhead-handle"></div>
+          <div class="playhead-line"></div>
+        </div>
+
+        <!-- TRACK 1: Subtitle & Captions Track -->
+        <div class="timeline-track subtitle-track" id="subtitleTrack">
+          <div class="track-header">
+            <span class="th-icon">💬</span>
+            <span class="th-name">Phụ đề AI</span>
+          </div>
+          <div class="track-lane" id="subtitleLane">
+            <!-- Dynamic Subtitle Blocks -->
+          </div>
+        </div>
+
+        <!-- TRACK 2: Video Stream Track -->
+        <div class="timeline-track video-track" id="videoTrack">
+          <div class="track-header">
+            <span class="th-icon">🎬</span>
+            <span class="th-name">Video</span>
+          </div>
+          <div class="track-lane" id="videoLane">
+            <!-- Interactive Video Clip Block -->
+            <div class="video-clip-block" id="videoClipBlock">
+              <div class="clip-trim-handle handle-left"></div>
+              <div class="clip-content">
+                <span class="clip-title" id="timelineClipTitle">7675792462593428756.mp4</span>
+                <div class="clip-thumbnails-strip" id="clipThumbnailsStrip"></div>
+              </div>
+              <div class="clip-trim-handle handle-right"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TRACK 3: Audio / Sound Track -->
+        <div class="timeline-track audio-track" id="audioTrack">
+          <div class="track-header">
+            <span class="th-icon">🎵</span>
+            <span class="th-name">Âm thanh</span>
+          </div>
+          <div class="track-lane" id="audioLane">
+            <div class="audio-clip-block" id="audioClipBlock">
+              <div class="audio-waveform-canvas-wrap">
+                <canvas id="waveformCanvas"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- MODAL: Import TikTok URL -->
+    <div class="studio-modal-backdrop" id="modalImportTikTok">
+      <div class="studio-modal">
+        <div class="modal-header">
+          <h3>⬇ Nhập & Tải Video TikTok</h3>
+          <button class="modal-close-btn" id="btnCloseImportModal">✕</button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-instruction">Dán link TikTok (Profile hoặc Video đơn lẻ) để tải sạch không logo và mở ngay trong Studio:</p>
+          <input type="text" id="inputImportTikTokUrl" class="studio-input" placeholder="https://www.tiktok.com/@username/video/123456789 hoặc @username">
+          <div class="modal-options">
+            <label class="checkbox-label">
+              <input type="checkbox" id="checkAutoHumanize" checked>
+              Tự động lấy tiêu đề & chạy làm mượt tiếng Việt sau khi tải
+            </label>
+          </div>
+          <div id="importStatusBox" class="status-box hidden"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="studio-btn secondary-btn" id="btnCancelImport">Hủy</button>
+          <button class="studio-btn primary-btn" id="btnStartImport">Bắt đầu tải</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Export Video & Subtitles -->
+    <div class="studio-modal-backdrop" id="modalExport">
+      <div class="studio-modal">
+        <div class="modal-header">
+          <h3>⚡ Xuất Video & Phụ Đề Hoàn Chỉnh</h3>
+          <button class="modal-close-btn" id="btnCloseExportModal">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="export-options-grid">
+            <div class="export-card active" data-export-type="video-burned">
+              <span class="ec-icon">🎬</span>
+              <h4>Video Có Phụ Đề Burn-in</h4>
+              <p>Khắc trực tiếp phụ đề tiếng Việt làm mượt vào khung hình (Sẵn sàng đăng TikTok/Reels).</p>
+            </div>
+            <div class="export-card" data-export-type="srt">
+              <span class="ec-icon">📄</span>
+              <h4>Tệp Phụ Đề (.SRT)</h4>
+              <p>Tải file SubRip SRT chuẩn để gắn vào CapCut, Premiere hoặc YouTube.</p>
+            </div>
+            <div class="export-card" data-export-type="vtt">
+              <span class="ec-icon">🌐</span>
+              <h4>Tệp WebVTT (.VTT)</h4>
+              <p>Chuẩn phụ đề web quốc tế có căn lề thời gian.</p>
+            </div>
+          </div>
+
+          <div class="export-progress-wrap hidden" id="exportProgressWrap">
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="exportProgressBar" style="width: 0%"></div>
+            </div>
+            <span class="progress-status-text" id="exportProgressStatus">Đang khởi tạo bộ mã hóa...</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="studio-btn secondary-btn" id="btnCancelExport">Đóng</button>
+          <button class="studio-btn primary-btn glow-btn" id="btnConfirmExport">Xuất ngay</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="humanizer-engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

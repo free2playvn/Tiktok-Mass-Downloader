@@ -5,6 +5,7 @@
   "main": "TMD.js",
   "scripts": {
     "start": "node TMD.js",
+    "studio": "node server.js",
     "test": "node TMD.js https://www.tiktok.com/@tiktok 1"
   },
   "keywords": [
