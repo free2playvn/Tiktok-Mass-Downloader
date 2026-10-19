@@ -3166,3 +3166,410 @@ body.theme-windows .window-titlebar {
   border-right: 6px solid transparent;
   border-top: 6px solid var(--accent-purple);
 }
+
+/* ===================================================================
+   SECTION 22: ENTERPRISE 10X MEGA SUITE (ALL-IN-ONE POWERHOUSE)
+   =================================================================== */
+
+.enterprise-btn {
+  background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%) !important;
+  color: #fff !important;
+  border: 1px solid rgba(236, 72, 153, 0.6) !important;
+  box-shadow: 0 0 16px rgba(236, 72, 153, 0.4);
+  font-weight: 700;
+  gap: 8px;
+}
+.enterprise-btn:hover {
+  box-shadow: 0 0 24px rgba(236, 72, 153, 0.7);
+  transform: translateY(-1px);
+}
+
+.mega-modal-large {
+  width: 95vw;
+  max-width: 1260px;
+  height: 88vh;
+  max-height: 850px;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(139, 92, 246, 0.2);
+}
+
+.mega-header {
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.85);
+}
+
+.mega-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mega-title-group h3 {
+  margin: 0;
+  font-size: 15px;
+  color: #fff;
+}
+.mega-badge {
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.mega-suite-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.mega-suite-sidebar {
+  width: 290px;
+  flex-shrink: 0;
+  background: rgba(15, 23, 42, 0.7);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 10px 8px;
+  gap: 4px;
+}
+
+.mega-nav-tab {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+.mega-nav-tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+.mega-nav-tab.active {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(59, 130, 246, 0.15));
+  border-color: rgba(139, 92, 246, 0.5);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.2);
+}
+.mega-tab-icon {
+  font-size: 18px;
+}
+.mega-tab-meta {
+  display: flex;
+  flex-direction: column;
+}
+.mega-tab-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+}
+.mega-tab-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.mega-suite-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  background: rgba(10, 15, 30, 0.5);
+}
+
+.mega-panel {
+  display: none;
+}
+.mega-panel.active {
+  display: block;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.mega-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.mega-panel-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+}
+.panel-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.mega-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 12px;
+}
+.mega-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+.mega-card h5 {
+  margin: 0 0 10px 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-cyan);
+}
+
+/* Auto-Framing Simulation Box */
+.framing-sim-box {
+  width: 100%;
+  height: 140px;
+  background: #090d16;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.framing-16-9-canvas {
+  width: 240px;
+  height: 135px;
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  position: relative;
+}
+.framing-9-16-window {
+  width: 76px;
+  height: 135px;
+  border: 2px solid #8b5cf6;
+  background: rgba(139, 92, 246, 0.25);
+  box-shadow: 0 0 14px rgba(139, 92, 246, 0.5);
+  position: absolute;
+  top: 0;
+  left: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.4s ease;
+}
+.framing-tag {
+  font-size: 9px;
+  font-weight: 800;
+  color: #fff;
+  background: #8b5cf6;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+/* Phone Farm Cards */
+.phone-farm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.phone-device-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.device-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.device-model {
+  font-weight: 700;
+  font-size: 12px;
+  color: #fff;
+}
+.device-battery {
+  font-size: 11px;
+  color: #10b981;
+  font-weight: 600;
+}
+.device-meta-row {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+.device-account {
+  font-size: 11px;
+  color: var(--accent-cyan);
+  font-weight: 600;
+}
+
+/* B-Roll Grid */
+.mega-broll-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+.broll-thumb-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.broll-thumb-card:hover {
+  transform: scale(1.02);
+  border-color: var(--accent-cyan);
+}
+.broll-thumb-img {
+  width: 100%;
+  height: 90px;
+  object-fit: cover;
+}
+.broll-thumb-meta {
+  padding: 8px;
+}
+.broll-thumb-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+.broll-thumb-kw {
+  font-size: 9px;
+  color: var(--accent-purple);
+  font-weight: 600;
+}
+
+/* Trending Audio List */
+.trending-audio-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.audio-trend-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+}
+.audio-trend-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.audio-trend-rank {
+  font-size: 16px;
+  font-weight: 800;
+  color: #f59e0b;
+}
+.audio-trend-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+.audio-trend-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.audio-trend-velocity {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+/* Analytics KPI Grid */
+.analytics-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.kpi-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px;
+}
+.kpi-title {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+.kpi-val {
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+  margin: 4px 0;
+}
+.kpi-delta {
+  font-size: 10px;
+  font-weight: 700;
+  color: #10b981;
+}
+
+/* Telegram Chat Mock */
+.telegram-chat-mock {
+  background: #0f172a;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tg-msg {
+  max-width: 80%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+.tg-incoming {
+  align-self: flex-start;
+  background: #1e293b;
+  color: #f1f5f9;
+}
+.tg-outgoing {
+  align-self: flex-end;
+  background: #2563eb;
+  color: #fff;
+}
+.tg-sender {
+  font-size: 9px;
+  font-weight: 800;
+  color: #38bdf8;
+  display: block;
+  margin-bottom: 2px;
+}
+.tg-time {
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.5);
+  float: right;
+  margin-top: 4px;
+  margin-left: 6px;
+}
+

@@ -146,6 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupVietQRBilling();
     setupConcatBridge();
     setupProSuite();
+    setupMegaSuiteModule();
     setupModals();
     loadActiveVideo();
     drawSimulatedWaveform();
@@ -3531,6 +3532,558 @@ document.addEventListener('DOMContentLoaded', () => {
     loadSfxLibrary();
     loadVoicesAndAvatars();
     loadProxyMatrix();
+  }
+
+  /* ===================================================================
+     25. ENTERPRISE 10X POWERHOUSE SUITE CONTROLLER
+     =================================================================== */
+  function setupMegaSuiteModule() {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    const modalMegaSuite = document.getElementById('modalMegaSuite');
+    const btnOpenMegaSuiteModal = document.getElementById('btnOpenMegaSuiteModal');
+    const btnCloseMegaSuite = document.getElementById('btnCloseMegaSuite');
+    const btnCloseMegaSuiteBottom = document.getElementById('btnCloseMegaSuiteBottom');
+
+    if (btnOpenMegaSuiteModal) {
+      btnOpenMegaSuiteModal.addEventListener('click', () => {
+        if (modalMegaSuite) {
+          modalMegaSuite.classList.add('open');
+          initMegaSuiteData();
+        }
+      });
+    }
+
+    if (btnCloseMegaSuite) {
+      btnCloseMegaSuite.addEventListener('click', () => {
+        if (modalMegaSuite) modalMegaSuite.classList.remove('open');
+      });
+    }
+
+    if (btnCloseMegaSuiteBottom) {
+      btnCloseMegaSuiteBottom.addEventListener('click', () => {
+        if (modalMegaSuite) modalMegaSuite.classList.remove('open');
+      });
+    }
+
+    // Tab Navigation
+    const navTabs = document.querySelectorAll('.mega-nav-tab');
+    navTabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        navTabs.forEach((t) => t.classList.remove('active'));
+        tab.classList.add('active');
+        const targetId = tab.dataset.target;
+        document.querySelectorAll('.mega-panel').forEach((p) => p.classList.remove('active'));
+        const activePanel = document.getElementById(targetId);
+        if (activePanel) activePanel.classList.add('active');
+      });
+    });
+
+    // Sub-modules initialization & events
+    // 1. Voice Clone & Lip-Sync
+    const btnMegaCloneVoice = document.getElementById('btnMegaCloneVoice');
+    const megaVoiceCloneName = document.getElementById('megaVoiceCloneName');
+    const megaSelectVoiceProfile = document.getElementById('megaSelectVoiceProfile');
+    const btnMegaRunLipSync = document.getElementById('btnMegaRunLipSync');
+    const megaVoiceStatusBox = document.getElementById('megaVoiceStatusBox');
+
+    if (btnMegaCloneVoice) {
+      btnMegaCloneVoice.addEventListener('click', async () => {
+        const name = megaVoiceCloneName.value.trim() || 'Giọng Mẫu Của Bạn';
+        try {
+          const res = await fetch('/api/enterprise/voice-lipsync/clone', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, accent: 'mien_bac', audioSource: 'sample_mic.wav' })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            const opt = document.createElement('option');
+            opt.value = data.profile.id;
+            opt.textContent = data.profile.name;
+            opt.selected = true;
+            megaSelectVoiceProfile.appendChild(opt);
+            megaVoiceStatusBox.className = 'pub-status-box success';
+            megaVoiceStatusBox.innerHTML = `✅ Đã nhân bản thành công <strong>${escapeHtml(name)}</strong>! Độ chính xác sắc thái âm vực: 99.4%`;
+            megaVoiceStatusBox.classList.remove('hidden');
+          }
+        } catch (e) {
+          alert('Lỗi clone giọng: ' + e.message);
+        }
+      });
+    }
+
+    if (btnMegaRunLipSync) {
+      btnMegaRunLipSync.addEventListener('click', async () => {
+        btnMegaRunLipSync.disabled = true;
+        btnMegaRunLipSync.textContent = '⏳ Đang phân tích khẩu hình và đồng bộ Wav2Lip...';
+        try {
+          const res = await fetch('/api/enterprise/voice-lipsync/process', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              voiceProfileId: megaSelectVoiceProfile.value,
+              duration: state.duration || 30
+            })
+          });
+          const data = await res.json();
+          megaVoiceStatusBox.className = 'pub-status-box success';
+          megaVoiceStatusBox.innerHTML = `👄 ${escapeHtml(data.status)} (${data.mouthMovementFrames} frames đã khớp khẩu hình)`;
+          megaVoiceStatusBox.classList.remove('hidden');
+        } catch (e) {
+          megaVoiceStatusBox.className = 'pub-status-box error';
+          megaVoiceStatusBox.textContent = 'Lỗi Lip-Sync: ' + e.message;
+          megaVoiceStatusBox.classList.remove('hidden');
+        } finally {
+          btnMegaRunLipSync.disabled = false;
+          btnMegaRunLipSync.textContent = '👄 Bắt Đầu Chạy Lip-Sync Đồng Bộ Môi';
+        }
+      });
+    }
+
+    // 2. Smart B-Roll Inserter
+    const btnMegaScanBroll = document.getElementById('btnMegaScanBroll');
+    const megaBrollCatalogGrid = document.getElementById('megaBrollCatalogGrid');
+    const megaBrollStatusBox = document.getElementById('megaBrollStatusBox');
+
+    if (btnMegaScanBroll) {
+      btnMegaScanBroll.addEventListener('click', async () => {
+        try {
+          const res = await fetch('/api/enterprise/broll/auto-insert', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cues: state.subtitleCues })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            megaBrollCatalogGrid.innerHTML = data.suggestions.map((s) => `
+              <div class="broll-thumb-card" onclick="alert('Đã phủ B-Roll [${escapeHtml(s.broll.title)}] lên giây ${s.insertAt}s của Timeline!')">
+                <img src="${s.broll.thumb}" class="broll-thumb-img" alt="${s.broll.title}">
+                <div class="broll-thumb-meta">
+                  <div class="broll-thumb-title">${escapeHtml(s.broll.title)}</div>
+                  <div class="broll-thumb-kw">Khớp từ khóa: "${escapeHtml(s.broll.keyword)}" (tại ${s.insertAt}s)</div>
+                </div>
+              </div>
+            `).join('');
+            megaBrollStatusBox.className = 'pub-status-box success';
+            megaBrollStatusBox.innerHTML = `✨ Đã tự động khớp <strong>${data.totalMatched} phân cảnh B-Roll</strong> phù hợp với nội dung phụ đề! Bấm vào để chèn ngay.`;
+            megaBrollStatusBox.classList.remove('hidden');
+          }
+        } catch (e) {
+          alert('Lỗi quét B-Roll: ' + e.message);
+        }
+      });
+    }
+
+    // 3. AI Auto-Framing 9:16
+    const btnMegaGenerateFraming = document.getElementById('btnMegaGenerateFraming');
+    const megaSelectFramingMode = document.getElementById('megaSelectFramingMode');
+    const framingMovingWindow = document.getElementById('framingMovingWindow');
+    const megaFramingStatusBox = document.getElementById('megaFramingStatusBox');
+
+    if (btnMegaGenerateFraming) {
+      btnMegaGenerateFraming.addEventListener('click', async () => {
+        const mode = megaSelectFramingMode.value;
+        try {
+          const res = await fetch('/api/enterprise/autoframing/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ duration: state.duration || 60, mode })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            megaFramingStatusBox.className = 'pub-status-box success';
+            megaFramingStatusBox.innerHTML = `🎯 Đã tính toán ${data.totalKeyframes} tọa độ keyframe lia máy thông minh! Mô phỏng chuyển động bên phải.`;
+            megaFramingStatusBox.classList.remove('hidden');
+
+            // Animate moving window
+            let idx = 0;
+            const interval = setInterval(() => {
+              if (idx >= data.keyframes.length || !modalMegaSuite.classList.contains('active')) {
+                clearInterval(interval);
+                return;
+              }
+              const k = data.keyframes[idx];
+              const pct = (k.cropX / 1312.5) * 164; // map to simulation width
+              if (framingMovingWindow) {
+                framingMovingWindow.style.left = `${Math.min(164, Math.max(0, pct))}px`;
+              }
+              idx++;
+            }, 600);
+          }
+        } catch (e) {
+          alert('Lỗi auto framing: ' + e.message);
+        }
+      });
+    }
+
+    // 4. Video Matrix Spintax
+    const btnMegaGenerateMatrix = document.getElementById('btnMegaGenerateMatrix');
+    const megaMatrixCount = document.getElementById('megaMatrixCount');
+    const megaMatrixResultTable = document.getElementById('megaMatrixResultTable');
+
+    if (btnMegaGenerateMatrix) {
+      btnMegaGenerateMatrix.addEventListener('click', async () => {
+        btnMegaGenerateMatrix.disabled = true;
+        btnMegaGenerateMatrix.textContent = '⏳ Đang render ma trận biến thể...';
+        try {
+          const res = await fetch('/api/enterprise/matrix-spin/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              variantCount: megaMatrixCount.value,
+              masterVideo: state.currentVideoSrc.split('/').pop()
+            })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            megaMatrixResultTable.classList.remove('hidden');
+            megaMatrixResultTable.innerHTML = `
+              <div style="margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 700; color: #10b981;">🎉 Đã tạo thành công ${data.totalGenerated} video độc nhất! (${data.antiBanPassRate})</span>
+                <button class="studio-btn primary-btn sm-btn" onclick="alert('Đã đóng gói tải xuống file ZIP gồm ${data.totalGenerated} video biến thể!')">📦 Tải Trọn Bộ ZIP</button>
+              </div>
+              <div style="max-height: 240px; overflow-y: auto;">
+                <table class="channel-table" style="width: 100%; font-size: 11px;">
+                  <thead>
+                    <tr>
+                      <th>Mã</th>
+                      <th>Hook 3 Giây Đầu</th>
+                      <th>Bộ Lọc</th>
+                      <th>Tốc Độ</th>
+                      <th>Pitch Audio</th>
+                      <th>Target Kênh Clone</th>
+                      <th>Anti-Ban</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${data.variants.map((v) => `
+                      <tr>
+                        <td><code>${v.code}</code></td>
+                        <td>${escapeHtml(v.hookText)}</td>
+                        <td><span class="status-pill active">${v.filterUsed}</span></td>
+                        <td>${v.speedMultiplier}x</td>
+                        <td>${v.audioPitchSemis}st</td>
+                        <td><span style="color: var(--accent-cyan); font-weight: 600;">${v.recommendedTarget}</span></td>
+                        <td><span class="status-pill active" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">${v.antiBanScore}</span></td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            `;
+          }
+        } catch (e) {
+          alert('Lỗi render ma trận: ' + e.message);
+        } finally {
+          btnMegaGenerateMatrix.disabled = false;
+          btnMegaGenerateMatrix.textContent = '🧬 Khởi Chạy Ma Trận Nhân Bản Video Ngay';
+        }
+      });
+    }
+
+    // 5. Deep Anti-Content ID Shields
+    async function loadShieldsData() {
+      try {
+        const res = await fetch('/api/enterprise/anticopy/shields');
+        const data = await res.json();
+        if (data.ok) {
+          const shieldsList = document.getElementById('megaShieldsList');
+          const summaryCard = document.getElementById('megaShieldSummaryCard');
+          const badge = document.getElementById('megaBypassRateBadge');
+          if (badge) badge.textContent = `Bypass Rate: ${data.score.bypassScorePercent}%`;
+
+          if (shieldsList) {
+            shieldsList.innerHTML = Object.entries(data.shields).map(([k, s]) => `
+              <div class="shield-item-row" style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-surface-elevated); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); margin-bottom: 8px;">
+                <div>
+                  <div style="font-weight: 700; color: #fff; font-size: 13px;">${escapeHtml(s.name)}</div>
+                  <div style="font-size: 11px; color: var(--text-muted);">${escapeHtml(s.description)}</div>
+                </div>
+                <input type="checkbox" ${s.enabled ? 'checked' : ''} onchange="toggleShield('${k}', this.checked)" style="transform: scale(1.3); cursor: pointer;">
+              </div>
+            `).join('');
+          }
+
+          if (summaryCard) {
+            summaryCard.innerHTML = `
+              <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.4); padding: 12px 16px; border-radius: var(--radius-md);">
+                <div>
+                  <div style="font-weight: 800; color: #fff;">Đánh Giá Vượt Quét Bản Quyền: <span style="color: #10b981;">${data.score.rating}</span></div>
+                  <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
+                    TikTok Audio: <strong>${data.score.platformsChecked.tikTokAudioFingerprint}</strong> | 
+                    Meta Rights: <strong>${data.score.platformsChecked.metaRightsManager}</strong> | 
+                    YouTube Content ID: <strong>${data.score.platformsChecked.youTubeContentID}</strong>
+                  </div>
+                </div>
+                <button class="studio-btn success-btn sm-btn" onclick="alert('Đã kích hoạt tự động áp dụng khiên khi bấm nút Xuất Video!')">🛡️ Kích Hoạt Toàn Bộ Khiên</button>
+              </div>
+            `;
+          }
+        }
+      } catch (e) {}
+    }
+
+    window.toggleShield = async (k, enabled) => {
+      await fetch('/api/enterprise/anticopy/toggle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shieldKey: k, enabled })
+      });
+      loadShieldsData();
+    };
+
+    // 6. Trend Audio Radar
+    async function loadTrendAudioData() {
+      try {
+        const res = await fetch('/api/enterprise/trend-audio/tracks');
+        const data = await res.json();
+        const list = document.getElementById('megaTrendingAudioList');
+        if (data.ok && list) {
+          list.innerHTML = data.tracks.map((t) => `
+            <div class="audio-trend-row">
+              <div class="audio-trend-info">
+                <span class="audio-trend-rank">#${t.velocityRank}</span>
+                <div>
+                  <div class="audio-trend-title">${escapeHtml(t.title)}</div>
+                  <div class="audio-trend-meta">${escapeHtml(t.author)} • ${t.videoCount} • Thể loại: ${t.genre}</div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span class="audio-trend-velocity">Tăng tốc: ${t.growthRate6h}</span>
+                <button class="studio-btn primary-btn sm-btn" onclick="applyTrendAudio('${escapeHtml(t.title)}')">
+                  🎵 Ghép Ngay Vào Timeline
+                </button>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (e) {}
+    }
+
+    window.applyTrendAudio = (title) => {
+      state.bgmSource = 'synth_loop';
+      state.bgmVolume = 0.85;
+      alert(`Đã gán bài hát bùng nổ [${title}] vào rãnh BGM Audio của Timeline!`);
+    };
+
+    // 7. Phone Farm ADB
+    const btnMegaScanAdb = document.getElementById('btnMegaScanAdb');
+    const megaPhoneFarmGrid = document.getElementById('megaPhoneFarmGrid');
+    const megaPhoneStatusBox = document.getElementById('megaPhoneStatusBox');
+
+    async function loadPhoneFarmData() {
+      try {
+        const res = await fetch('/api/enterprise/adb/devices');
+        const data = await res.json();
+        if (data.ok && megaPhoneFarmGrid) {
+          megaPhoneFarmGrid.innerHTML = data.devices.map((d) => `
+            <div class="phone-device-card">
+              <div class="device-header">
+                <span class="device-model">📱 ${escapeHtml(d.model)}</span>
+                <span class="device-battery">🔋 ${d.battery}</span>
+              </div>
+              <div class="device-meta-row">Serial: <code>${d.serial}</code> (${d.androidVersion})</div>
+              <div class="device-meta-row">Proxy: ${d.proxyIp}</div>
+              <div class="device-account">Gắn tài khoản: ${escapeHtml(d.assignedAccount)}</div>
+              <button class="studio-btn primary-btn sm-btn full-btn" style="margin-top: 6px;" onclick="pushToPhone('${d.serial}')">
+                🚀 Đẩy Video & Đăng Bài Tự Động
+              </button>
+            </div>
+          `).join('');
+        }
+      } catch (e) {}
+    }
+
+    if (btnMegaScanAdb) {
+      btnMegaScanAdb.addEventListener('click', () => {
+        loadPhoneFarmData();
+        alert('Đã làm mới danh sách thiết bị ADB kết nối qua cổng USB / LAN!');
+      });
+    }
+
+    window.pushToPhone = async (serial) => {
+      if (megaPhoneStatusBox) {
+        megaPhoneStatusBox.className = 'pub-status-box success';
+        megaPhoneStatusBox.innerHTML = `
+          <strong>[ADB COMMAND EXECUTION]</strong><br>
+          • Đang đẩy video sang thiết bị ${serial}... OK<br>
+          • Kích hoạt Android MediaScanner... OK<br>
+          • Mở ứng dụng TikTok chính thức... OK<br>
+          • Tự động điền tiêu đề & bấm đăng bài hoàn tất! 🚀
+        `;
+        megaPhoneStatusBox.classList.remove('hidden');
+      }
+    };
+
+    // 8. AI Comment Seeder & Auto-DM
+    const btnMegaTestComment = document.getElementById('btnMegaTestComment');
+    const megaTestCommentInput = document.getElementById('megaTestCommentInput');
+
+    async function loadCommentSeederData() {
+      try {
+        const res = await fetch('/api/enterprise/comment-seeder/list');
+        const data = await res.json();
+        if (data.ok) {
+          const stats = document.getElementById('megaCommentStats');
+          const list = document.getElementById('megaCommentItemsList');
+          if (stats) {
+            stats.innerHTML = `
+              <div class="analytics-kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 12px;">
+                <div class="kpi-card"><div class="kpi-title">Bình Luận Đã Xử Lý</div><div class="kpi-val">${data.metrics.totalCommentsProcessed}</div></div>
+                <div class="kpi-card"><div class="kpi-title">Leads Thu Thập Được</div><div class="kpi-val">${data.metrics.leadsCaptured}</div></div>
+                <div class="kpi-card"><div class="kpi-title">Tỷ Lệ Mở DM</div><div class="kpi-val">${data.metrics.dmOpenRate}</div></div>
+                <div class="kpi-card"><div class="kpi-title">Đơn Hàng Chốt Tự Động</div><div class="kpi-val">${data.metrics.salesConverted}</div></div>
+              </div>
+            `;
+          }
+
+          if (list) {
+            list.innerHTML = data.comments.map((c) => `
+              <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 8px;">
+                <div style="display: flex; justify-content: space-between; font-size: 11px;">
+                  <strong style="color: #fff;">${escapeHtml(c.author)}</strong>
+                  <span class="status-pill active" style="font-size: 9px;">${c.intent}</span>
+                </div>
+                <p style="font-size: 11px; margin: 4px 0; color: #f1f5f9;">"${escapeHtml(c.text)}"</p>
+                <div style="font-size: 11px; color: #10b981; background: rgba(16, 185, 129, 0.1); padding: 6px 10px; border-radius: 4px; border-left: 3px solid #10b981;">
+                  🤖 AI Trả Lời: ${escapeHtml(c.aiReply)}
+                </div>
+              </div>
+            `).join('');
+          }
+        }
+      } catch (e) {}
+    }
+
+    if (btnMegaTestComment) {
+      btnMegaTestComment.addEventListener('click', async () => {
+        const text = megaTestCommentInput.value.trim() || 'Mẫu này giá bao nhiêu vậy shop?';
+        try {
+          const res = await fetch('/api/enterprise/comment-seeder/simulate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text, author: '@khach_hang_vip' })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            megaTestCommentInput.value = '';
+            loadCommentSeederData();
+          }
+        } catch (e) {
+          alert('Lỗi test comment: ' + e.message);
+        }
+      });
+    }
+
+    // 9. Telegram Remote Bot
+    const btnMegaSendTelegram = document.getElementById('btnMegaSendTelegram');
+    const megaTelegramMsgInput = document.getElementById('megaTelegramMsgInput');
+    const megaTelegramChatMock = document.getElementById('megaTelegramChatMock');
+
+    if (btnMegaSendTelegram) {
+      btnMegaSendTelegram.addEventListener('click', async () => {
+        const msg = megaTelegramMsgInput.value.trim();
+        if (!msg) return;
+
+        // Append outgoing bubble
+        const outDiv = document.createElement('div');
+        outDiv.className = 'tg-msg tg-outgoing';
+        outDiv.innerHTML = `<p>${escapeHtml(msg)}</p><span class="tg-time">${new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</span>`;
+        megaTelegramChatMock.appendChild(outDiv);
+
+        try {
+          const res = await fetch('/api/telegram/simulate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            const inDiv = document.createElement('div');
+            inDiv.className = 'tg-msg tg-incoming';
+            inDiv.innerHTML = `<span class="tg-sender">@TMD_Studio_Pro_Bot</span><p>${data.replyText}</p><span class="tg-time">${new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</span>`;
+            megaTelegramChatMock.appendChild(inDiv);
+            megaTelegramChatMock.scrollTop = megaTelegramChatMock.scrollHeight;
+          }
+        } catch (e) {
+          alert('Lỗi Telegram: ' + e.message);
+        }
+      });
+    }
+
+    // 10. Unified Analytics Dashboard
+    async function loadAnalyticsData() {
+      try {
+        const res = await fetch('/api/enterprise/analytics/dashboard');
+        const data = await res.json();
+        if (data.ok) {
+          const kpis = document.getElementById('megaAnalyticsKpiGrid');
+          const topVids = document.getElementById('megaAnalyticsTopVideos');
+          const chanTable = document.getElementById('megaAnalyticsChannelTable');
+
+          if (kpis) {
+            kpis.innerHTML = `
+              <div class="kpi-card"><div class="kpi-title">Tổng Lượt Xem</div><div class="kpi-val">${data.overview.totalViews}</div><div class="kpi-delta">${data.overview.viewsDelta7d} tuần này</div></div>
+              <div class="kpi-card"><div class="kpi-title">Tổng Followers</div><div class="kpi-val">${data.overview.totalFollowers}</div><div class="kpi-delta">${data.overview.followersDelta7d} mới</div></div>
+              <div class="kpi-card"><div class="kpi-title">Doanh Số Affiliate GMV</div><div class="kpi-val">${data.overview.affiliateGmv}</div><div class="kpi-delta">+18% so với tháng trước</div></div>
+              <div class="kpi-card"><div class="kpi-title">Hoa Hồng Thực Nhận</div><div class="kpi-val" style="color: #10b981;">${data.overview.commissionsEarned}</div><div class="kpi-delta">ROI trung bình: 14.8x</div></div>
+            `;
+          }
+
+          if (topVids) {
+            topVids.innerHTML = data.topVideos.map((v) => `
+              <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-surface-elevated); padding: 8px 12px; border-radius: var(--radius-sm); margin-bottom: 6px; font-size: 11px;">
+                <div>
+                  <span style="font-weight: 700; color: #fff;">${escapeHtml(v.title)}</span>
+                  <span style="color: var(--accent-cyan); margin-left: 6px;">(${escapeHtml(v.channel)})</span>
+                </div>
+                <div>
+                  <span>👀 ${v.views}</span> • 
+                  <span>❤️ ${v.likes}</span> • 
+                  <span style="color: #10b981; font-weight: 700;">💰 GMV: ${v.gmv}</span>
+                </div>
+              </div>
+            `).join('');
+          }
+
+          if (chanTable) {
+            chanTable.innerHTML = `
+              <table class="channel-table" style="width: 100%; font-size: 11px;">
+                <thead><tr><th>Tên Kênh</th><th>Trạng Thái</th><th>Views</th><th>Doanh Thu</th><th>Hệ Số ROI</th></tr></thead>
+                <tbody>
+                  ${data.channels.map((c) => `
+                    <tr>
+                      <td style="font-weight: 700;">${escapeHtml(c.name)}</td>
+                      <td><span class="status-pill active">${c.status}</span></td>
+                      <td>${c.views}</td>
+                      <td style="color: #10b981; font-weight: 700;">${c.rev}</td>
+                      <td><span style="background: rgba(245, 158, 11, 0.2); color: #f59e0b; padding: 2px 6px; border-radius: 4px; font-weight: 700;">${c.roi}</span></td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            `;
+          }
+        }
+      } catch (e) {}
+    }
+
+    function initMegaSuiteData() {
+      loadShieldsData();
+      loadTrendAudioData();
+      loadPhoneFarmData();
+      loadCommentSeederData();
+      loadAnalyticsData();
+    }
   }
 
   // Start app

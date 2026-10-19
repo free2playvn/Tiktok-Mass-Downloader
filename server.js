@@ -15,6 +15,13 @@ const affiliateMonetization = require('./modules/affiliate_monetization');
 const proxyAntiDetect = require('./modules/proxy_anti_detect');
 const telegramBotCommander = require('./modules/telegram_bot');
 const viralSplitTester = require('./modules/viral_split_tester');
+const autoFramingEngine = require('./modules/auto_framing');
+const videoMatrixSpintax = require('./modules/video_matrix_spin');
+const deepAntiContentID = require('./modules/deep_anti_content_id');
+const trendAudioRadar = require('./modules/trend_audio_radar');
+const phoneFarmADB = require('./modules/phone_farm_adb');
+const commentSeeder = require('./modules/comment_seeder');
+const creatorAnalytics = require('./modules/creator_analytics');
 
 const PORT = process.env.PORT || 3000;
 const STUDIO_DIR = path.join(__dirname, 'studio');
@@ -925,6 +932,178 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: false, message: e.message }));
     }
+    return;
+  }
+
+  /* ===================================================================
+     ENTERPRISE 10X POWERHOUSE SUITE APIS
+     =================================================================== */
+
+  // 24. AI Voice Clone & Lip-Sync
+  if (pathname === '/api/enterprise/voice-lipsync/voices' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      ok: true,
+      voices: voiceAvatarEngine.getVoices(),
+      avatars: voiceAvatarEngine.getAvatars()
+    }));
+    return;
+  }
+
+  if (pathname === '/api/enterprise/voice-lipsync/clone' && req.method === 'POST') {
+    try {
+      const { name, accent, audioSource } = await readJsonBody();
+      const result = voiceAvatarEngine.cloneVoice(name, accent, audioSource);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  if (pathname === '/api/enterprise/voice-lipsync/process' && req.method === 'POST') {
+    try {
+      const body = await readJsonBody();
+      const result = voiceAvatarEngine.processLipSync(body);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 25. AI Smart B-Roll Inserter
+  if (pathname === '/api/enterprise/broll/auto-insert' && req.method === 'POST') {
+    try {
+      const { cues = [] } = await readJsonBody();
+      const suggestions = smartAudioBroll.suggestBroll(cues);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, suggestions, totalMatched: suggestions.length }));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 26. AI Auto-Framing 9:16
+  if (pathname === '/api/enterprise/autoframing/modes' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, modes: autoFramingEngine.getModes() }));
+    return;
+  }
+
+  if (pathname === '/api/enterprise/autoframing/generate' && req.method === 'POST') {
+    try {
+      const { duration = 60, mode = 'speaker_focus' } = await readJsonBody();
+      const result = autoFramingEngine.generatePanKeyframes(duration, mode);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 27. Video Matrix Spintax (1 Video -> 100 Variants)
+  if (pathname === '/api/enterprise/matrix-spin/generate' && req.method === 'POST') {
+    try {
+      const body = await readJsonBody();
+      const result = videoMatrixSpintax.generateMatrix(body);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 28. Deep Anti-Content ID (Audio Ultrasound & Pixel Shift)
+  if (pathname === '/api/enterprise/anticopy/shields' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      ok: true,
+      shields: deepAntiContentID.getShields(),
+      score: deepAntiContentID.calculateBypassScore()
+    }));
+    return;
+  }
+
+  if (pathname === '/api/enterprise/anticopy/toggle' && req.method === 'POST') {
+    try {
+      const { shieldKey, enabled } = await readJsonBody();
+      deepAntiContentID.updateShield(shieldKey, enabled);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        ok: true,
+        shields: deepAntiContentID.getShields(),
+        score: deepAntiContentID.calculateBypassScore()
+      }));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 29. Trend Velocity Audio Radar
+  if (pathname === '/api/enterprise/trend-audio/tracks' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, tracks: trendAudioRadar.getTrendingTracks() }));
+    return;
+  }
+
+  // 30. Phone Farm ADB Device Manager
+  if (pathname === '/api/enterprise/adb/devices' && req.method === 'GET') {
+    const devices = await phoneFarmADB.scanDevices();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(devices));
+    return;
+  }
+
+  if (pathname === '/api/enterprise/adb/push-post' && req.method === 'POST') {
+    try {
+      const { serial, videoPath, caption, hashtags } = await readJsonBody();
+      const result = await phoneFarmADB.pushAndPost(serial, videoPath, caption, hashtags);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 31. AI Smart Comment Seeder & Auto-DM Lead
+  if (pathname === '/api/enterprise/comment-seeder/list' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(commentSeeder.getComments()));
+    return;
+  }
+
+  if (pathname === '/api/enterprise/comment-seeder/simulate' && req.method === 'POST') {
+    try {
+      const { text, author } = await readJsonBody();
+      const result = commentSeeder.simulateNewComment(text, author);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 32. Unified Creator Analytics & Revenue Matrix Dashboard
+  if (pathname === '/api/enterprise/analytics/dashboard' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(creatorAnalytics.getDashboardData()));
     return;
   }
 
