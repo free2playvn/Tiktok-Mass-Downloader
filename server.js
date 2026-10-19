@@ -39,6 +39,14 @@ const lipsyncFaceSwap = require('./modules/lipsync_faceswap');
 const shadowbanWarmup = require('./modules/shadowban_warmup');
 const omnichannelCrmShipping = require('./modules/omnichannel_crm_shipping');
 const affiliateKocHunter = require('./modules/affiliate_koc_hunter');
+const videoStyleMorph = require('./modules/video_style_morph');
+const magicEraserStudio = require('./modules/magic_eraser_studio');
+const autonomousDirector = require('./modules/autonomous_director');
+const competitorSpyRadar = require('./modules/competitor_spy_radar');
+const webcamMocapStream = require('./modules/webcam_mocap_stream');
+const cvProductPinning = require('./modules/cv_product_pinning');
+const simFarmFingerprint = require('./modules/sim_farm_fingerprint');
+const profitMarginTracker = require('./modules/profit_margin_tracker');
 
 const PORT = process.env.PORT || 3000;
 const STUDIO_DIR = path.join(__dirname, 'studio');
@@ -1636,6 +1644,205 @@ const server = http.createServer(async (req, res) => {
     try {
       const { kocId, commissionPercent, productName } = await readJsonBody();
       const result = affiliateKocHunter.sendSampleOutreachProposal(kocId, commissionPercent, productName);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 49. AI Video Style Morphing Engine (Video-to-Video Diffusion)
+  if (pathname === '/api/enterprise/video/style-morph/presets' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(videoStyleMorph.getStylePresets()));
+    return;
+  }
+
+  if (pathname === '/api/enterprise/video/style-morph/apply' && req.method === 'POST') {
+    try {
+      const { videoSrc, styleId, denoiseStrength, customPrompt } = await readJsonBody();
+      const result = videoStyleMorph.morphVideoStyle(videoSrc, styleId, denoiseStrength, customPrompt);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 50. AI Green Screen Magic Eraser & 3D Virtual Studio Set
+  if (pathname === '/api/enterprise/video/magic-studio/sets' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(magicEraserStudio.getVirtualSets()));
+    return;
+  }
+
+  if (pathname === '/api/enterprise/video/magic-studio/composite' && req.method === 'POST') {
+    try {
+      const { videoSrc, setId, enableRimLight, blurBackground } = await readJsonBody();
+      const result = magicEraserStudio.compositeVirtualStudio(videoSrc, setId, enableRimLight, blurBackground);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 51. Autonomous Channel Director (AI Đạo Diễn Tự Trị - Hands-Free 100%)
+  if (pathname === '/api/enterprise/automation/director/status' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(autonomousDirector.getDirectorStatus()));
+    return;
+  }
+
+  if (pathname === '/api/enterprise/automation/director/trigger' && req.method === 'POST') {
+    try {
+      const { niche, targetChannelsCount } = await readJsonBody();
+      const result = autonomousDirector.triggerAutonomousCycle(niche, targetChannelsCount);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  if (pathname === '/api/enterprise/automation/director/toggle' && req.method === 'POST') {
+    try {
+      const { enable } = await readJsonBody();
+      const result = autonomousDirector.toggleAutoPilot(enable);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 52. AI Competitor Spy Radar (Radar Bắt Bài Đối Thủ Cùng Ngành)
+  if (pathname === '/api/enterprise/market/spy-radar/data' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(competitorSpyRadar.getRadarData()));
+    return;
+  }
+
+  if (pathname === '/api/enterprise/market/spy-radar/counter-strategy' && req.method === 'POST') {
+    try {
+      const { alertId } = await readJsonBody();
+      const result = competitorSpyRadar.generateCounterStrategy(alertId);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 53. Live Webcam Motion Capture & Interactive Avatar Controller
+  if (pathname === '/api/enterprise/live/mocap/state' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(webcamMocapStream.getMocapState()));
+    return;
+  }
+
+  if (pathname === '/api/enterprise/live/mocap/toggle' && req.method === 'POST') {
+    try {
+      const { enable } = await readJsonBody();
+      const result = webcamMocapStream.toggleMocap(enable);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  if (pathname === '/api/enterprise/live/mocap/blendshapes' && req.method === 'POST') {
+    try {
+      const { shapes } = await readJsonBody();
+      const result = webcamMocapStream.updateLiveBlendshapes(shapes);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 54. Computer Vision Auto-Pinning (Tự Quét Sản Phẩm Ghim Giỏ Hàng)
+  if (pathname === '/api/enterprise/live/cv-pinning/scanner' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(cvProductPinning.getScannerState()));
+    return;
+  }
+
+  if (pathname === '/api/enterprise/live/cv-pinning/detect' && req.method === 'POST') {
+    try {
+      const { imageFeed, forcedProductId } = await readJsonBody();
+      const result = cvProductPinning.detectAndPinProduct(imageFeed, forcedProductId);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  if (pathname === '/api/enterprise/live/cv-pinning/toggle' && req.method === 'POST') {
+    try {
+      const { enable } = await readJsonBody();
+      const result = cvProductPinning.toggleScanner(enable);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 55. 4G/5G Rotating SIM Farm & Fingerprint Browser Hub
+  if (pathname === '/api/enterprise/matrix/sim-fingerprint/status' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(simFarmFingerprint.getSimFarmStatus()));
+    return;
+  }
+
+  if (pathname === '/api/enterprise/matrix/sim-fingerprint/rotate-ip' && req.method === 'POST') {
+    try {
+      const { dongleId } = await readJsonBody();
+      const result = simFarmFingerprint.rotateDongleIp(dongleId);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 56. Realtime Profit & Net Margin Tracker (Biên Lợi Nhuận Ròng & Thuế Sàn)
+  if (pathname === '/api/enterprise/finance/margin-tracker/report' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(profitMarginTracker.getFinancialReport()));
+    return;
+  }
+
+  if (pathname === '/api/enterprise/finance/margin-tracker/record-sale' && req.method === 'POST') {
+    try {
+      const { productName, salePrice, cogsPercent } = await readJsonBody();
+      const result = profitMarginTracker.recordLiveSale(productName, salePrice, cogsPercent);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(result));
     } catch (e) {

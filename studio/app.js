@@ -4687,6 +4687,484 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    // =========================================================================
+    // 22. AI Video Style Morphing
+    // =========================================================================
+    let currentMorphStyleId = 'style_pixar_3d';
+    const styleMorphPresetsGrid = document.getElementById('styleMorphPresetsGrid');
+    const rangeMorphDenoise = document.getElementById('rangeMorphDenoise');
+    const valMorphDenoise = document.getElementById('valMorphDenoise');
+    const inputMorphPrompt = document.getElementById('inputMorphPrompt');
+    const btnApplyStyleMorph = document.getElementById('btnApplyStyleMorph');
+    const morphResultBox = document.getElementById('morphResultBox');
+
+    if (rangeMorphDenoise && valMorphDenoise) {
+      rangeMorphDenoise.addEventListener('input', () => {
+        valMorphDenoise.textContent = parseFloat(rangeMorphDenoise.value).toFixed(2);
+      });
+    }
+
+    async function loadStyleMorphPresets() {
+      if (!styleMorphPresetsGrid) return;
+      try {
+        const res = await fetch('/api/enterprise/video/style-morph/presets');
+        const data = await res.json();
+        if (data.ok && data.presets) {
+          styleMorphPresetsGrid.innerHTML = data.presets.map((preset) => `
+            <div class="style-preset-card ${preset.id === currentMorphStyleId ? 'active' : ''}" data-style-id="${preset.id}">
+              <div class="preset-thumb-box">
+                <img src="${preset.previewThumb}" alt="${preset.name}" class="preset-thumb-img">
+              </div>
+              <div class="preset-meta-content">
+                <div class="preset-name-row">
+                  <span class="preset-name-title">${preset.icon} ${preset.name}</span>
+                </div>
+                <p class="preset-desc-text">${preset.description}</p>
+              </div>
+            </div>
+          `).join('');
+
+          styleMorphPresetsGrid.querySelectorAll('.style-preset-card').forEach(card => {
+            card.addEventListener('click', () => {
+              styleMorphPresetsGrid.querySelectorAll('.style-preset-card').forEach(c => c.classList.remove('active'));
+              card.classList.add('active');
+              currentMorphStyleId = card.dataset.styleId;
+            });
+          });
+        }
+      } catch (e) {}
+    }
+
+    if (btnApplyStyleMorph) {
+      btnApplyStyleMorph.addEventListener('click', async () => {
+        const denoiseStrength = parseFloat(rangeMorphDenoise ? rangeMorphDenoise.value : 0.65);
+        const customPrompt = inputMorphPrompt ? inputMorphPrompt.value : '';
+        btnApplyStyleMorph.disabled = true;
+        btnApplyStyleMorph.innerHTML = '<span>⏳ Đang chạy Diffusion Latents...</span>';
+        try {
+          const res = await fetch('/api/enterprise/video/style-morph/apply', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ videoSrc: 'current_timeline_clip.mp4', styleId: currentMorphStyleId, denoiseStrength, customPrompt })
+          });
+          const data = await res.json();
+          if (morphResultBox) {
+            morphResultBox.classList.remove('hidden');
+            morphResultBox.innerHTML = `
+              <div style="font-size:12px; font-weight:700; color:#10b981; margin-bottom:4px;">✨ ${escapeHtml(data.message)}</div>
+              <div style="font-size:11px; color:#cbd5e1;">Mã job: <code>${data.jobId}</code> | Engine: <strong>${data.renderConfig.engine}</strong></div>
+              <div style="font-size:11px; color:#38bdf8;">File xuất: <code>${data.renderConfig.outputVideo}</code> | Kháng bản quyền: <strong>${data.renderConfig.contentIdBypassRate}</strong></div>
+            `;
+          }
+        } catch (e) {
+          alert('Lỗi Style Morphing: ' + e.message);
+        } finally {
+          btnApplyStyleMorph.disabled = false;
+          btnApplyStyleMorph.innerHTML = '<span>⚡ Kích Hoạt Style Morphing</span>';
+        }
+      });
+    }
+
+    // =========================================================================
+    // 23. AI Green Screen Magic Eraser & 3D Virtual Studio
+    // =========================================================================
+    let currentVirtualSetId = 'set_penthouse_luxury';
+    const magicStudioSetsGrid = document.getElementById('magicStudioSetsGrid');
+    const chkEnableRimLight = document.getElementById('chkEnableRimLight');
+    const chkBlurStudioBg = document.getElementById('chkBlurStudioBg');
+    const btnApplyMagicStudio = document.getElementById('btnApplyMagicStudio');
+    const magicStudioResultBox = document.getElementById('magicStudioResultBox');
+
+    async function loadMagicStudioSets() {
+      if (!magicStudioSetsGrid) return;
+      try {
+        const res = await fetch('/api/enterprise/video/magic-studio/sets');
+        const data = await res.json();
+        if (data.ok && data.sets) {
+          magicStudioSetsGrid.innerHTML = data.sets.map(set => `
+            <div class="virtual-set-card ${set.id === currentVirtualSetId ? 'active' : ''}" data-set-id="${set.id}">
+              <div class="set-thumb-box">
+                <img src="${set.backdropUrl}" alt="${set.name}" class="set-thumb-img">
+              </div>
+              <div class="set-meta-content">
+                <div class="set-name-row">
+                  <span class="set-name-title">${set.name}</span>
+                </div>
+                <p class="set-desc-text">Ánh sáng: ${set.lightingPreset}</p>
+              </div>
+            </div>
+          `).join('');
+
+          magicStudioSetsGrid.querySelectorAll('.virtual-set-card').forEach(card => {
+            card.addEventListener('click', () => {
+              magicStudioSetsGrid.querySelectorAll('.virtual-set-card').forEach(c => c.classList.remove('active'));
+              card.classList.add('active');
+              currentVirtualSetId = card.dataset.setId;
+            });
+          });
+        }
+      } catch (e) {}
+    }
+
+    if (btnApplyMagicStudio) {
+      btnApplyMagicStudio.addEventListener('click', async () => {
+        btnApplyMagicStudio.disabled = true;
+        btnApplyMagicStudio.innerHTML = '<span>⏳ Đang tách nền Sub-pixel...</span>';
+        try {
+          const res = await fetch('/api/enterprise/video/magic-studio/composite', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              videoSrc: 'host_presentation_raw.mp4',
+              setId: currentVirtualSetId,
+              enableRimLight: chkEnableRimLight ? chkEnableRimLight.checked : true,
+              blurBackground: chkBlurStudioBg ? chkBlurStudioBg.checked : true
+            })
+          });
+          const data = await res.json();
+          if (magicStudioResultBox) {
+            magicStudioResultBox.classList.remove('hidden');
+            magicStudioResultBox.innerHTML = `
+              <div style="font-size:12px; font-weight:700; color:#10b981; margin-bottom:4px;">✨ ${escapeHtml(data.message)}</div>
+              <div style="font-size:11px; color:#cbd5e1;">Bối cảnh: <strong>${data.compositionConfig.virtualSet.name}</strong> | Động cơ: <strong>${data.compositionConfig.blendingEngine}</strong></div>
+              <div style="font-size:11px; color:#38bdf8;">File Studio 3D: <code>${data.compositionConfig.outputVideo}</code> (${data.compositionConfig.renderResolution})</div>
+            `;
+          }
+        } catch (e) {
+          alert('Lỗi ghép Virtual Studio: ' + e.message);
+        } finally {
+          btnApplyMagicStudio.disabled = false;
+          btnApplyMagicStudio.innerHTML = '<span>🚀 Tách Nền & Ghép Studio Ảo</span>';
+        }
+      });
+    }
+
+    // =========================================================================
+    // 24. Autonomous Channel Director
+    // =========================================================================
+    const directorProcessedToday = document.getElementById('directorProcessedToday');
+    const directorTotalViews = document.getElementById('directorTotalViews');
+    const directorTotalGmv = document.getElementById('directorTotalGmv');
+    const directorStatusBadge = document.getElementById('directorStatusBadge');
+    const directorPipelineLogs = document.getElementById('directorPipelineLogs');
+    const directorNicheSelect = document.getElementById('directorNicheSelect');
+    const btnTriggerDirectorCycle = document.getElementById('btnTriggerDirectorCycle');
+    const btnToggleAutoPilot = document.getElementById('btnToggleAutoPilot');
+    const directorStatusBox = document.getElementById('directorStatusBox');
+
+    async function loadAutonomousDirectorStatus() {
+      try {
+        const res = await fetch('/api/enterprise/automation/director/status');
+        const data = await res.json();
+        if (data.ok && data.status) {
+          if (directorProcessedToday) directorProcessedToday.textContent = `${data.status.processedToday} / ${data.status.dailyVideoQuota} video`;
+          if (directorTotalViews) directorTotalViews.textContent = `${data.status.totalViewsGenerated.toLocaleString()} views`;
+          if (directorTotalGmv) directorTotalGmv.textContent = data.status.totalGmvGenerated;
+          if (directorStatusBadge) {
+            directorStatusBadge.textContent = data.status.isRunning ? '🟢 ĐANG BẬT' : '⚪ ĐÃ TẮT';
+            directorStatusBadge.style.color = data.status.isRunning ? '#10b981' : 'var(--text-muted)';
+          }
+          if (btnToggleAutoPilot) {
+            btnToggleAutoPilot.textContent = data.status.isRunning ? '🟢 Đang Bật Tự Trị' : '⚪ Đã Dừng Tự Trị';
+          }
+          if (directorPipelineLogs && data.logs) {
+            directorPipelineLogs.innerHTML = data.logs.map(log => `
+              <div class="director-log-row">
+                <span class="director-log-time">${log.time}</span>
+                <span class="director-log-stage">${log.stage}</span>
+                <span class="director-log-detail" style="color:#e2e8f0; flex:1;">${escapeHtml(log.detail)}</span>
+                <span class="badge-pill active" style="font-size:9px;">${log.status}</span>
+              </div>
+            `).join('');
+          }
+        }
+      } catch (e) {}
+    }
+
+    if (btnTriggerDirectorCycle) {
+      btnTriggerDirectorCycle.addEventListener('click', async () => {
+        const niche = directorNicheSelect ? directorNicheSelect.value : 'Thời trang & Giày dép';
+        btnTriggerDirectorCycle.disabled = true;
+        btnTriggerDirectorCycle.innerHTML = '<span>⏳ Đang điều phối...</span>';
+        try {
+          const res = await fetch('/api/enterprise/automation/director/trigger', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ niche, targetChannelsCount: 5 })
+          });
+          const data = await res.json();
+          if (directorStatusBox) {
+            directorStatusBox.classList.remove('hidden');
+            directorStatusBox.innerHTML = `
+              <div style="font-size:12px; font-weight:700; color:#10b981; margin-bottom:4px;">🚀 ${escapeHtml(data.message)}</div>
+              <div style="font-size:11px; color:#cbd5e1;">Ngách: <strong>${data.cycle.niche}</strong> | Thời gian hoàn tất ước tính: <strong>${data.cycle.estimatedCompletionMin} phút</strong></div>
+              <div style="font-size:11px; color:#38bdf8;">Đích phân phối: <strong>${data.cycle.targetPlatforms.join(', ')}</strong></div>
+            `;
+          }
+          loadAutonomousDirectorStatus();
+        } catch (e) {
+          alert('Lỗi kích hoạt Đạo Diễn: ' + e.message);
+        } finally {
+          btnTriggerDirectorCycle.disabled = false;
+          btnTriggerDirectorCycle.innerHTML = '<span>⚡ Chạy Chu Trình Ngay</span>';
+        }
+      });
+    }
+
+    if (btnToggleAutoPilot) {
+      btnToggleAutoPilot.addEventListener('click', async () => {
+        const currentIsOn = btnToggleAutoPilot.textContent.includes('Bật');
+        try {
+          const res = await fetch('/api/enterprise/automation/director/toggle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ enable: !currentIsOn })
+          });
+          const data = await res.json();
+          alert(data.message);
+          loadAutonomousDirectorStatus();
+        } catch (e) {
+          alert('Lỗi bật/tắt Auto-Pilot: ' + e.message);
+        }
+      });
+    }
+
+    // =========================================================================
+    // 25. AI Competitor Spy Radar
+    // =========================================================================
+    const spyCompetitorsList = document.getElementById('spyCompetitorsList');
+    const spyBreakoutCard = document.getElementById('spyBreakoutCard');
+    const btnGenerateCounterStrategy = document.getElementById('btnGenerateCounterStrategy');
+    const spyCounterPlanBox = document.getElementById('spyCounterPlanBox');
+    let currentAlertId = 'alt_breakout_991';
+
+    async function loadSpyRadarData() {
+      try {
+        const res = await fetch('/api/enterprise/market/spy-radar/data');
+        const data = await res.json();
+        if (data.ok) {
+          if (spyCompetitorsList && data.competitors) {
+            spyCompetitorsList.innerHTML = data.competitors.map(c => `
+              <div class="competitor-spy-card">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong style="color:#fff; font-size:12px;">${c.channelName}</strong>
+                  <span class="badge-mini-3d" style="background:rgba(56,189,248,0.15); color:#38bdf8;">${c.followers} Follower</span>
+                </div>
+                <div style="font-size:11px; color:var(--text-muted);">${c.handle} • ${c.niche}</div>
+                <div style="font-size:10px; color:#10b981; font-weight:700;">🔥 ${c.breakoutVideosDetected} video bùng nổ | Hoạt động: ${c.lastActive}</div>
+              </div>
+            `).join('');
+          }
+
+          if (spyBreakoutCard && data.alerts && data.alerts.length > 0) {
+            const alert = data.alerts[0];
+            currentAlertId = alert.alertId;
+            spyBreakoutCard.innerHTML = `
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="badge-pill active" style="background:#ef4444; color:#fff;">🚨 PHÁT HIỆN VIDEO VIRAL MỚI</span>
+                <span style="font-size:10px; color:var(--text-muted);">${alert.detectedTime}</span>
+              </div>
+              <div style="font-weight:700; color:#fff; font-size:13px;">"${escapeHtml(alert.videoTitle)}"</div>
+              <div style="font-size:11px; color:#f87171;">Tốc độ: <strong>${alert.velocity}</strong> (Đạt <strong>${alert.viewsIn6h}</strong>) trên kênh <strong>${alert.channelHandle}</strong></div>
+              <div style="font-size:11px; color:#cbd5e1; background:rgba(0,0,0,0.3); padding:8px; border-radius:6px;">
+                💡 <strong>Hook Tâm Lý:</strong> ${escapeHtml(alert.hookPattern)}<br>
+                <em>${escapeHtml(alert.hookAnalysis)}</em>
+              </div>
+            `;
+          }
+        }
+      } catch (e) {}
+    }
+
+    if (btnGenerateCounterStrategy) {
+      btnGenerateCounterStrategy.addEventListener('click', async () => {
+        btnGenerateCounterStrategy.disabled = true;
+        btnGenerateCounterStrategy.innerHTML = '<span>⏳ Đang giải phẫu Hook...</span>';
+        try {
+          const res = await fetch('/api/enterprise/market/spy-radar/counter-strategy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ alertId: currentAlertId })
+          });
+          const data = await res.json();
+          if (spyCounterPlanBox && data.ok) {
+            spyCounterPlanBox.classList.remove('hidden');
+            const plan = data.counterPlan;
+            spyCounterPlanBox.innerHTML = `
+              <div style="font-size:13px; font-weight:800; color:#10b981; margin-bottom:6px;">🎯 CHIẾN LƯỢC PHẢN ĐÒN ĐÁNH BẠI ĐỐI THỦ:</div>
+              <div style="font-size:11px; color:#fff; margin-bottom:6px;">
+                <strong>🎣 Câu Hook 3 Giây Đầu:</strong> <span style="color:var(--accent-cyan);">"${escapeHtml(plan.suggestedHook)}"</span>
+              </div>
+              <div style="font-size:11px; color:#cbd5e1; margin-bottom:6px;">
+                <strong>📋 Sườn Kịch Bản 4 Phân Đoạn:</strong>
+                <ul style="margin:4px 0 0 16px; padding:0;">
+                  ${plan.scriptOutline.map(item => `<li>${escapeHtml(item)}</li>`).join('')}
+                </ul>
+              </div>
+              <div style="font-size:10px; color:#fbbf24;">🎵 Beat đề xuất: <strong>${plan.recommendedAudioTrack}</strong> | ⏰ Khung giờ vàng: <strong>${plan.targetPublishWindow}</strong></div>
+            `;
+          }
+        } catch (e) {
+          alert('Lỗi tạo chiến lược phản đòn: ' + e.message);
+        } finally {
+          btnGenerateCounterStrategy.disabled = false;
+          btnGenerateCounterStrategy.innerHTML = '<span>⚡ Bóc Mánh & Tạo Kịch Bản Phản Đòn</span>';
+        }
+      });
+    }
+
+    // =========================================================================
+    // 26. 4G/5G Rotating SIM Farm & Fingerprints
+    // =========================================================================
+    const simDonglesGrid = document.getElementById('simDonglesGrid');
+    const simProfilesTable = document.getElementById('simProfilesTable');
+    const btnRotateSimIpAction = document.getElementById('btnRotateSimIpAction');
+    const simRotateStatusBox = document.getElementById('simRotateStatusBox');
+
+    async function loadSimFarmStatus() {
+      try {
+        const res = await fetch('/api/enterprise/matrix/sim-fingerprint/status');
+        const data = await res.json();
+        if (data.ok) {
+          if (simDonglesGrid && data.dongles) {
+            simDonglesGrid.innerHTML = data.dongles.map(d => `
+              <div class="sim-dongle-card ${d.status === 'ACTIVE_ONLINE' ? 'active' : ''}">
+                <div class="dongle-header-row">
+                  <span class="dongle-slot-title">${d.slot}</span>
+                  <span class="badge-mini-3d" style="background:#10b981; color:#fff;">${d.carrier}</span>
+                </div>
+                <div class="dongle-ip-val">IP: ${d.currentIp}</div>
+                <div style="font-size:10px; color:var(--text-muted); display:flex; justify-content:space-between;">
+                  <span>Sóng: <strong>${d.signal}</strong></span>
+                  <span>Đã xoay: <strong>${d.totalRotations} lần</strong></span>
+                </div>
+              </div>
+            `).join('');
+          }
+
+          if (simProfilesTable && data.profiles) {
+            const tbody = simProfilesTable.querySelector('tbody');
+            if (tbody) {
+              tbody.innerHTML = data.profiles.map(p => `
+                <tr>
+                  <td><strong>${p.accountTag}</strong></td>
+                  <td><span class="badge-pill active">${p.platform}</span></td>
+                  <td><code>${p.dongleAttached}</code></td>
+                  <td><code>${p.canvasNoiseHash}</code></td>
+                  <td><code>${p.webrtcSpoof}</code></td>
+                  <td><span style="color:#10b981; font-weight:700;">🟢 ${p.healthScore}</span></td>
+                </tr>
+              `).join('');
+            }
+          }
+        }
+      } catch (e) {}
+    }
+
+    if (btnRotateSimIpAction) {
+      btnRotateSimIpAction.addEventListener('click', async () => {
+        btnRotateSimIpAction.disabled = true;
+        btnRotateSimIpAction.innerHTML = '<span>🔄 Đang gửi tín hiệu AT Command...</span>';
+        try {
+          const res = await fetch('/api/enterprise/matrix/sim-fingerprint/rotate-ip', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ dongleId: 'dongle_01' })
+          });
+          const data = await res.json();
+          if (simRotateStatusBox) {
+            simRotateStatusBox.classList.remove('hidden');
+            simRotateStatusBox.innerHTML = `
+              <div style="font-size:12px; font-weight:700; color:#10b981; margin-bottom:4px;">✨ ${escapeHtml(data.message)}</div>
+              <div style="font-size:11px; color:#cbd5e1;">IP Cũ: <code>${data.oldIp}</code> ➔ IP Dân Cư Mới: <code style="color:#38bdf8;">${data.newResidentialIp}</code> (${data.rotationSpeedSec}s)</div>
+            `;
+          }
+          loadSimFarmStatus();
+        } catch (e) {
+          alert('Lỗi xoay IP: ' + e.message);
+        } finally {
+          btnRotateSimIpAction.disabled = false;
+          btnRotateSimIpAction.innerHTML = '<span>🔄 Xoay IP Dân Cư Tức Thì (Cổng 1)</span>';
+        }
+      });
+    }
+
+    // =========================================================================
+    // 27. Realtime Profit & Net Margin Tracker
+    // =========================================================================
+    const marginGrossValue = document.getElementById('marginGrossValue');
+    const marginCogsValue = document.getElementById('marginCogsValue');
+    const marginFeesAndAds = document.getElementById('marginFeesAndAds');
+    const marginNetProfit = document.getElementById('marginNetProfit');
+    const marginNetPercent = document.getElementById('marginNetPercent');
+    const marginTransactionsTable = document.getElementById('marginTransactionsTable');
+    const inputSaleProductName = document.getElementById('inputSaleProductName');
+    const inputSalePrice = document.getElementById('inputSalePrice');
+    const inputSaleCogsPercent = document.getElementById('inputSaleCogsPercent');
+    const btnRecordLiveSale = document.getElementById('btnRecordLiveSale');
+    const marginRecordStatusBox = document.getElementById('marginRecordStatusBox');
+
+    async function loadMarginReport() {
+      try {
+        const res = await fetch('/api/enterprise/finance/margin-tracker/report');
+        const data = await res.json();
+        if (data.ok && data.summary) {
+          const s = data.summary;
+          if (marginGrossValue) marginGrossValue.textContent = `${s.grossMerchandiseValue.toLocaleString('vi-VN')} ₫`;
+          if (marginCogsValue) marginCogsValue.textContent = `${s.cogs.toLocaleString('vi-VN')} ₫`;
+          if (marginFeesAndAds) marginFeesAndAds.textContent = `${(s.platformFees + s.adSpendSpark).toLocaleString('vi-VN')} ₫`;
+          if (marginNetProfit) marginNetProfit.textContent = `${s.netProfit.toLocaleString('vi-VN')} ₫`;
+          if (marginNetPercent) marginNetPercent.textContent = `Biên ròng: ${s.netMarginPercent} | ROAS: ${s.roasAds}`;
+
+          if (marginTransactionsTable && data.transactions) {
+            const tbody = marginTransactionsTable.querySelector('tbody');
+            if (tbody) {
+              tbody.innerHTML = data.transactions.map(tx => `
+                <tr>
+                  <td><code>${tx.id}</code></td>
+                  <td>${tx.time}</td>
+                  <td><strong>${escapeHtml(tx.product)}</strong></td>
+                  <td>${tx.salePrice.toLocaleString('vi-VN')} ₫</td>
+                  <td style="color:#f59e0b;">-${tx.cogs.toLocaleString('vi-VN')} ₫</td>
+                  <td style="color:#ef4444;">-${(tx.fee + tx.ads).toLocaleString('vi-VN')} ₫</td>
+                  <td style="color:#10b981; font-weight:700;">+${tx.net.toLocaleString('vi-VN')} ₫</td>
+                  <td><span class="badge-mini-3d" style="background:#10b981; color:#fff;">LÃI RÒNG</span></td>
+                </tr>
+              `).join('');
+            }
+          }
+        }
+      } catch (e) {}
+    }
+
+    if (btnRecordLiveSale) {
+      btnRecordLiveSale.addEventListener('click', async () => {
+        const productName = inputSaleProductName ? inputSaleProductName.value.trim() : 'Sản Phẩm Live';
+        const salePrice = parseInt(inputSalePrice ? inputSalePrice.value : 1250000, 10);
+        const cogsPercent = parseInt(inputSaleCogsPercent ? inputSaleCogsPercent.value : 40, 10);
+
+        try {
+          const res = await fetch('/api/enterprise/finance/margin-tracker/record-sale', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productName, salePrice, cogsPercent })
+          });
+          const data = await res.json();
+          if (marginRecordStatusBox) {
+            marginRecordStatusBox.classList.remove('hidden');
+            const netAmount = (data.transaction || data.recordedTransaction || {}).net || 0;
+            marginRecordStatusBox.innerHTML = `
+              <div style="font-size:12px; font-weight:700; color:#10b981;">💰 ${escapeHtml(data.message)}</div>
+              <div style="font-size:11px; color:#cbd5e1;">Lợi nhuận ròng đút túi đơn này: <strong style="color:#10b981;">+${netAmount.toLocaleString('vi-VN')} ₫</strong></div>
+            `;
+          }
+          loadMarginReport();
+        } catch (e) {
+          alert('Lỗi ghi nhận đơn: ' + e.message);
+        }
+      });
+    }
+
     function initMegaSuiteData() {
       loadShieldsData();
       loadTrendAudioData();
@@ -4701,6 +5179,12 @@ document.addEventListener('DOMContentLoaded', () => {
       auditChannelHealth('@tmd_official_store', 'tiktok');
       loadCrmOrders();
       loadKocHunter('all');
+      loadStyleMorphPresets();
+      loadMagicStudioSets();
+      loadAutonomousDirectorStatus();
+      loadSpyRadarData();
+      loadSimFarmStatus();
+      loadMarginReport();
     }
   }
 
@@ -5925,6 +6409,260 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     }
+
+    // =========================================================================
+    // 28. Live Webcam Motion Capture & Avatar Blendshapes Controller
+    // =========================================================================
+    const btnToggleWebcamMocap = document.getElementById('btnToggleWebcamMocap');
+    const mocapStatusPill = document.getElementById('mocapStatusPill');
+    const mocapLatencyVal = document.getElementById('mocapLatencyVal');
+    const mocapFpsVal = document.getElementById('mocapFpsVal');
+    const meterBlink = document.getElementById('meterBlink');
+    const valBlink = document.getElementById('valBlink');
+    const meterJaw = document.getElementById('meterJaw');
+    const valJaw = document.getElementById('valJaw');
+    const meterSmile = document.getElementById('meterSmile');
+    const valSmile = document.getElementById('valSmile');
+    const meterYaw = document.getElementById('meterYaw');
+    const valYaw = document.getElementById('valYaw');
+    const mocapStatusAlert = document.getElementById('mocapStatusAlert');
+    const btnSimMocapSmile = document.getElementById('btnSimMocapSmile');
+    const btnSimMocapSurprise = document.getElementById('btnSimMocapSurprise');
+    const btnSimMocapTalk = document.getElementById('btnSimMocapTalk');
+    const btnSimMocapReset = document.getElementById('btnSimMocapReset');
+
+    let isMocapActive = false;
+    let mocapTalkInterval = null;
+
+    async function loadMocapState() {
+      try {
+        const res = await fetch('/api/enterprise/live/mocap/state');
+        const data = await res.json();
+        if (data.ok && data.state) {
+          isMocapActive = data.state.isCapturing;
+          updateMocapUI(data.state);
+        }
+      } catch (e) {}
+    }
+
+    function updateMocapUI(state) {
+      if (mocapStatusPill) {
+        mocapStatusPill.textContent = state.isCapturing ? '🟢 ĐANG BẬT (LIVE MOCAP)' : '⚪ ĐANG TẮT';
+        mocapStatusPill.style.background = state.isCapturing ? '#10b981' : '';
+      }
+      if (btnToggleWebcamMocap) {
+        btnToggleWebcamMocap.innerHTML = state.isCapturing 
+          ? '<span>⏹️ Tắt Webcam Mocap</span>' 
+          : '<span>📹 Bật Webcam Mocap Ngay</span>';
+      }
+      if (mocapLatencyVal) mocapLatencyVal.textContent = `${state.latencyMs} ms`;
+      if (mocapFpsVal) mocapFpsVal.textContent = `${state.fps} FPS`;
+
+      const b = state.blendshapes || {};
+      if (meterBlink) meterBlink.style.width = `${Math.min(100, (b.eyeBlinkLeft || 0.05) * 100)}%`;
+      if (valBlink) valBlink.textContent = (b.eyeBlinkLeft || 0.05).toFixed(2);
+      if (meterJaw) meterJaw.style.width = `${Math.min(100, (b.jawOpen || 0.12) * 100)}%`;
+      if (valJaw) valJaw.textContent = (b.jawOpen || 0.12).toFixed(2);
+      if (meterSmile) meterSmile.style.width = `${Math.min(100, (b.mouthSmile || 0.45) * 100)}%`;
+      if (valSmile) valSmile.textContent = (b.mouthSmile || 0.45).toFixed(2);
+      if (meterYaw) meterYaw.style.width = `${Math.min(100, 50 + (b.headYaw || 4.5) * 3)}%`;
+      if (valYaw) valYaw.textContent = `${(b.headYaw || 4.5).toFixed(1)}°`;
+
+      const spatialTag = document.getElementById('live3DSpatialText');
+      if (spatialTag && state.isCapturing) {
+        spatialTag.textContent = '🎭 Mocap Webcam: MC Ảo đang mô phỏng gương mặt bạn (14.2ms)';
+      }
+    }
+
+    if (btnToggleWebcamMocap) {
+      btnToggleWebcamMocap.addEventListener('click', async () => {
+        try {
+          const res = await fetch('/api/enterprise/live/mocap/toggle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ enable: !isMocapActive })
+          });
+          const data = await res.json();
+          isMocapActive = data.isCapturing;
+          if (mocapStatusAlert) {
+            mocapStatusAlert.classList.remove('hidden');
+            mocapStatusAlert.innerHTML = `<span>${escapeHtml(data.message)}</span>`;
+          }
+          loadMocapState();
+        } catch (e) {
+          alert('Lỗi chuyển đổi Webcam Mocap: ' + e.message);
+        }
+      });
+    }
+
+    if (btnSimMocapSmile) {
+      btnSimMocapSmile.addEventListener('click', async () => {
+        await fetch('/api/enterprise/live/mocap/blendshapes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ shapes: { mouthSmile: 0.95, jawOpen: 0.25, eyeBlinkLeft: 0.1, headYaw: 2.0 } })
+        });
+        loadMocapState();
+      });
+    }
+
+    if (btnSimMocapSurprise) {
+      btnSimMocapSurprise.addEventListener('click', async () => {
+        await fetch('/api/enterprise/live/mocap/blendshapes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ shapes: { jawOpen: 0.92, mouthSmile: 0.1, eyeBlinkLeft: 0.0, headPitch: -6.0 } })
+        });
+        loadMocapState();
+      });
+    }
+
+    if (btnSimMocapTalk) {
+      btnSimMocapTalk.addEventListener('click', () => {
+        if (mocapTalkInterval) {
+          clearInterval(mocapTalkInterval);
+          mocapTalkInterval = null;
+          btnSimMocapTalk.textContent = '🗣️ Đang Nói Sôi Nổi';
+        } else {
+          btnSimMocapTalk.textContent = '⏹️ Dừng Nói';
+          let step = 0;
+          mocapTalkInterval = setInterval(async () => {
+            step++;
+            const jaw = 0.15 + 0.45 * Math.abs(Math.sin(step * 0.8));
+            const smile = 0.4 + 0.2 * Math.cos(step * 0.5);
+            await fetch('/api/enterprise/live/mocap/blendshapes', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ shapes: { jawOpen: jaw, mouthSmile: smile } })
+            });
+            loadMocapState();
+          }, 200);
+        }
+      });
+    }
+
+    if (btnSimMocapReset) {
+      btnSimMocapReset.addEventListener('click', async () => {
+        if (mocapTalkInterval) {
+          clearInterval(mocapTalkInterval);
+          mocapTalkInterval = null;
+          if (btnSimMocapTalk) btnSimMocapTalk.textContent = '🗣️ Đang Nói Sôi Nổi';
+        }
+        await fetch('/api/enterprise/live/mocap/blendshapes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ shapes: { eyeBlinkLeft: 0.05, jawOpen: 0.12, mouthSmile: 0.45, headYaw: 4.5, headPitch: -2.1 } })
+        });
+        loadMocapState();
+      });
+    }
+
+    // =========================================================================
+    // 29. Computer Vision Auto-Pinning (Tự Quét Sản Phẩm Trên Tay)
+    // =========================================================================
+    const cvScannerStatusBadge = document.getElementById('cvScannerStatusBadge');
+    const cvProductName = document.getElementById('cvProductName');
+    const cvConfidence = document.getElementById('cvConfidence');
+    const cvBarcode = document.getElementById('cvBarcode');
+    const cvPrice = document.getElementById('cvPrice');
+    const btnTriggerCVScan = document.getElementById('btnTriggerCVScan');
+    const btnToggleCVScanner = document.getElementById('btnToggleCVScanner');
+    const cvLastScanTime = document.getElementById('cvLastScanTime');
+    const cvPinStatusBox = document.getElementById('cvPinStatusBox');
+
+    let isCVScannerActive = true;
+
+    async function loadCVPinningState() {
+      try {
+        const res = await fetch('/api/enterprise/live/cv-pinning/scanner');
+        const data = await res.json();
+        if (data.ok && data.scanner) {
+          const s = data.scanner;
+          isCVScannerActive = s.isScannerActive;
+          if (cvScannerStatusBadge) {
+            cvScannerStatusBadge.textContent = isCVScannerActive ? 'SCANNER ACTIVE' : 'SCANNER IDLE';
+            cvScannerStatusBadge.style.background = isCVScannerActive ? '#10b981' : 'var(--text-muted)';
+          }
+          if (btnToggleCVScanner) {
+            btnToggleCVScanner.textContent = isCVScannerActive ? '🟢 Đang Bật Tự Quét' : '⚪ Đã Tắt Tự Quét';
+          }
+          if (s.detectedProduct) {
+            const p = s.detectedProduct;
+            if (cvProductName) cvProductName.textContent = p.name;
+            if (cvConfidence) cvConfidence.textContent = `Độ tin cậy: ${p.confidence}`;
+            if (cvBarcode) cvBarcode.textContent = p.barcode;
+            if (cvPrice) cvPrice.textContent = p.dealPrice;
+          }
+        }
+      } catch (e) {}
+    }
+
+    if (btnTriggerCVScan) {
+      btnTriggerCVScan.addEventListener('click', async () => {
+        btnTriggerCVScan.disabled = true;
+        btnTriggerCVScan.innerHTML = '<span>🎯 Đang quét vật thể qua Camera...</span>';
+        try {
+          const res = await fetch('/api/enterprise/live/cv-pinning/detect', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ imageFeed: 'live_webcam_frame_cv.jpg' })
+          });
+          const data = await res.json();
+          if (cvPinStatusBox && data.ok) {
+            cvPinStatusBox.classList.remove('hidden');
+            cvPinStatusBox.innerHTML = `
+              <div style="font-size:12px; font-weight:700; color:#10b981;">🎯 ${escapeHtml(data.message)}</div>
+              <div style="font-size:11px; color:#cbd5e1;">${escapeHtml(data.broadcastChatComment)}</div>
+            `;
+          }
+          if (cvLastScanTime) {
+            cvLastScanTime.textContent = `Quét lần cuối: ${new Date().toLocaleTimeString('vi-VN')} | Đã ghim giỏ #1`;
+          }
+          loadCVPinningState();
+
+          // Push live comment notification into unified comments feed
+          const commentsBox = document.getElementById('liveCommentsBox');
+          if (commentsBox && data.broadcastChatComment) {
+            const row = document.createElement('div');
+            row.className = 'live-comment-item';
+            row.style.background = 'rgba(16, 185, 129, 0.12)';
+            row.style.borderLeft = '3px solid #10b981';
+            row.innerHTML = `
+              <span class="comment-author" style="color:#10b981;">🤖 AI Shopping Bot:</span>
+              <span class="comment-text">${escapeHtml(data.broadcastChatComment)}</span>
+            `;
+            commentsBox.appendChild(row);
+            commentsBox.scrollTop = commentsBox.scrollHeight;
+          }
+        } catch (e) {
+          alert('Lỗi quét sản phẩm: ' + e.message);
+        } finally {
+          btnTriggerCVScan.disabled = false;
+          btnTriggerCVScan.innerHTML = '<span>🎯 Quét Sản Phẩm Khác Trên Tay</span>';
+        }
+      });
+    }
+
+    if (btnToggleCVScanner) {
+      btnToggleCVScanner.addEventListener('click', async () => {
+        try {
+          const res = await fetch('/api/enterprise/live/cv-pinning/toggle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ enable: !isCVScannerActive })
+          });
+          const data = await res.json();
+          alert(data.message);
+          loadCVPinningState();
+        } catch (e) {
+          alert('Lỗi bật/tắt Scanner: ' + e.message);
+        }
+      });
+    }
+
+    // Call loaders for live additions
+    loadMocapState();
+    loadCVPinningState();
   }
 
   // Start app

@@ -2062,6 +2062,48 @@
                 <span class="mega-tab-sub">In mã GHTK/Viettel & Săn KOC</span>
               </div>
             </button>
+            <button class="mega-nav-tab" data-target="megaTabStyleMorph">
+              <span class="mega-tab-icon">🎨</span>
+              <div class="mega-tab-meta">
+                <span class="mega-tab-title">22. AI Video Style Morphing</span>
+                <span class="mega-tab-sub">Anime 3D / Pixar / Cyberpunk</span>
+              </div>
+            </button>
+            <button class="mega-nav-tab" data-target="megaTabMagicStudio">
+              <span class="mega-tab-icon">🪄</span>
+              <div class="mega-tab-meta">
+                <span class="mega-tab-title">23. 3D Virtual Studio Set</span>
+                <span class="mega-tab-sub">Tách nền không phông xanh</span>
+              </div>
+            </button>
+            <button class="mega-nav-tab" data-target="megaTabAutoDirector">
+              <span class="mega-tab-icon">🧠</span>
+              <div class="mega-tab-meta">
+                <span class="mega-tab-title">24. Autonomous Channel Director</span>
+                <span class="mega-tab-sub">AI Đạo Diễn Tự Trị 100%</span>
+              </div>
+            </button>
+            <button class="mega-nav-tab" data-target="megaTabSpyRadar">
+              <span class="mega-tab-icon">🛰️</span>
+              <div class="mega-tab-meta">
+                <span class="mega-tab-title">25. AI Competitor Spy Radar</span>
+                <span class="mega-tab-sub">Bắt bài video triệu view</span>
+              </div>
+            </button>
+            <button class="mega-nav-tab" data-target="megaTabSimFingerprint">
+              <span class="mega-tab-icon">🌐</span>
+              <div class="mega-tab-meta">
+                <span class="mega-tab-title">26. 4G/5G SIM Farm Hub</span>
+                <span class="mega-tab-sub">Xoay IP & Trình duyệt sạch</span>
+              </div>
+            </button>
+            <button class="mega-nav-tab" data-target="megaTabProfitMargin">
+              <span class="mega-tab-icon">📊</span>
+              <div class="mega-tab-meta">
+                <span class="mega-tab-title">27. Realtime Profit Margin</span>
+                <span class="mega-tab-sub">Biên lãi ròng & Thuế sàn</span>
+              </div>
+            </button>
           </div>
 
           <!-- Right Content Panels -->
@@ -2695,6 +2737,325 @@
               </div>
             </div>
 
+            <!-- PANEL 22: AI Video Style Morphing (Video-to-Video Diffusion) -->
+            <div class="mega-panel" id="megaTabStyleMorph">
+              <div class="mega-panel-header">
+                <h4>🎨 AI Video Style Morphing (Video-to-Video Diffusion)</h4>
+                <span class="status-pill active">AnimateDiff-XL + ControlNet</span>
+              </div>
+              <p class="panel-desc">Biến đổi footage người thật thành hoạt hình 3D Pixar, Anime Nhật Bản hoặc Cyberpunk trong khi giữ nguyên động tác và khẩu hình môi, kháng 100% bản quyền Content ID của TikTok & YouTube.</p>
+
+              <div class="mega-card" style="margin-bottom: 12px;">
+                <h5 class="mega-card-title">1. Chọn Phong Cách Chuyển Đổi Nghệ Thuật (AI Style Presets):</h5>
+                <div class="style-presets-grid" id="styleMorphPresetsGrid">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+
+              <div class="mega-card">
+                <h5 class="mega-card-title">2. Tinh Chỉnh Tham Số Diffusion & Render:</h5>
+                <div class="form-row-3">
+                  <div class="form-field">
+                    <label class="form-label">Độ sâu khuếch tán (Denoising Strength): <strong id="valMorphDenoise" style="color:var(--accent-cyan);">0.65</strong></label>
+                    <input type="range" id="rangeMorphDenoise" min="0.40" max="0.90" step="0.05" value="0.65" class="studio-slider">
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label">Prompt Tăng Cường (Diffusion Prompt):</label>
+                    <input type="text" id="inputMorphPrompt" class="studio-input" value="Masterpiece, 8k resolution, cinematic lighting, Disney Pixar 3D look">
+                  </div>
+                  <div class="form-field" style="display:flex; align-items:flex-end;">
+                    <button class="studio-btn primary-btn full-btn" id="btnApplyStyleMorph">
+                      <span>⚡ Kích Hoạt Style Morphing</span>
+                    </button>
+                  </div>
+                </div>
+                <div id="morphResultBox" class="pub-status-box hidden" style="margin-top: 10px;"></div>
+              </div>
+            </div>
+
+            <!-- PANEL 23: AI Green Screen Magic Eraser & 3D Virtual Studio Set -->
+            <div class="mega-panel" id="megaTabMagicStudio">
+              <div class="mega-panel-header">
+                <h4>🪄 AI Green Screen Magic Eraser & 3D Virtual Studio Set</h4>
+                <span class="status-pill active">BiRefNet-HR Sub-Pixel Matting</span>
+              </div>
+              <p class="panel-desc">Tách nền người nói sắc nét đến từng sợi tóc mà không cần phông xanh vật lý, đặt người nói vào không gian 3D Penthouse, Phố đêm Tokyo hoặc Showroom siêu xe sang trọng.</p>
+
+              <div class="mega-card" style="margin-bottom: 12px;">
+                <h5 class="mega-card-title">1. Chọn Bối Cảnh Studio Ảo 3D (Photorealistic Virtual Sets):</h5>
+                <div class="virtual-sets-grid" id="magicStudioSetsGrid">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+
+              <div class="mega-card">
+                <h5 class="mega-card-title">2. Cấu Hình Tách Nền & Ánh Sáng Phản Chiếu:</h5>
+                <div class="form-row-3">
+                  <div class="form-field" style="display:flex; align-items:center; gap:8px;">
+                    <input type="checkbox" id="chkEnableRimLight" checked style="accent-color:var(--accent-cyan); width:18px; height:18px;">
+                    <label for="chkEnableRimLight" class="form-label" style="margin:0; cursor:pointer;">Ánh sáng viền phản chiếu bối cảnh (Rim Light 60fps)</label>
+                  </div>
+                  <div class="form-field" style="display:flex; align-items:center; gap:8px;">
+                    <input type="checkbox" id="chkBlurStudioBg" checked style="accent-color:var(--accent-cyan); width:18px; height:18px;">
+                    <label for="chkBlurStudioBg" class="form-label" style="margin:0; cursor:pointer;">Xóa phông độ sâu trường ảnh (DoF Bokeh Blur)</label>
+                  </div>
+                  <div class="form-field" style="display:flex; align-items:flex-end;">
+                    <button class="studio-btn primary-btn full-btn" id="btnApplyMagicStudio">
+                      <span>🚀 Tách Nền & Ghép Studio Ảo</span>
+                    </button>
+                  </div>
+                </div>
+                <div id="magicStudioResultBox" class="pub-status-box hidden" style="margin-top: 10px;"></div>
+              </div>
+            </div>
+
+            <!-- PANEL 24: Autonomous Channel Director (AI Đạo Diễn Tự Trị - Hands-Free 100%) -->
+            <div class="mega-panel" id="megaTabAutoDirector">
+              <div class="mega-panel-header">
+                <h4>🧠 Autonomous Channel Director (AI Đạo Diễn Tự Trị - Hands-Free 100%)</h4>
+                <span class="status-pill active" id="directorHeaderPill">24/7 AUTONOMOUS LOOP</span>
+              </div>
+              <p class="panel-desc">Đạo diễn ảo vận hành kênh tự động: Quét video Douyin viral ➔ Việt hóa theo giọng GenZ ➔ Sinh giọng đọc MC ➔ Render 10 biến thể chống Content ID ➔ Đăng đa kênh & tự động trả lời bình luận gửi link giỏ hàng.</p>
+
+              <!-- Metrics Stats -->
+              <div class="director-stats-bar">
+                <div class="stat-mini-card">
+                  <span class="stat-mini-label">Video xử lý hôm nay:</span>
+                  <strong class="stat-mini-val" id="directorProcessedToday">14 / 30 video</strong>
+                </div>
+                <div class="stat-mini-card">
+                  <span class="stat-mini-label">Tổng lượt xem sinh ra:</span>
+                  <strong class="stat-mini-val" id="directorTotalViews" style="color:var(--accent-cyan);">489.200 views</strong>
+                </div>
+                <div class="stat-mini-card">
+                  <span class="stat-mini-label">Doanh số GMV tự động:</span>
+                  <strong class="stat-mini-val" id="directorTotalGmv" style="color:#10b981;">38.450.000 ₫</strong>
+                </div>
+                <div class="stat-mini-card">
+                  <span class="stat-mini-label">Chế độ Đạo Diễn:</span>
+                  <strong class="stat-mini-val" id="directorStatusBadge" style="color:#10b981;">🟢 ĐANG BẬT</strong>
+                </div>
+              </div>
+
+              <!-- Pipeline Stepper -->
+              <div class="mega-card" style="margin-bottom: 12px;">
+                <h5 class="mega-card-title">Chu Trình Tự Động Khép Kín (5-Stage Autonomous Loop):</h5>
+                <div class="director-pipeline-flow">
+                  <div class="pipeline-node done">
+                    <span class="node-icon">🔍</span>
+                    <span class="node-title">1. Quét Douyin</span>
+                    <span class="node-sub">>100k view/24h</span>
+                  </div>
+                  <span class="flow-arrow">➔</span>
+                  <div class="pipeline-node done">
+                    <span class="node-icon">✍️</span>
+                    <span class="node-title">2. Việt Hóa GenZ</span>
+                    <span class="node-sub">Vietnamese-Humanizer</span>
+                  </div>
+                  <span class="flow-arrow">➔</span>
+                  <div class="pipeline-node done">
+                    <span class="node-icon">🎙️</span>
+                    <span class="node-title">3. Sinh Giọng MC</span>
+                    <span class="node-sub">Bắc Bộ Chuẩn 99%</span>
+                  </div>
+                  <span class="flow-arrow">➔</span>
+                  <div class="pipeline-node done">
+                    <span class="node-icon">🧬</span>
+                    <span class="node-title">4. Ma Trận Spin</span>
+                    <span class="node-sub">10 Biến thể 19.5kHz</span>
+                  </div>
+                  <span class="flow-arrow">➔</span>
+                  <div class="pipeline-node active">
+                    <span class="node-icon">🚀</span>
+                    <span class="node-title">5. Đăng Đa Kênh</span>
+                    <span class="node-sub">TikTok, Shorts, Reels</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Controls & Ticker -->
+              <div class="mega-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                  <h5 class="mega-card-title" style="margin:0;">Điều Khiển Chu Trình & Nhật Ký Hoạt Động (Live Logs):</h5>
+                  <div style="display:flex; gap:8px;">
+                    <select id="directorNicheSelect" class="studio-select" style="width:160px; font-size:11px;">
+                      <option value="Thời trang & Giày dép">Thời trang & Giày dép</option>
+                      <option value="Đồ điện tử & Công nghệ">Đồ điện tử & Công nghệ</option>
+                      <option value="Mỹ phẩm & Skincare">Mỹ phẩm & Skincare</option>
+                    </select>
+                    <button class="studio-btn primary-btn sm-btn" id="btnTriggerDirectorCycle">
+                      <span>⚡ Chạy Chu Trình Ngay</span>
+                    </button>
+                    <button class="studio-btn secondary-btn sm-btn" id="btnToggleAutoPilot">
+                      <span>🟢 Đang Bật Tự Trị</span>
+                    </button>
+                  </div>
+                </div>
+                <div id="directorPipelineLogs" class="director-logs-list">
+                  <!-- Injected via JS -->
+                </div>
+                <div id="directorStatusBox" class="pub-status-box hidden" style="margin-top: 10px;"></div>
+              </div>
+            </div>
+
+            <!-- PANEL 25: AI Competitor Spy Radar (Radar Bắt Bài Đối Thủ Cùng Ngành) -->
+            <div class="mega-panel" id="megaTabSpyRadar">
+              <div class="mega-panel-header">
+                <h4>🛰️ AI Competitor Spy Radar (Radar Bắt Bài Đối Thủ Cùng Ngành)</h4>
+                <span class="status-pill active">Quét 30 phút / lần</span>
+              </div>
+              <p class="panel-desc">Theo dõi tự động các tài khoản TikTok/Reels đối thủ hàng đầu. Khi phát hiện video bùng nổ (>50k view trong 6h), radar lập tức bóc tách Hook tâm lý 3 giây đầu và tạo kịch bản phản đòn.</p>
+
+              <!-- Monitored Competitors -->
+              <div class="mega-card" style="margin-bottom: 12px;">
+                <h5 class="mega-card-title">1. Kênh Đối Thủ Đang Giám Sát Realtime:</h5>
+                <div class="competitors-grid" id="spyCompetitorsList">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+
+              <!-- Breakout Alert & Counter Strategy -->
+              <div class="mega-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                  <h5 class="mega-card-title" style="margin:0;">2. Cảnh Báo Bùng Nổ & Kịch Bản Phản Đòn (Breakout Alert):</h5>
+                  <button class="studio-btn danger-btn sm-btn" id="btnGenerateCounterStrategy">
+                    <span>⚡ Bóc Mánh & Tạo Kịch Bản Phản Đòn</span>
+                  </button>
+                </div>
+                <div id="spyBreakoutCard" class="spy-breakout-card">
+                  <!-- Injected via JS -->
+                </div>
+                <div id="spyCounterPlanBox" class="counter-plan-box hidden" style="margin-top: 10px;"></div>
+              </div>
+            </div>
+
+            <!-- PANEL 26: 4G/5G Rotating SIM Farm & Fingerprint Browser Hub -->
+            <div class="mega-panel" id="megaTabSimFingerprint">
+              <div class="mega-panel-header">
+                <h4>🌐 4G/5G Rotating SIM Farm & Fingerprint Browser Hub</h4>
+                <span class="status-pill active">Zero-Fingerprint Leak</span>
+              </div>
+              <p class="panel-desc">Điều khiển phần cứng cụm Dcom 4G/5G xoay IP dân cư sạch theo yêu cầu, tạo hồ sơ vân tay trình duyệt cô lập (Canvas, WebGL, WebRTC, AudioBuffer) giúp quản lý hàng trăm nick TikTok Shop mà không lo bị khóa liên đới.</p>
+
+              <!-- Dongle Grid -->
+              <div class="mega-card" style="margin-bottom: 12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                  <h5 class="mega-card-title" style="margin:0;">1. Cụm USB 4G/5G Dongles (Hardware Rotating Farm):</h5>
+                  <button class="studio-btn primary-btn sm-btn" id="btnRotateSimIpAction">
+                    <span>🔄 Xoay IP Dân Cư Tức Thì (Cổng 1)</span>
+                  </button>
+                </div>
+                <div class="sim-dongles-grid" id="simDonglesGrid">
+                  <!-- Injected via JS -->
+                </div>
+                <div id="simRotateStatusBox" class="pub-status-box hidden" style="margin-top: 10px;"></div>
+              </div>
+
+              <!-- Isolated Profiles Table -->
+              <div class="mega-card">
+                <h5 class="mega-card-title">2. Danh Sách Hồ Sơ Trình Duyệt Cô Lập Vân Tay (Isolated Fingerprints):</h5>
+                <div class="sim-profiles-table-wrap">
+                  <table class="matrix-table" id="simProfilesTable">
+                    <thead>
+                      <tr>
+                        <th>Tài Khoản</th>
+                        <th>Nền Tảng</th>
+                        <th>Cổng Dcom Gắn</th>
+                        <th>Canvas Noise Hash</th>
+                        <th>WebRTC Fake IP</th>
+                        <th>Độ Khỏe Kênh</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- Injected via JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- PANEL 27: Realtime Profit & Net Margin Tracker (Biên Lợi Nhuận Ròng & Thuế Sàn) -->
+            <div class="mega-panel" id="megaTabProfitMargin">
+              <div class="mega-panel-header">
+                <h4>📊 Realtime Profit & Net Margin Tracker (Biên Lợi Nhuận Ròng & Thuế Sàn)</h4>
+                <span class="status-pill active">Live Financial Ledger</span>
+              </div>
+              <p class="panel-desc">Tự động khấu trừ 5% phí sàn TikTok Shop, chi phí Spark Ads, tỷ lệ hoàn hủy đơn và giá vốn hàng bán COGS để theo dõi chính xác lợi nhuận ròng thực nhận theo thời gian thực.</p>
+
+              <!-- 4 Financial KPI Cards -->
+              <div class="finance-kpis-grid">
+                <div class="kpi-finance-card">
+                  <span class="kpi-label">Tổng Doanh Thu GMV:</span>
+                  <strong class="kpi-val" id="marginGrossValue" style="color:#fff;">48.600.000 ₫</strong>
+                  <span class="kpi-sub">186 đơn hôm nay</span>
+                </div>
+                <div class="kpi-finance-card">
+                  <span class="kpi-label">Giá Vốn Hàng Bán (COGS):</span>
+                  <strong class="kpi-val" id="marginCogsValue" style="color:#f59e0b;">19.440.000 ₫</strong>
+                  <span class="kpi-sub">40.0% giá nhập sỉ</span>
+                </div>
+                <div class="kpi-finance-card">
+                  <span class="kpi-label">Phí Sàn 5% + Spark Ads 10%:</span>
+                  <strong class="kpi-val" id="marginFeesAndAds" style="color:#ef4444;">7.290.000 ₫</strong>
+                  <span class="kpi-sub">Bao gồm 1.5% thuế & hoàn hủy</span>
+                </div>
+                <div class="kpi-finance-card highlight">
+                  <span class="kpi-label">Lợi Nhuận Ròng Thực Nhận:</span>
+                  <strong class="kpi-val" id="marginNetProfit" style="color:#10b981;">19.683.000 ₫</strong>
+                  <span class="kpi-sub" id="marginNetPercent">Biên ròng: 40.5% | ROAS: 10.0x</span>
+                </div>
+              </div>
+
+              <!-- Quick Record Live Sale Form -->
+              <div class="mega-card" style="margin-bottom: 12px;">
+                <h5 class="mega-card-title">Ghi Nhận Đơn Hàng Live Mới & Tính Biên Lãi Ròng Tức Thì:</h5>
+                <div class="form-row-4">
+                  <div class="form-field">
+                    <label class="form-label">Tên Sản Phẩm:</label>
+                    <input type="text" id="inputSaleProductName" class="studio-input" value="Giày Sneaker Cyberpunk Phantom X">
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label">Giá Bán Livestream (₫):</label>
+                    <input type="number" id="inputSalePrice" class="studio-input" value="1250000">
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label">Tỷ Lệ Giá Vốn (%):</label>
+                    <input type="number" id="inputSaleCogsPercent" class="studio-input" value="40">
+                  </div>
+                  <div class="form-field" style="display:flex; align-items:flex-end;">
+                    <button class="studio-btn success-btn full-btn" id="btnRecordLiveSale">
+                      <span>💰 Ghi Nhận & Tính Lãi</span>
+                    </button>
+                  </div>
+                </div>
+                <div id="marginRecordStatusBox" class="pub-status-box hidden" style="margin-top: 10px;"></div>
+              </div>
+
+              <!-- Realtime Ledger Table -->
+              <div class="mega-card">
+                <h5 class="mega-card-title">Sổ Cái Giao Dịch Bán Hàng Trực Tiếp (Live Transactions Ledger):</h5>
+                <div class="transactions-table-wrap">
+                  <table class="matrix-table" id="marginTransactionsTable">
+                    <thead>
+                      <tr>
+                        <th>Mã Đơn</th>
+                        <th>Thời Gian</th>
+                        <th>Sản Phẩm</th>
+                        <th>Giá Bán</th>
+                        <th>Giá Vốn (COGS)</th>
+                        <th>Phí Sàn + Ads</th>
+                        <th>Lãi Ròng</th>
+                        <th>Trạng Thái</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- Injected via JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -3198,6 +3559,111 @@
                   </button>
                 </div>
               </div>
+            </div>
+
+            <!-- =========================================================
+                 ENTERPRISE: LIVE WEBCAM MOTION CAPTURE (MOCAP MC ẢO 3D)
+                 ========================================================= -->
+            <div class="live-control-group live-mocap-suite">
+              <div class="live-group-title" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>🎭 Live Webcam Motion Capture & FaceMesh 468 (Điều Khiển MC Ảo Bằng Mặt Thật):</span>
+                <span class="badge-pill active" id="mocapStatusPill">⚪ ĐANG TẮT</span>
+              </div>
+              <p class="panel-desc" style="margin-bottom: 8px;">Nhận diện 468 điểm biểu cảm khuôn mặt từ Webcam (chớp mắt, cười, há miệng, góc nghiêng đầu) để điều khiển avatar MC 3D cử động theo bạn với độ trễ siêu thấp 14ms.</p>
+
+              <div class="mocap-controls-row" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <button class="studio-btn primary-btn sm-btn" id="btnToggleWebcamMocap">
+                  <span>📹 Bật Webcam Mocap Ngay</span>
+                </button>
+                <div class="mocap-metrics-badge">
+                  <span>Độ trễ: <strong id="mocapLatencyVal" style="color: #10b981;">14.2 ms</strong></span>
+                  <span> | Tốc độ: <strong id="mocapFpsVal" style="color: var(--accent-cyan);">60 FPS</strong></span>
+                  <span> | Engine: <strong style="color: #fff;">MediaPipe GPU</strong></span>
+                </div>
+              </div>
+
+              <!-- Live Blendshapes Meters -->
+              <div class="blendshapes-live-grid" id="blendshapesLiveGrid">
+                <div class="blendshape-meter-box">
+                  <span class="meter-name">👁️ Mắt Nháy (Blink)</span>
+                  <div class="meter-bar-track">
+                    <div class="meter-bar-fill" id="meterBlink" style="width: 5%;"></div>
+                  </div>
+                  <span class="meter-val" id="valBlink">0.05</span>
+                </div>
+                <div class="blendshape-meter-box">
+                  <span class="meter-name">👄 Há Miệng (Jaw Open)</span>
+                  <div class="meter-bar-track">
+                    <div class="meter-bar-fill" id="meterJaw" style="width: 12%;"></div>
+                  </div>
+                  <span class="meter-val" id="valJaw">0.12</span>
+                </div>
+                <div class="blendshape-meter-box">
+                  <span class="meter-name">😊 Cười Tươi (Smile)</span>
+                  <div class="meter-bar-track">
+                    <div class="meter-bar-fill" id="meterSmile" style="width: 45%;"></div>
+                  </div>
+                  <span class="meter-val" id="valSmile">0.45</span>
+                </div>
+                <div class="blendshape-meter-box">
+                  <span class="meter-name">📐 Quay Đầu (Head Yaw)</span>
+                  <div class="meter-bar-track">
+                    <div class="meter-bar-fill" id="meterYaw" style="width: 52%;"></div>
+                  </div>
+                  <span class="meter-val" id="valYaw">+4.5°</span>
+                </div>
+              </div>
+
+              <!-- Quick Express Emotion Buttons -->
+              <div class="mocap-quick-emotions" style="display: flex; gap: 8px; margin-top: 8px;">
+                <span style="font-size: 11px; color: var(--text-muted); display: flex; align-items: center;">Mô phỏng nhanh:</span>
+                <button class="emotion-chip sm" id="btnSimMocapSmile">😄 Cười Rạng Rỡ</button>
+                <button class="emotion-chip sm" id="btnSimMocapSurprise">😲 Há Hốc Mồm</button>
+                <button class="emotion-chip sm" id="btnSimMocapTalk">🗣️ Đang Nói Sôi Nổi</button>
+                <button class="emotion-chip sm" id="btnSimMocapReset">🔄 Đặt Lại</button>
+              </div>
+              <div id="mocapStatusAlert" class="pub-status-box hidden" style="margin-top: 8px;"></div>
+            </div>
+
+            <!-- =========================================================
+                 ENTERPRISE: COMPUTER VISION AUTO-PINNING (TỰ QUÉT SẢN PHẨM TRÊN TAY)
+                 ========================================================= -->
+            <div class="live-control-group live-cv-pinning-suite">
+              <div class="live-group-title" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>👁️ Computer Vision Auto-Pinning (Tự Động Quét Sản Phẩm Ghim Giỏ Hàng):</span>
+                <span class="badge-mini-3d" style="background: #10b981; color: #fff;" id="cvScannerStatusBadge">SCANNER ACTIVE</span>
+              </div>
+              <p class="panel-desc" style="margin-bottom: 8px;">Sử dụng thị giác máy tính & OCR nhận diện tức thời sản phẩm người bán hoặc MC ảo giơ lên trước camera, tự động đẩy link lên giỏ hàng ghim #1 và phát mã giảm giá vào chat.</p>
+
+              <!-- Detected Product Highlight Card -->
+              <div class="cv-detected-card" id="cvDetectedProductCard">
+                <div class="cv-card-inner">
+                  <div class="cv-prod-icon">👟</div>
+                  <div class="cv-prod-meta">
+                    <div class="cv-meta-row">
+                      <strong class="cv-prod-name" id="cvProductName">Giày Sneaker Cyberpunk Phantom X</strong>
+                      <span class="badge-pill active" id="cvConfidence">Độ tin cậy: 98.2%</span>
+                    </div>
+                    <div class="cv-details-row">
+                      <span>Mã Barcode: <code id="cvBarcode">8936012849102</code></span>
+                      <span> | Giá Live: <strong id="cvPrice" style="color:#10b981;">1.250.000 ₫</strong></span>
+                      <span> | Vị trí: <strong style="color:var(--accent-cyan);">Ghim Giỏ Hàng #1</strong></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="cv-actions-row" style="display: flex; gap: 8px; margin-top: 8px; align-items: center;">
+                <button class="studio-btn primary-btn sm-btn" id="btnTriggerCVScan">
+                  <span>🎯 Quét Sản Phẩm Khác Trên Tay</span>
+                </button>
+                <button class="studio-btn secondary-btn sm-btn" id="btnToggleCVScanner">
+                  <span>🟢 Đang Bật Tự Quét</span>
+                </button>
+                <span class="critic-hint" id="cvLastScanTime">Quét lần cuối: 18:28:40 | Đã đẩy voucher 50k vào khung chat</span>
+              </div>
+              <div id="cvPinStatusBox" class="pub-status-box hidden" style="margin-top: 8px;"></div>
             </div>
 
             <!-- Standard Live Controls: Host Picker & Live Chat -->
