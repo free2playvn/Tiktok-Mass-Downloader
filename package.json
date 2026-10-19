@@ -1,17 +1,23 @@
 {
-  "name": "TMD",
-  "version": "2.1.0",
-  "description": "",
+  "name": "tiktok-mass-downloader",
+  "version": "3.0.0",
+  "description": "Fast and lightweight tool to mass download TikTok videos without watermark using Node.js and Puppeteer",
   "main": "TMD.js",
   "scripts": {
-    "test": "node TMD.js proflie url"
+    "start": "node TMD.js",
+    "test": "node TMD.js https://www.tiktok.com/@tiktok 1"
   },
-  "keywords": [],
-  "author": "Rahmatul Usra (Xsrazy)",
-  "license": "ISC",
+  "keywords": [
+    "tiktok",
+    "tiktok-downloader",
+    "mass-downloader",
+    "no-watermark",
+    "puppeteer",
+    "nodejs"
+  ],
+  "author": "free2playvn",
+  "license": "MIT",
   "dependencies": {
-    "node-fetch": "^2.6.7",
-    "puppeteer": "^19.0.0",
-    "puppeteer-extra": "^3.3.4"
+    "puppeteer": "^19.0.0"
   }
 }

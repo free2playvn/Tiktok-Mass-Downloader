@@ -1,58 +1,99 @@
-# Tiktok Mass Downloader
-Simple script to mass download tiktok video without watermark, used node js + puppeteer
+# TikTok Mass Downloader (TMD)
 
-That script only does one thing if you want many downloads options consider looking at [Xsrazy](https://xsrazy.github.io/)
-- TMD script mass downloads all tiktok videos of a single user profileand the descriptions.
-- Adding number after url argument mass downloads number of tiktok videos of a single user and the descriptions.
+Modern, fast, and lightweight Node.js tool to **mass download TikTok videos without watermark** in high definition.
 
-Note: Videos are stored in @username folder whereas the description is stored in names.txt
+---
 
-Warning: Since the script mass downloads, it can be alot of data depending on the number you enter or the number of videos a user has. 
+## ✨ Features
 
-# requirements:
-+ Node Js
+- **100% Watermark-Free HD**: Downloads clean video streams without the TikTok watermark/logo.
+- **Profile Mass Download**: Scrapes and downloads all or a specified number ($N$) of videos from any public TikTok profile.
+- **Single Video Download**: Instantly downloads a single video when given a direct video URL.
+- **Smart Auto-Scroll & Pop-up Handling**: Automatically bypasses login prompts and dialogs during profile scanning.
+- **Live Stream Progress**: Real-time progress bar displaying speed, downloaded size, percentage, and estimated time remaining (ETA).
+- **Duplicate Skipping**: Skips already downloaded videos when re-running for the same profile.
+- **Metadata Archiving**: Automatically appends video titles and descriptions to `names.txt` in the creator's folder.
 
-# Installtion:
-After installing Node Js
+---
 
-+ git clone https://github.com/xsrazy/Tiktok-Mass-Downloader
+## 📋 Requirements
 
-+ cd Tiktok-Mass-Downloader
+- **Node.js** v18+ (tested on Node.js v20 and v22)
+- **npm**
 
-navigate to the project directory and use this command:
+---
 
-+ npm i
+## 🚀 Installation
 
-+ node TMD https://www.tiktok.com/@username (Replace with your username)
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/free2playvn/Tiktok-Mass-Downloader.git
+   cd Tiktok-Mass-Downloader
+   ```
 
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-# How to use:
+---
 
-Manual Step:
-edit the user profile url in TMD script or edit the user profile url & the N Videos parameter in N videosuser script.
+## 💡 How to Use
 
-Auto Step:
-In the terminal or command prompt use:
+### 1. Mass Download from Profile
 
-+ node TMD https://www.tiktok.com/@xsrazy
+Download all available videos from a user's profile:
+```bash
+node TMD.js https://www.tiktok.com/@username
+```
 
-Or
+Or limit the download to $N$ videos (e.g. 5 videos):
+```bash
+node TMD.js https://www.tiktok.com/@username 5
+```
 
-+ node TMD https://www.tiktok.com/@xsrazy n
+You can also use shorthand username formats:
+```bash
+node TMD.js @username 10
+node TMD.js username 3
+```
 
-Note: N = The number of videos you want to download. e.g; 2
+---
 
+### 2. Single Video Download
 
-Of course you can change the username xsrazy to whatever user you want 
-to download all videos of single user.
+Download a specific video directly without watermark:
+```bash
+node TMD.js https://www.tiktok.com/@username/video/7675792462593428756
+```
 
-Results will be saved in names.txt and videos in username folder location.
+Shortened links (`vm.tiktok.com` or `vt.tiktok.com`) are also supported:
+```bash
+node TMD.js https://vm.tiktok.com/xxxxxx/
+```
 
-All videos will be saved without watermark unless the user reuploaded his videos with logo.
+---
 
-Thank you,
+## 📁 Output Directory
 
--Xsrazy.
+All downloads are neatly organized in the root directory under the creator's handle:
 
-<a href="https://www.buymeacoffee.com/xsrazy" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
+```text
+Tiktok-Mass-Downloader/
+├── @username/
+│   ├── 7675792462593428756.mp4
+│   ├── 7696392556535418113.mp4
+│   └── names.txt
+├── TMD.js
+├── package.json
+└── README.md
+```
 
+- Each video is saved as `<videoId>.mp4`.
+- `names.txt` stores each video ID and its caption/description.
+
+---
+
+## 📄 License
+
+MIT License.
