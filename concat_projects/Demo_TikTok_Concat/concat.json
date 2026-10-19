@@ -1,0 +1,174 @@
+{
+  "version": 1,
+  "generator": "TMD Studio Pro v3.2 AI - Concat Bridge",
+  "name": "TikTok Demo with Vietnamese Subtitles",
+  "created": "2026-10-19T08:43:01.644Z",
+  "media": [],
+  "video": {
+    "width": 1080,
+    "height": 1920,
+    "rate_num": 30,
+    "rate_den": 1
+  },
+  "timelines": [
+    {
+      "id": "TL_MAIN",
+      "name": "Main Timeline",
+      "video": {
+        "width": 1080,
+        "height": 1920,
+        "rate_num": 30,
+        "rate_den": 1
+      },
+      "tracks": [
+        {
+          "id": "T_VIDEO",
+          "kind": "video",
+          "name": "Video Chính"
+        },
+        {
+          "id": "T_SUBTITLES",
+          "kind": "text",
+          "name": "Phụ Đề Tiếng Việt (Humanized)"
+        },
+        {
+          "id": "T_AUDIO_BGM",
+          "kind": "audio",
+          "name": "Nhạc Nền Dubbing"
+        }
+      ],
+      "clips": [
+        {
+          "id": "C_MAIN_VIDEO",
+          "trackId": "T_VIDEO",
+          "mediaId": "M_VIDEO_01",
+          "start": 0,
+          "duration": 35,
+          "kind": "video",
+          "volume": 1,
+          "opacity": 1,
+          "flipH": true,
+          "flipV": false,
+          "speed": 1.02,
+          "crop": {
+            "left": 0.02,
+            "right": 0.02,
+            "top": 0.02,
+            "bottom": 0.02
+          }
+        },
+        {
+          "id": "C_SUB_1",
+          "trackId": "T_SUBTITLES",
+          "start": 0,
+          "duration": 3.5,
+          "kind": "text",
+          "text": {
+            "content": "Chào mừng bạn đến với TMD Studio Pro!",
+            "fontFamily": "Plus Jakarta Sans",
+            "fontSize": 48,
+            "color": "#FACC15",
+            "backgroundColor": "rgba(0, 0, 0, 0.75)",
+            "strokeWidth": 2,
+            "strokeColor": "#000000",
+            "alignment": "center",
+            "positionY": 0.82
+          }
+        },
+        {
+          "id": "C_SUB_2",
+          "trackId": "T_SUBTITLES",
+          "start": 3.6,
+          "duration": 3.6,
+          "kind": "text",
+          "text": {
+            "content": "Tích hợp bộ dựng Concat siêu tốc bằng Rust.",
+            "fontFamily": "Plus Jakarta Sans",
+            "fontSize": 48,
+            "color": "#FACC15",
+            "backgroundColor": "rgba(0, 0, 0, 0.75)",
+            "strokeWidth": 2,
+            "strokeColor": "#000000",
+            "alignment": "center",
+            "positionY": 0.82
+          }
+        }
+      ]
+    }
+  ],
+  "activeTimelineId": "TL_MAIN",
+  "tracks": [
+    {
+      "id": "T_VIDEO",
+      "kind": "video",
+      "name": "Video Chính"
+    },
+    {
+      "id": "T_SUBTITLES",
+      "kind": "text",
+      "name": "Phụ Đề Tiếng Việt (Humanized)"
+    },
+    {
+      "id": "T_AUDIO_BGM",
+      "kind": "audio",
+      "name": "Nhạc Nền Dubbing"
+    }
+  ],
+  "clips": [
+    {
+      "id": "C_MAIN_VIDEO",
+      "trackId": "T_VIDEO",
+      "mediaId": "M_VIDEO_01",
+      "start": 0,
+      "duration": 35,
+      "kind": "video",
+      "volume": 1,
+      "opacity": 1,
+      "flipH": true,
+      "flipV": false,
+      "speed": 1.02,
+      "crop": {
+        "left": 0.02,
+        "right": 0.02,
+        "top": 0.02,
+        "bottom": 0.02
+      }
+    },
+    {
+      "id": "C_SUB_1",
+      "trackId": "T_SUBTITLES",
+      "start": 0,
+      "duration": 3.5,
+      "kind": "text",
+      "text": {
+        "content": "Chào mừng bạn đến với TMD Studio Pro!",
+        "fontFamily": "Plus Jakarta Sans",
+        "fontSize": 48,
+        "color": "#FACC15",
+        "backgroundColor": "rgba(0, 0, 0, 0.75)",
+        "strokeWidth": 2,
+        "strokeColor": "#000000",
+        "alignment": "center",
+        "positionY": 0.82
+      }
+    },
+    {
+      "id": "C_SUB_2",
+      "trackId": "T_SUBTITLES",
+      "start": 3.6,
+      "duration": 3.6,
+      "kind": "text",
+      "text": {
+        "content": "Tích hợp bộ dựng Concat siêu tốc bằng Rust.",
+        "fontFamily": "Plus Jakarta Sans",
+        "fontSize": 48,
+        "color": "#FACC15",
+        "backgroundColor": "rgba(0, 0, 0, 0.75)",
+        "strokeWidth": 2,
+        "strokeColor": "#000000",
+        "alignment": "center",
+        "positionY": 0.82
+      }
+    }
+  ]
+}

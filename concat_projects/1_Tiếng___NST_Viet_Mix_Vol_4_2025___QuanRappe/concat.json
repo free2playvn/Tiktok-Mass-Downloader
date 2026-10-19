@@ -1,0 +1,211 @@
+{
+  "version": 1,
+  "generator": "TMD Studio Pro v3.2 AI - Concat Bridge",
+  "name": "1 Tiếng | NST Viet Mix Vol 4 2025 - QuanRapper",
+  "created": "2026-10-19T08:51:50.845Z",
+  "media": [
+    {
+      "id": "M_VIDEO_01",
+      "name": "7675792462593428756.mp4",
+      "path": "C:\\Users\\pc\\Downloads\\new project\\@nhacnghedixe\\7675792462593428756.mp4",
+      "duration": 60,
+      "kind": "video",
+      "width": 1080,
+      "height": 1920,
+      "frame_rate": 30,
+      "frame_rate_fraction": "30/1",
+      "video_codec": "h264",
+      "audio_codec": "aac",
+      "has_audio": true
+    }
+  ],
+  "video": {
+    "width": 1080,
+    "height": 1920,
+    "rate_num": 30,
+    "rate_den": 1
+  },
+  "timelines": [
+    {
+      "id": "TL_MAIN",
+      "name": "Main Timeline",
+      "video": {
+        "width": 1080,
+        "height": 1920,
+        "rate_num": 30,
+        "rate_den": 1
+      },
+      "tracks": [
+        {
+          "id": "T_VIDEO",
+          "kind": "video",
+          "name": "Video Chính"
+        },
+        {
+          "id": "T_SUBTITLES",
+          "kind": "text",
+          "name": "Phụ Đề Tiếng Việt (Humanized)"
+        },
+        {
+          "id": "T_AUDIO_BGM",
+          "kind": "audio",
+          "name": "Nhạc Nền Dubbing"
+        }
+      ],
+      "clips": [
+        {
+          "id": "C_MAIN_VIDEO",
+          "trackId": "T_VIDEO",
+          "mediaId": "M_VIDEO_01",
+          "start": 0,
+          "duration": 60,
+          "kind": "video",
+          "volume": 1,
+          "opacity": 1,
+          "flipV": false,
+          "crop": null
+        },
+        {
+          "id": "C_SUB_1",
+          "trackId": "T_SUBTITLES",
+          "start": 0.5,
+          "duration": 3,
+          "kind": "text",
+          "text": {
+            "content": "Chào mừng các bạn đến với TMD Studio Pro!",
+            "fontFamily": "Plus Jakarta Sans",
+            "fontSize": 48,
+            "color": "#FACC15",
+            "backgroundColor": "rgba(0, 0, 0, 0.75)",
+            "strokeWidth": 2,
+            "strokeColor": "#000000",
+            "alignment": "center",
+            "positionY": 0.82
+          }
+        },
+        {
+          "id": "C_SUB_2",
+          "trackId": "T_SUBTITLES",
+          "start": 4,
+          "duration": 4,
+          "kind": "text",
+          "text": {
+            "content": "Hôm nay chúng ta cùng thưởng thức bản phối đỉnh cao.",
+            "fontFamily": "Plus Jakarta Sans",
+            "fontSize": 48,
+            "color": "#FACC15",
+            "backgroundColor": "rgba(0, 0, 0, 0.75)",
+            "strokeWidth": 2,
+            "strokeColor": "#000000",
+            "alignment": "center",
+            "positionY": 0.82
+          }
+        },
+        {
+          "id": "C_SUB_3",
+          "trackId": "T_SUBTITLES",
+          "start": 8.5,
+          "duration": 4.5,
+          "kind": "text",
+          "text": {
+            "content": "Việt hóa tự nhiên và làm mượt câu từ với Humanizer AI.",
+            "fontFamily": "Plus Jakarta Sans",
+            "fontSize": 48,
+            "color": "#FACC15",
+            "backgroundColor": "rgba(0, 0, 0, 0.75)",
+            "strokeWidth": 2,
+            "strokeColor": "#000000",
+            "alignment": "center",
+            "positionY": 0.82
+          }
+        }
+      ]
+    }
+  ],
+  "activeTimelineId": "TL_MAIN",
+  "tracks": [
+    {
+      "id": "T_VIDEO",
+      "kind": "video",
+      "name": "Video Chính"
+    },
+    {
+      "id": "T_SUBTITLES",
+      "kind": "text",
+      "name": "Phụ Đề Tiếng Việt (Humanized)"
+    },
+    {
+      "id": "T_AUDIO_BGM",
+      "kind": "audio",
+      "name": "Nhạc Nền Dubbing"
+    }
+  ],
+  "clips": [
+    {
+      "id": "C_MAIN_VIDEO",
+      "trackId": "T_VIDEO",
+      "mediaId": "M_VIDEO_01",
+      "start": 0,
+      "duration": 60,
+      "kind": "video",
+      "volume": 1,
+      "opacity": 1,
+      "flipV": false,
+      "crop": null
+    },
+    {
+      "id": "C_SUB_1",
+      "trackId": "T_SUBTITLES",
+      "start": 0.5,
+      "duration": 3,
+      "kind": "text",
+      "text": {
+        "content": "Chào mừng các bạn đến với TMD Studio Pro!",
+        "fontFamily": "Plus Jakarta Sans",
+        "fontSize": 48,
+        "color": "#FACC15",
+        "backgroundColor": "rgba(0, 0, 0, 0.75)",
+        "strokeWidth": 2,
+        "strokeColor": "#000000",
+        "alignment": "center",
+        "positionY": 0.82
+      }
+    },
+    {
+      "id": "C_SUB_2",
+      "trackId": "T_SUBTITLES",
+      "start": 4,
+      "duration": 4,
+      "kind": "text",
+      "text": {
+        "content": "Hôm nay chúng ta cùng thưởng thức bản phối đỉnh cao.",
+        "fontFamily": "Plus Jakarta Sans",
+        "fontSize": 48,
+        "color": "#FACC15",
+        "backgroundColor": "rgba(0, 0, 0, 0.75)",
+        "strokeWidth": 2,
+        "strokeColor": "#000000",
+        "alignment": "center",
+        "positionY": 0.82
+      }
+    },
+    {
+      "id": "C_SUB_3",
+      "trackId": "T_SUBTITLES",
+      "start": 8.5,
+      "duration": 4.5,
+      "kind": "text",
+      "text": {
+        "content": "Việt hóa tự nhiên và làm mượt câu từ với Humanizer AI.",
+        "fontFamily": "Plus Jakarta Sans",
+        "fontSize": 48,
+        "color": "#FACC15",
+        "backgroundColor": "rgba(0, 0, 0, 0.75)",
+        "strokeWidth": 2,
+        "strokeColor": "#000000",
+        "alignment": "center",
+        "positionY": 0.82
+      }
+    }
+  ]
+}

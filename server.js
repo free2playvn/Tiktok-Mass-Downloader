@@ -4,6 +4,8 @@ const path = require('path');
 const url = require('url');
 const { exec } = require('child_process');
 const db = require('./database');
+const ConcatBridge = require('./concat_bridge');
+const concatBridge = new ConcatBridge(__dirname);
 
 const PORT = process.env.PORT || 3000;
 const STUDIO_DIR = path.join(__dirname, 'studio');
@@ -629,6 +631,61 @@ const server = http.createServer(async (req, res) => {
     } catch (e) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 13. API: Concat Engine Status & Local Detection
+  if (pathname === '/api/concat/status' && req.method === 'GET') {
+    const status = concatBridge.detectConcatBinary();
+    const rpcList = concatBridge.handleJsonRpc({ method: 'project_list' });
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      ok: true,
+      detection: status,
+      projects: rpcList.result?.projects || []
+    }));
+    return;
+  }
+
+  // 14. API: Export TMD Studio project to Concat Project Format (.concat)
+  if (pathname === '/api/concat/export' && req.method === 'POST') {
+    try {
+      const body = await readJsonBody();
+      const exportRes = concatBridge.exportToConcatProject(body);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(exportRes));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 15. API: Launch Native Concat App with Project
+  if (pathname === '/api/concat/launch' && req.method === 'POST') {
+    try {
+      const { projectPath } = await readJsonBody();
+      const launchRes = concatBridge.launchConcat(projectPath);
+      res.writeHead(launchRes.ok ? 200 : 400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(launchRes));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 16. API: Concat JSON-RPC & MCP Bridge Endpoint
+  if ((pathname === '/api/concat/rpc' || pathname === '/api/mcp') && req.method === 'POST') {
+    try {
+      const body = await readJsonBody();
+      const rpcRes = concatBridge.handleJsonRpc(body);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(rpcRes));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ jsonrpc: '2.0', error: { code: -32603, message: e.message } }));
     }
     return;
   }

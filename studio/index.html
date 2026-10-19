@@ -102,6 +102,11 @@
           <span>📅 Lịch Ma Trận</span>
         </button>
 
+        <!-- Concat CapCut Engine Bridge Button -->
+        <button class="studio-btn secondary-btn" id="btnOpenConcatBridge" title="Tích hợp Concat - CapCut mã nguồn mở (jub0t/concat)">
+          <span>🦀 Concat Engine</span>
+        </button>
+
         <div class="tool-divider"></div>
 
         <!-- User Profile Pill & Dropdown -->
@@ -1000,6 +1005,11 @@
               <h4>Tệp WebVTT (.VTT)</h4>
               <p>Chuẩn phụ đề web quốc tế có căn lề thời gian.</p>
             </div>
+            <div class="export-card" data-export-type="concat-project">
+              <span class="ec-icon">🦀</span>
+              <h4>Dự Án Concat (.concat)</h4>
+              <p>Mở bằng Concat / CapCut Open-Source (jub0t/concat). Giữ 4K 60fps & Whisper auto-captions.</p>
+            </div>
           </div>
 
           <div class="export-progress-wrap hidden" id="exportProgressWrap">
@@ -1495,6 +1505,96 @@
 
         <div class="modal-footer">
           <button class="studio-btn secondary-btn" id="btnCloseBillingModalBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Concat CapCut Pro Local Engine Bridge (jub0t/concat) -->
+    <div class="studio-modal-backdrop" id="modalConcatBridge">
+      <div class="studio-modal modal-lg">
+        <div class="modal-header">
+          <div class="modal-title-with-badge">
+            <span class="modal-icon">🦀</span>
+            <div>
+              <h3>Tích Hợp Concat (CapCut Open-Source Local)</h3>
+              <p class="modal-sub">Đồng bộ dự án TMD Studio với Concat Engine (jub0t/concat) - 0 Watermark, 4K GPU & AI MCP</p>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseConcatModal">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <!-- Concat Status Banner -->
+          <div class="concat-status-card" id="concatStatusCard">
+            <div class="concat-crab-icon">🦀</div>
+            <div class="concat-status-meta">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <h4 style="margin: 0;">Concat Engine v0.2.8</h4>
+                <span class="status-pill active" id="concatStatusBadge">🟢 MCP Bridge Active</span>
+              </div>
+              <p class="section-desc" style="margin: 4px 0 0 0;" id="concatStatusDesc">
+                Tương thích 100% chuẩn định dạng Concat/CapCut (Rust GPU Compositor, Whisper Local, Background Cutout DirectML).
+              </p>
+            </div>
+          </div>
+
+          <!-- Quick Actions Grid -->
+          <div class="concat-actions-grid">
+            <div class="concat-action-card">
+              <span class="card-icon">⚡</span>
+              <h4>Đồng Bộ Sang Dự Án Concat</h4>
+              <p>Chuyển video, cắt timeline, nhạc nền và phụ đề tiếng Việt sang file <code>concat.json</code> chuẩn.</p>
+              <button class="studio-btn primary-btn sm-btn full-btn" id="btnSyncToConcat">
+                <span>⚡ Xuất Sang .concat</span>
+              </button>
+            </div>
+
+            <div class="concat-action-card">
+              <span class="card-icon">🚀</span>
+              <h4>Khởi Chạy Concat Desktop</h4>
+              <p>Mở trực tiếp ứng dụng Concat trên máy tính của bạn để biên tập nâng cao, keyframe & render 4K.</p>
+              <button class="studio-btn secondary-btn sm-btn full-btn" id="btnLaunchConcatDesktop">
+                <span>🚀 Mở Concat</span>
+              </button>
+            </div>
+
+            <div class="concat-action-card">
+              <span class="card-icon">🤖</span>
+              <h4>Cấu Hình MCP AI Agent</h4>
+              <p>Cung cấp Model Context Protocol để Claude / Antigravity / Cursor tự động dựng video.</p>
+              <button class="studio-btn secondary-btn sm-btn full-btn" id="btnCopyConcatMcp">
+                <span>📋 Sao Chép Lệnh MCP</span>
+              </button>
+            </div>
+
+            <div class="concat-action-card">
+              <span class="card-icon">📦</span>
+              <h4>Tải Bộ Cài Concat</h4>
+              <p>Tải bản phát hành mới nhất từ jub0t/concat (Windows .msi / .exe, macOS Apple Silicon & Intel).</p>
+              <a href="https://github.com/jub0t/Concat/releases/latest" target="_blank" class="studio-btn secondary-btn sm-btn full-btn" style="text-align: center; text-decoration: none;">
+                <span>⬇ Tải Từ GitHub</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Live Export / Action Output Alert -->
+          <div id="concatAlertBox" class="pub-status-box hidden" style="margin-top: 12px;"></div>
+
+          <!-- Recent Exported Concat Projects List -->
+          <div style="margin-top: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <h4 style="font-size: 12px; margin: 0; color: #fff;">📁 Các Dự Án Concat Đã Đồng Bộ</h4>
+              <button class="icon-refresh-btn" id="btnRefreshConcatProjects" title="Làm mới">🔄</button>
+            </div>
+            <div class="concat-projects-list" id="concatProjectsList">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <span class="footer-hint">💡 Concat là phần mềm biên tập video mã nguồn mở miễn phí, xử lý hoàn toàn Offline trên máy của bạn.</span>
+          <button class="studio-btn secondary-btn" id="btnCloseConcatModalBottom">Đóng</button>
         </div>
       </div>
     </div>

@@ -143,11 +143,13 @@ document.addEventListener('DOMContentLoaded', () => {
     setupCalendarMatrix();
     setupTeamWorkspace();
     setupVietQRBilling();
+    setupConcatBridge();
     setupModals();
     loadActiveVideo();
     drawSimulatedWaveform();
     renderTimelineSubtitles();
   }
+
 
   function setupOsSwitcher() {
     btnMacMode.addEventListener('click', () => {
@@ -427,9 +429,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderTimelineSubtitles() {
-    subtitleLane.innerHTML = '';
+    if (subtitleLane) subtitleLane.innerHTML = '';
     const container = document.getElementById('subtitlesListContainer');
-    container.innerHTML = '';
+    if (container) container.innerHTML = '';
 
     state.subtitleCues.forEach((cue) => {
       // 1. Timeline Block
@@ -445,7 +447,7 @@ document.addEventListener('DOMContentLoaded', () => {
         selectSubtitleCue(cue.id);
       });
 
-      subtitleLane.appendChild(block);
+      if (subtitleLane) subtitleLane.appendChild(block);
 
       // 2. Left Panel Cue List Card
       const card = document.createElement('div');
@@ -476,9 +478,10 @@ document.addEventListener('DOMContentLoaded', () => {
         selectSubtitleCue(cue.id);
       });
 
-      container.appendChild(card);
+      if (container) container.appendChild(card);
     });
   }
+
 
   function selectSubtitleCue(cueId) {
     state.selectedCueId = cueId;
@@ -746,11 +749,15 @@ document.addEventListener('DOMContentLoaded', () => {
         downloadSrtFile();
       } else if (currentExportType === 'vtt') {
         downloadVttFile();
+      } else if (currentExportType === 'concat-project') {
+        modalExport.classList.remove('open');
+        syncCurrentProjectToConcat(true);
       } else {
         renderAndExportBurnedVideo();
       }
     });
   }
+
 
   function downloadSrtFile() {
     let srtContent = '';
@@ -2558,6 +2565,242 @@ document.addEventListener('DOMContentLoaded', () => {
           btnSimulateVietQRSuccess.disabled = false;
           btnSimulateVietQRSuccess.innerHTML = `<span>⚡ Kích Hoạt Tức Thì (Mô Phỏng Nhận Tiền Thành Công)</span>`;
         }
+      });
+    }
+  }
+
+  /* ===================================================================
+     18. CONCAT (CAPCUT LOCAL RUST ENGINE) BRIDGE (jub0t/concat)
+     =================================================================== */
+
+  let syncCurrentProjectToConcat = null;
+
+  function setupConcatBridge() {
+    const btnOpenConcatBridge = document.getElementById('btnOpenConcatBridge');
+    const modalConcatBridge = document.getElementById('modalConcatBridge');
+    const btnCloseConcatModal = document.getElementById('btnCloseConcatModal');
+    const btnCloseConcatModalBottom = document.getElementById('btnCloseConcatModalBottom');
+    const concatStatusBadge = document.getElementById('concatStatusBadge');
+    const concatStatusDesc = document.getElementById('concatStatusDesc');
+    const btnSyncToConcat = document.getElementById('btnSyncToConcat');
+    const btnLaunchConcatDesktop = document.getElementById('btnLaunchConcatDesktop');
+    const btnCopyConcatMcp = document.getElementById('btnCopyConcatMcp');
+    const btnRefreshConcatProjects = document.getElementById('btnRefreshConcatProjects');
+    const concatAlertBox = document.getElementById('concatAlertBox');
+    const concatProjectsList = document.getElementById('concatProjectsList');
+
+    if (!modalConcatBridge) return;
+
+    // Open & Close Modal
+    if (btnOpenConcatBridge) {
+      btnOpenConcatBridge.addEventListener('click', () => {
+        modalConcatBridge.classList.add('open');
+        loadConcatStatus();
+      });
+    }
+
+    if (btnCloseConcatModal) {
+      btnCloseConcatModal.addEventListener('click', () => modalConcatBridge.classList.remove('open'));
+    }
+    if (btnCloseConcatModalBottom) {
+      btnCloseConcatModalBottom.addEventListener('click', () => modalConcatBridge.classList.remove('open'));
+    }
+
+    // Load status from backend
+    async function loadConcatStatus() {
+      try {
+        const res = await fetch('/api/concat/status');
+        const data = await res.json();
+        if (!data.ok) return;
+
+        const det = data.detection;
+        if (det.installed) {
+          concatStatusBadge.className = 'status-pill active';
+          concatStatusBadge.textContent = '🟢 Concat Desktop Sẵn Sàng';
+          concatStatusDesc.innerHTML = `Đã kết nối Concat Engine tại: <code>${det.path}</code> (Rust GPU + Whisper AI + 4K Export).`;
+        } else {
+          concatStatusBadge.className = 'status-pill pending';
+          concatStatusBadge.textContent = '🟡 Chế Độ Web & MCP Bridge';
+          concatStatusDesc.innerHTML = `Chưa tìm thấy Concat Desktop trên máy (Đường dẫn chuẩn: <code>${det.recommendedLocation || 'concat.exe'}</code>). Dự án vẫn xuất ra định dạng <code>concat.json</code> và hỗ trợ MCP AI Agent đầy đủ!`;
+        }
+
+        renderConcatProjects(data.projects || []);
+      } catch (err) {
+        console.error('Lỗi kiểm tra Concat status:', err);
+      }
+    }
+
+    function renderConcatProjects(projects) {
+      if (!concatProjectsList) return;
+      if (projects.length === 0) {
+        concatProjectsList.innerHTML = `
+          <div style="text-align: center; padding: 24px; color: var(--text-muted); font-size: 13px;">
+            Chưa có dự án Concat nào được đồng bộ. Bấm <strong>"⚡ Xuất Sang .concat"</strong> để tạo dự án đầu tiên!
+          </div>
+        `;
+        return;
+      }
+
+      concatProjectsList.innerHTML = projects.map((p) => `
+        <div class="concat-project-item">
+          <div class="concat-proj-info">
+            <h5>🦀 ${escapeHtml(p.name)}</h5>
+            <div class="concat-proj-meta">
+              <span>📐 ${p.width}x${p.height}</span>
+              <span>⚡ ${p.fps || 30} FPS</span>
+              <span>🎞 ${p.clipsCount || 0} clips</span>
+              <span>🕒 ${p.mtime || 'Mới'}</span>
+            </div>
+          </div>
+          <div class="concat-proj-actions">
+            <button class="studio-btn primary-btn sm-btn" data-action="launch-proj" data-path="${escapeHtml(p.path)}">
+              🚀 Mở Concat
+            </button>
+            <button class="studio-btn secondary-btn sm-btn" data-action="copy-path" data-path="${escapeHtml(p.path)}">
+              📋 Copy Path
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      // Wire item buttons
+      concatProjectsList.querySelectorAll('button[data-action="launch-proj"]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const pPath = btn.dataset.path;
+          showAlert('⏳ Đang khởi chạy Concat Desktop...', 'pending');
+          try {
+            const res = await fetch('/api/concat/launch', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ projectPath: pPath })
+            });
+            const data = await res.json();
+            if (data.ok) {
+              showAlert(`🚀 ${data.message} (PID: ${data.pid || 'Active'})`, 'success');
+            } else {
+              showAlert(`❌ ${data.message}`, 'error');
+            }
+          } catch (e) {
+            showAlert(`❌ Lỗi kết nối: ${e.message}`, 'error');
+          }
+        });
+      });
+
+      concatProjectsList.querySelectorAll('button[data-action="copy-path"]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          navigator.clipboard.writeText(btn.dataset.path);
+          showAlert(`📋 Đã copy đường dẫn: ${btn.dataset.path}`, 'success');
+        });
+      });
+    }
+
+    function showAlert(msg, type = 'success') {
+      if (!concatAlertBox) return;
+      concatAlertBox.className = `pub-status-box ${type === 'error' ? 'error' : type === 'pending' ? 'pending' : 'success'}`;
+      concatAlertBox.classList.remove('hidden');
+      concatAlertBox.innerHTML = msg;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Sync current active studio timeline to Concat project
+    syncCurrentProjectToConcat = async function(openModalAfter = false) {
+      showAlert('⏳ Đang tổng hợp dữ liệu timeline và chuyển đổi sang chuẩn Concat (Rust)...', 'pending');
+      try {
+        const payload = {
+          projectName: (state.currentVideoTitle || 'TMD_Video_Project').replace(/[^a-zA-Z0-9_\u00C0-\u024F\u1EA0-\u1EF9]/g, '_').slice(0, 45),
+          videoFile: state.currentVideoSrc || 'sample_video.mp4',
+          videoTitle: state.currentVideoTitle || 'TikTok Studio Video',
+          duration: video ? Math.round(video.duration || 60) : 60,
+          aspectRatio: state.aspectRatio || '9:16',
+          subtitleCues: state.subtitleCues || [],
+          antiReup: state.antiReup || {},
+          audioDub: state.audioTrackFile ? { file: state.audioTrackFile, volume: 1.0 } : null
+        };
+
+        const res = await fetch('/api/concat/export', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.ok) {
+          showAlert(`
+            🎉 <strong>ĐỒNG BỘ CONCAT THÀNH CÔNG!</strong><br>
+            • Dự án: <code>${escapeHtml(data.projectName)}</code><br>
+            • Tổng clips: <strong>${data.totalClips}</strong> | Phụ đề: <strong>${data.totalSubtitles}</strong> | Tỉ lệ: <strong>${data.aspectRatio}</strong><br>
+            • Thư mục: <code>${escapeHtml(data.projectPath)}</code>
+          `, 'success');
+          loadConcatStatus();
+          if (openModalAfter) {
+            modalConcatBridge.classList.add('open');
+          }
+        } else {
+          showAlert(`❌ Lỗi xuất dự án: ${data.message || 'Không xác định'}`, 'error');
+        }
+      } catch (err) {
+        showAlert(`❌ Lỗi kết nối: ${err.message}`, 'error');
+      }
+    };
+
+    if (btnSyncToConcat) {
+      btnSyncToConcat.addEventListener('click', () => syncCurrentProjectToConcat(false));
+    }
+
+    if (btnLaunchConcatDesktop) {
+      btnLaunchConcatDesktop.addEventListener('click', async () => {
+        showAlert('⏳ Đang gửi lệnh mở ứng dụng Concat...', 'pending');
+        try {
+          const res = await fetch('/api/concat/launch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+          });
+          const data = await res.json();
+          if (data.ok) {
+            showAlert(`🚀 ${data.message}`, 'success');
+          } else {
+            showAlert(`ℹ️ ${data.message} <br><a href="https://github.com/jub0t/Concat/releases/latest" target="_blank" style="color: var(--accent-cyan); text-decoration: underline;">👉 Bấm vào đây để tải Concat Desktop (.msi / .exe)</a>`, 'error');
+          }
+        } catch (e) {
+          showAlert(`❌ Lỗi kết nối: ${e.message}`, 'error');
+        }
+      });
+    }
+
+    if (btnCopyConcatMcp) {
+      btnCopyConcatMcp.addEventListener('click', () => {
+        const mcpConfig = {
+          mcpServers: {
+            concat: {
+              command: "node",
+              args: [
+                "c:\\Users\\pc\\Downloads\\new project\\concat-cli.js",
+                "--mcp"
+              ]
+            }
+          }
+        };
+        const text = JSON.stringify(mcpConfig, null, 2);
+        navigator.clipboard.writeText(text);
+        showAlert(`
+          📋 <strong>ĐÃ SAO CHÉP CẤU HÌNH MCP!</strong><br>
+          Dán đoạn cấu hình này vào file <code>claude_desktop_config.json</code> hoặc cài đặt Agent của bạn để Claude / Cursor tự động cắt ghép video qua Concat Engine!
+        `, 'success');
+      });
+    }
+
+    if (btnRefreshConcatProjects) {
+      btnRefreshConcatProjects.addEventListener('click', () => {
+        loadConcatStatus();
+        showAlert('🔄 Đã cập nhật danh sách dự án Concat mới nhất!', 'success');
       });
     }
   }
