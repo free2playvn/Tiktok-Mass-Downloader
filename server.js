@@ -1127,10 +1127,29 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  if (pathname === '/api/enterprise/live/platforms' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, platforms: virtualLivestreamEngine.platforms }));
+    return;
+  }
+
+  if (pathname === '/api/enterprise/live/platforms/update' && req.method === 'POST') {
+    try {
+      const { platformId, settings } = await readJsonBody();
+      const result = virtualLivestreamEngine.updatePlatformSettings(platformId, settings);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
   if (pathname === '/api/enterprise/live/toggle' && req.method === 'POST') {
     try {
-      const { start, platform } = await readJsonBody();
-      const result = virtualLivestreamEngine.toggleLiveStream(start, platform);
+      const { start, targetPlatforms } = await readJsonBody();
+      const result = virtualLivestreamEngine.toggleLiveStream(start, targetPlatforms);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(result));
     } catch (e) {
@@ -1168,8 +1187,8 @@ const server = http.createServer(async (req, res) => {
 
   if (pathname === '/api/enterprise/live/comment' && req.method === 'POST') {
     try {
-      const { user, text } = await readJsonBody();
-      const result = virtualLivestreamEngine.handleIncomingViewerComment(user, text);
+      const { user, text, platform } = await readJsonBody();
+      const result = virtualLivestreamEngine.handleIncomingViewerComment(user, text, platform);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(result));
     } catch (e) {

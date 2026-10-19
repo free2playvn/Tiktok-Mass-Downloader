@@ -4976,19 +4976,146 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ------------------------------------------------------------------
-       ORIGINAL 2D LIVE STUDIO HOST & COMMENTS MANAGEMENT
+       MULTI-PLATFORM LIVE STUDIO CONTROLLER (TIKTOK - YOUTUBE - FACEBOOK)
        ------------------------------------------------------------------ */
+    let livePlatformsState = {};
+
     async function loadLiveStudioState() {
       try {
         const res = await fetch('/api/enterprise/live/state');
         const data = await res.json();
         if (data.ok) {
+          livePlatformsState = data.platforms || {};
           renderHosts(data.hosts, data.session.activeHostId);
           renderCatalog(data.catalog, data.session.activeProductId);
           renderComments(data.recentComments);
-          updateSessionOverlay(data.session);
+          renderPlatformSettings(data.platforms);
+          updateSessionOverlay(data.session, data.platforms);
         }
-      } catch (e) {}
+      } catch (e) {
+        console.error('Lỗi tải live state:', e);
+      }
+    }
+
+    function renderPlatformSettings(platforms) {
+      if (!platforms) return;
+
+      // TikTok
+      if (platforms.tiktok) {
+        const chk = document.getElementById('chkEnableTikTok');
+        const rtmp = document.getElementById('rtmpUrlTikTok');
+        const key = document.getElementById('streamKeyTikTok');
+        const status = document.getElementById('statusTikTok');
+        const card = document.getElementById('cardBridgeTikTok');
+        if (chk) chk.checked = !!platforms.tiktok.enabled;
+        if (rtmp && !rtmp.matches(':focus')) rtmp.value = platforms.tiktok.rtmpServer;
+        if (key && !key.matches(':focus')) key.value = platforms.tiktok.streamKey;
+        if (status) {
+          status.textContent = platforms.tiktok.status === 'streaming' ? '🔴 Đang Phát Sóng' : '🟢 Sẵn Sàng';
+          status.style.color = platforms.tiktok.status === 'streaming' ? '#ef4444' : '#10b981';
+        }
+        if (card) card.classList.toggle('disabled', !platforms.tiktok.enabled);
+      }
+
+      // YouTube
+      if (platforms.youtube) {
+        const chk = document.getElementById('chkEnableYouTube');
+        const rtmp = document.getElementById('rtmpUrlYouTube');
+        const key = document.getElementById('streamKeyYouTube');
+        const status = document.getElementById('statusYouTube');
+        const card = document.getElementById('cardBridgeYouTube');
+        if (chk) chk.checked = !!platforms.youtube.enabled;
+        if (rtmp && !rtmp.matches(':focus')) rtmp.value = platforms.youtube.rtmpServer;
+        if (key && !key.matches(':focus')) key.value = platforms.youtube.streamKey;
+        if (status) {
+          status.textContent = platforms.youtube.status === 'streaming' ? '🔴 Đang Phát Sóng' : '🟢 Sẵn Sàng';
+          status.style.color = platforms.youtube.status === 'streaming' ? '#ef4444' : '#10b981';
+        }
+        if (card) card.classList.toggle('disabled', !platforms.youtube.enabled);
+      }
+
+      // Facebook
+      if (platforms.facebook) {
+        const chk = document.getElementById('chkEnableFacebook');
+        const rtmp = document.getElementById('rtmpUrlFacebook');
+        const key = document.getElementById('streamKeyFacebook');
+        const status = document.getElementById('statusFacebook');
+        const card = document.getElementById('cardBridgeFacebook');
+        if (chk) chk.checked = !!platforms.facebook.enabled;
+        if (rtmp && !rtmp.matches(':focus')) rtmp.value = platforms.facebook.rtmpServer;
+        if (key && !key.matches(':focus')) key.value = platforms.facebook.streamKey;
+        if (status) {
+          status.textContent = platforms.facebook.status === 'streaming' ? '🔴 Đang Phát Sóng' : '🟢 Sẵn Sàng';
+          status.style.color = platforms.facebook.status === 'streaming' ? '#ef4444' : '#10b981';
+        }
+        if (card) card.classList.toggle('disabled', !platforms.facebook.enabled);
+      }
+
+      // Viewers Breakdown Chips
+      const chipTk = document.getElementById('chipViewersTikTok');
+      const chipYt = document.getElementById('chipViewersYouTube');
+      const chipFb = document.getElementById('chipViewersFacebook');
+      if (chipTk && platforms.tiktok) chipTk.textContent = `🎵 TikTok: ${(platforms.tiktok.viewers / 1000).toFixed(1)}K`;
+      if (chipYt && platforms.youtube) chipYt.textContent = `▶️ YouTube: ${platforms.youtube.viewers}`;
+      if (chipFb && platforms.facebook) chipFb.textContent = `👥 Facebook: ${platforms.facebook.viewers}`;
+
+      // Active count badge
+      const activeCountPill = document.getElementById('activeChannelsCountPill');
+      if (activeCountPill) {
+        const enabledCount = Object.values(platforms).filter(p => p.enabled).length;
+        activeCountPill.textContent = `${enabledCount} KÊNH BẬT`;
+      }
+    }
+
+    // Save Platform Keys Event
+    const btnSavePlatformKeys = document.getElementById('btnSavePlatformKeys');
+    if (btnSavePlatformKeys) {
+      btnSavePlatformKeys.addEventListener('click', async () => {
+        btnSavePlatformKeys.disabled = true;
+        btnSavePlatformKeys.textContent = '⏳ Đang Lưu...';
+
+        try {
+          const updates = [
+            {
+              id: 'tiktok',
+              rtmpServer: document.getElementById('rtmpUrlTikTok')?.value,
+              streamKey: document.getElementById('streamKeyTikTok')?.value,
+              enabled: document.getElementById('chkEnableTikTok')?.checked
+            },
+            {
+              id: 'youtube',
+              rtmpServer: document.getElementById('rtmpUrlYouTube')?.value,
+              streamKey: document.getElementById('streamKeyYouTube')?.value,
+              enabled: document.getElementById('chkEnableYouTube')?.checked
+            },
+            {
+              id: 'facebook',
+              rtmpServer: document.getElementById('rtmpUrlFacebook')?.value,
+              streamKey: document.getElementById('streamKeyFacebook')?.value,
+              enabled: document.getElementById('chkEnableFacebook')?.checked
+            }
+          ];
+
+          for (const u of updates) {
+            await fetch('/api/enterprise/live/platforms/update', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                platformId: u.id,
+                settings: { rtmpServer: u.rtmpServer, streamKey: u.streamKey, enabled: u.enabled }
+              })
+            });
+          }
+
+          alert('✅ Đã lưu cấu hình Stream Key & RTMP Server cho cả 3 nền tảng TikTok, YouTube và Facebook!');
+          loadLiveStudioState();
+        } catch (e) {
+          alert('Lỗi lưu cấu hình nền tảng: ' + e.message);
+        } finally {
+          btnSavePlatformKeys.disabled = false;
+          btnSavePlatformKeys.textContent = '💾 Lưu Cấu Hình Stream Key 3 Kênh';
+        }
+      });
     }
 
     function renderHosts(hosts, activeId) {
@@ -5024,17 +5151,24 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderComments(comments) {
       const box = document.getElementById('liveCommentsBox');
       if (!box) return;
-      box.innerHTML = comments.map((c) => `
-        <div class="live-chat-line">
-          <span class="live-chat-user">${escapeHtml(c.user)}:</span>
-          <span class="live-chat-msg">${escapeHtml(c.text)}</span>
-          <div class="live-chat-reply">🤖 MC: "${escapeHtml(c.reply)}"</div>
-        </div>
-      `).join('');
+      box.innerHTML = comments.map((c) => {
+        let platBadge = '<span class="chat-plat-pill tiktok">🎵 TikTok</span>';
+        if (c.platform === 'youtube') platBadge = '<span class="chat-plat-pill youtube">▶️ YouTube</span>';
+        if (c.platform === 'facebook') platBadge = '<span class="chat-plat-pill facebook">👥 Facebook</span>';
+
+        return `
+          <div class="live-chat-line">
+            ${platBadge}
+            <span class="live-chat-user">${escapeHtml(c.user)}:</span>
+            <span class="live-chat-msg">${escapeHtml(c.text)}</span>
+            <div class="live-chat-reply">🤖 MC: "${escapeHtml(c.reply)}"</div>
+          </div>
+        `;
+      }).join('');
       box.scrollTop = box.scrollHeight;
     }
 
-    function updateSessionOverlay(session) {
+    function updateSessionOverlay(session, platforms) {
       const statusPill = document.getElementById('liveStatusPill');
       const btnToggle = document.getElementById('btnToggleBroadcast');
       const gmvVal = document.getElementById('liveGmvVal');
@@ -5042,26 +5176,26 @@ document.addEventListener('DOMContentLoaded', () => {
       const likes = document.getElementById('liveLikesCount');
 
       if (gmvVal) gmvVal.textContent = session.revenueGmv.toLocaleString('vi-VN') + ' ₫';
-      if (viewers) viewers.textContent = session.viewerCount.toLocaleString('vi-VN');
-      if (likes) likes.textContent = (session.likesCount / 1000).toFixed(1) + 'K';
+      if (viewers) viewers.textContent = (session.totalViewers || session.viewerCount).toLocaleString('vi-VN');
+      if (likes) likes.textContent = (((session.totalLikes || session.likesCount)) / 1000).toFixed(1) + 'K';
 
       if (session.isLive) {
         if (statusPill) {
-          statusPill.textContent = '🔴 ĐANG PHÁT SÓNG TRỰC TIẾP';
+          statusPill.textContent = '🔴 ĐANG PHÁT SÓNG ĐỒNG THỜI 3 KÊNH';
           statusPill.className = 'live-on-air-tag live-active';
         }
         if (btnToggle) {
-          btnToggle.textContent = '⏹ DỪNG PHÁT SÓNG TRỰC TIẾP';
+          btnToggle.textContent = '⏹ DỪNG PHÁT SÓNG TRỰC TIẾP TẤT CẢ KÊNH';
           btnToggle.className = 'studio-btn secondary-btn';
         }
       } else {
         if (statusPill) {
-          statusPill.textContent = '⚪ CHẾ ĐỘ CHỜ';
+          statusPill.textContent = '⚪ CHẾ ĐỘ CHỜ ĐA KÊNH';
           statusPill.className = 'live-on-air-tag';
         }
         if (btnToggle) {
-          btnToggle.textContent = '🚀 BẮT ĐẦU PHÁT SÓNG TRỰC TIẾP';
-          btnToggle.className = 'studio-btn success-btn';
+          btnToggle.textContent = '🚀 BẮT ĐẦU PHÁT SÓNG TRỰC TIẾP 3 KÊNH';
+          btnToggle.className = 'studio-btn success-btn pulse-glow';
         }
       }
     }
@@ -5105,17 +5239,22 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (e) {}
     };
 
-    // Send comment
+    // Send comment with platform choice
     const btnLiveSendComment = document.getElementById('btnLiveSendComment');
     const liveSimulateCommentInput = document.getElementById('liveSimulateCommentInput');
+    const liveCommentPlatformSelect = document.getElementById('liveCommentPlatformSelect');
+
     if (btnLiveSendComment) {
       btnLiveSendComment.addEventListener('click', async () => {
         const text = liveSimulateCommentInput.value.trim() || 'Mẫu áo này có size L không shop?';
+        const platform = liveCommentPlatformSelect ? liveCommentPlatformSelect.value : 'tiktok';
+        const user = platform === 'facebook' ? 'Khách Hàng Facebook' : platform === 'youtube' ? '@viewer_youtube' : '@khach_tiktok';
+
         try {
           const res = await fetch('/api/enterprise/live/comment', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user: '@khach_xem_live', text })
+            body: JSON.stringify({ user, text, platform })
           });
           const data = await res.json();
           if (data.ok) {
@@ -5130,25 +5269,38 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Toggle broadcast
+    // Toggle Master Multi-Stream Broadcast
     const btnToggleBroadcast = document.getElementById('btnToggleBroadcast');
     if (btnToggleBroadcast) {
       btnToggleBroadcast.addEventListener('click', async () => {
         const isCurrentlyLive = btnToggleBroadcast.textContent.includes('DỪNG');
+
+        // Check selected target platforms
+        const targetPlatforms = [];
+        if (document.getElementById('chkEnableTikTok')?.checked) targetPlatforms.push('tiktok');
+        if (document.getElementById('chkEnableYouTube')?.checked) targetPlatforms.push('youtube');
+        if (document.getElementById('chkEnableFacebook')?.checked) targetPlatforms.push('facebook');
+
+        if (!isCurrentlyLive && targetPlatforms.length === 0) {
+          alert('Vui lòng bật ít nhất 1 nền tảng phát sóng (TikTok, YouTube hoặc Facebook)!');
+          return;
+        }
+
         try {
           const res = await fetch('/api/enterprise/live/toggle', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ start: !isCurrentlyLive, platform: 'tiktok_live' })
+            body: JSON.stringify({ start: !isCurrentlyLive, targetPlatforms })
           });
           const data = await res.json();
           if (data.ok) {
-            updateSessionOverlay(data.session);
+            updateSessionOverlay(data.session, data.platforms);
+            renderPlatformSettings(data.platforms);
             const speechRibbon = document.getElementById('liveSpeechSub');
             if (speechRibbon) {
               speechRibbon.textContent = data.session.isLive 
-                ? '🔴 Buồng phát sóng 3D Virtual Host đã ON AIR trực tiếp lên TikTok Live Studio!' 
-                : '⚪ Đã tạm dừng phát sóng trực tiếp.';
+                ? `🔴 ĐÃ PHÁT SÓNG ĐỒNG THỜI LÊN: ${targetPlatforms.join(', ').toUpperCase()}!` 
+                : '⚪ Đã tạm dừng toàn bộ luồng phát sóng đa nền tảng.';
             }
           }
         } catch (e) {

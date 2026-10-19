@@ -2543,15 +2543,22 @@
 
               <!-- Top badges overlay (Persistent across 2D & 3D) -->
               <div class="live-overlay-top">
-                <div class="live-stat-pill"><span class="dot-red"></span> LIVE 24/7</div>
-                <div class="live-stat-pill">👀 <span id="liveViewerCount">1,420</span></div>
-                <div class="live-stat-pill">❤️ <span id="liveLikesCount">28.4K</span></div>
+                <div class="live-stat-pill live-multi-channel-tag"><span class="dot-red pulse"></span> MULTI-STREAM 3 KÊNH</div>
+                <div class="live-stat-pill" title="Tổng mắt xem đồng thời từ TikTok, YouTube và Facebook">👀 <span id="liveViewerCount">2,950</span></div>
+                <div class="live-stat-pill">❤️ <span id="liveLikesCount">37.4K</span></div>
+              </div>
+
+              <!-- Channel Viewers Breakdown Overlay -->
+              <div class="live-channel-breakdown-row" id="liveChannelBreakdown">
+                <span class="chan-chip chip-tiktok" id="chipViewersTikTok">🎵 TikTok: 1.4K</span>
+                <span class="chan-chip chip-youtube" id="chipViewersYouTube">▶️ YouTube: 890</span>
+                <span class="chan-chip chip-facebook" id="chipViewersFacebook">👥 Facebook: 640</span>
               </div>
 
               <!-- Top Right: Realtime Revenue Counter -->
               <div class="live-gmv-badge">
-                <span class="gmv-label">DOANH SỐ PHIÊN LIVE</span>
-                <span class="gmv-val" id="liveGmvVal">18.500.000 ₫</span>
+                <span class="gmv-label">DOANH SỐ TỔNG 3 KÊNH</span>
+                <span class="gmv-val" id="liveGmvVal">24.800.000 ₫</span>
               </div>
 
               <!-- Bottom Left: Pinned Product Card (With 3D Badge) -->
@@ -2727,6 +2734,125 @@
 
             </div>
 
+            <!-- =========================================================
+                 MULTI-PLATFORM BROADCAST BRIDGE (TIKTOK - YOUTUBE - FACEBOOK)
+                 ========================================================= -->
+            <div class="live-control-group multi-platform-suite">
+              <div class="live-group-title" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>🌐 Liên Kết Đa Nền Tảng (Simultaneous Broadcast Bridge):</span>
+                <span class="badge-pill active">3 KÊNH KẾT NỐI</span>
+              </div>
+              <p class="panel-desc" style="margin-bottom: 10px;">Phát sóng cùng lúc 1 luồng video lên 3 nền tảng lớn nhất, tự động nhận diện bình luận và hỗ trợ chốt đơn đa kênh.</p>
+
+              <!-- Triple Platform Grid -->
+              <div class="platforms-bridge-grid">
+                
+                <!-- 1. TikTok Live Card -->
+                <div class="platform-bridge-card active" id="cardBridgeTikTok">
+                  <div class="platform-card-header">
+                    <div class="platform-brand">
+                      <span class="plat-icon">🎵</span>
+                      <div>
+                        <strong>TikTok Live</strong>
+                        <span class="plat-status-text" id="statusTikTok">🟢 Sẵn Sàng</span>
+                      </div>
+                    </div>
+                    <label class="studio-switch" title="Bật/Tắt phát lên TikTok">
+                      <input type="checkbox" id="chkEnableTikTok" checked>
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <div class="platform-inputs-box">
+                    <div class="input-mini-row">
+                      <span class="input-mini-label">RTMP:</span>
+                      <input type="text" id="rtmpUrlTikTok" class="studio-input mini-input" value="rtmp://live-push.tiktokv.com/live/">
+                    </div>
+                    <div class="input-mini-row">
+                      <span class="input-mini-label">Key:</span>
+                      <input type="password" id="streamKeyTikTok" class="studio-input mini-input" value="live_tk_vn_78491823901_sec">
+                    </div>
+                  </div>
+                  <div class="platform-features-tags">
+                    <span class="feat-tag">TikTok Shop</span>
+                    <span class="feat-tag">Ghim Giỏ Hàng</span>
+                    <span class="feat-tag">1080x1920 60fps</span>
+                  </div>
+                </div>
+
+                <!-- 2. YouTube Live Card -->
+                <div class="platform-bridge-card active" id="cardBridgeYouTube">
+                  <div class="platform-card-header">
+                    <div class="platform-brand">
+                      <span class="plat-icon" style="color: #ff0000;">▶️</span>
+                      <div>
+                        <strong>YouTube Live</strong>
+                        <span class="plat-status-text" id="statusYouTube">🟢 Sẵn Sàng</span>
+                      </div>
+                    </div>
+                    <label class="studio-switch" title="Bật/Tắt phát lên YouTube">
+                      <input type="checkbox" id="chkEnableYouTube" checked>
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <div class="platform-inputs-box">
+                    <div class="input-mini-row">
+                      <span class="input-mini-label">RTMP:</span>
+                      <input type="text" id="rtmpUrlYouTube" class="studio-input mini-input" value="rtmp://a.rtmp.youtube.com/live2">
+                    </div>
+                    <div class="input-mini-row">
+                      <span class="input-mini-label">Key:</span>
+                      <input type="password" id="streamKeyYouTube" class="studio-input mini-input" value="yt_live_vn_2026_a8f9c2d_hdr">
+                    </div>
+                  </div>
+                  <div class="platform-features-tags">
+                    <span class="feat-tag">Super Chat</span>
+                    <span class="feat-tag">Shorts Live</span>
+                    <span class="feat-tag">Lưu Video 4K</span>
+                  </div>
+                </div>
+
+                <!-- 3. Facebook Live Card -->
+                <div class="platform-bridge-card active" id="cardBridgeFacebook">
+                  <div class="platform-card-header">
+                    <div class="platform-brand">
+                      <span class="plat-icon" style="color: #1877f2;">👥</span>
+                      <div>
+                        <strong>Facebook Live</strong>
+                        <span class="plat-status-text" id="statusFacebook">🟢 Sẵn Sàng</span>
+                      </div>
+                    </div>
+                    <label class="studio-switch" title="Bật/Tắt phát lên Facebook">
+                      <input type="checkbox" id="chkEnableFacebook" checked>
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <div class="platform-inputs-box">
+                    <div class="input-mini-row">
+                      <span class="input-mini-label">RTMPS:</span>
+                      <input type="text" id="rtmpUrlFacebook" class="studio-input mini-input" value="rtmps://live-api-s.facebook.com:443/rtmp/">
+                    </div>
+                    <div class="input-mini-row">
+                      <span class="input-mini-label">Key:</span>
+                      <input type="password" id="streamKeyFacebook" class="studio-input mini-input" value="fb_live_sec_991823102_token">
+                    </div>
+                  </div>
+                  <div class="platform-features-tags">
+                    <span class="feat-tag">Chốt Đơn SĐT</span>
+                    <span class="feat-tag">Fanpage Sync</span>
+                    <span class="feat-tag">Bắn Messenger</span>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Quick Save Platforms Key Button -->
+              <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
+                <button class="studio-btn secondary-btn sm-btn" id="btnSavePlatformKeys">
+                  <span>💾 Lưu Cấu Hình Stream Key 3 Kênh</span>
+                </button>
+              </div>
+            </div>
+
             <!-- Standard Live Controls: Host Picker & Live Chat -->
             <div class="live-control-group">
               <div class="live-group-title">👤 Nhân Vật Ảo Đang Dẫn Chương Trình:</div>
@@ -2735,27 +2861,40 @@
               </div>
             </div>
 
-            <!-- Realtime Live Chat Feed & AI Response -->
+            <!-- Unified Multi-Platform Live Chat Feed -->
             <div class="live-control-group">
-              <div class="live-group-title">💬 Khung Chat Khán Giả Realtime & Trợ Lý Bán Hàng:</div>
+              <div class="live-group-title" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>💬 Khung Chat Hợp Nhất 3 Kênh (Unified Chat Feed):</span>
+                <span class="badge-mini-3d" style="background:#10b981; color:#fff;">TỰ ĐỘNG LỌC ĐƠN</span>
+              </div>
               <div class="live-comments-box" id="liveCommentsBox">
                 <!-- Injected via JS -->
               </div>
               <div style="display: flex; gap: 8px; margin-top: 8px;">
-                <input type="text" id="liveSimulateCommentInput" placeholder="Gõ thử bình luận của khán giả (VD: Cho mình xem mẫu giày từ góc nghiêng)..." class="studio-input" style="flex:1;">
+                <select id="liveCommentPlatformSelect" class="studio-select" style="width: 140px; font-weight: 700;">
+                  <option value="tiktok">🎵 TikTok Live</option>
+                  <option value="youtube">▶️ YouTube Live</option>
+                  <option value="facebook">👥 Facebook Live</option>
+                </select>
+                <input type="text" id="liveSimulateCommentInput" placeholder="Nhập comment thử nghiệm (VD: Chốt 1 áo thun 0988888888)..." class="studio-input" style="flex:1;">
                 <button class="studio-btn primary-btn sm-btn" id="btnLiveSendComment">⚡ Hỏi MC</button>
               </div>
             </div>
 
-            <!-- RTMP Broadcast Action -->
+            <!-- Master Multi-Stream Broadcast Action Dock -->
             <div class="live-control-group broadcast-dock-box">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <div>
-                  <div style="font-weight: 700; color: #fff; font-size: 13px;">Phát Sóng RTMP Lên TikTok / Shopee Live</div>
-                  <div style="font-size: 10px; color: var(--text-muted);">Độ phân giải: 1080x1920 60fps | 3D WebGL PBR Engine Hardware Accelerated</div>
+                  <div style="font-weight: 800; color: #fff; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                    <span>🚀 PHÁT SÓNG ĐỒNG THỜI (MASTER MULTI-STREAM)</span>
+                    <span class="badge-pill active" id="activeChannelsCountPill">3 KÊNH BẬT</span>
+                  </div>
+                  <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">
+                    Mã hóa phần cứng NVENC 60fps | Băng thông Master: 14.5 Mbps | Tự động cân bằng tải chống rớt khung hình (Zero Frame Drop)
+                  </div>
                 </div>
-                <button class="studio-btn success-btn" id="btnToggleBroadcast" style="padding: 10px 20px; font-weight: 800; font-size: 13px;">
-                  🚀 BẮT ĐẦU PHÁT SÓNG TRỰC TIẾP
+                <button class="studio-btn success-btn pulse-glow" id="btnToggleBroadcast" style="padding: 12px 24px; font-weight: 800; font-size: 13px;">
+                  🚀 BẮT ĐẦU PHÁT SÓNG TRỰC TIẾP 3 KÊNH
                 </button>
               </div>
             </div>
