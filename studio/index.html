@@ -106,9 +106,10 @@
       <aside class="studio-sidebar left-panel">
         <div class="panel-tabs">
           <button class="tab-btn active" data-target="panelMedia" title="Thư viện video">📁 Media</button>
-          <button class="tab-btn" data-target="panelAudio" title="Lồng nhạc nền & Âm thanh">🎵 Nhạc nền</button>
-          <button class="tab-btn" data-target="panelBranding" title="Chèn Logo & Quảng cáo">🏷️ Logo / Ads</button>
-          <button class="tab-btn" data-target="panelAIAgents" title="Trợ lý AI & Cắt tự động">🤖 AI Agent</button>
+          <button class="tab-btn" data-target="panelAudio" title="Lồng nhạc nền & Âm thanh">🎵 Nhạc</button>
+          <button class="tab-btn" data-target="panelBranding" title="Chèn Logo & Quảng cáo">🏷️ Logo</button>
+          <button class="tab-btn" data-target="panelAIAgents" title="Trợ lý AI & Cắt tự động">🤖 AI</button>
+          <button class="tab-btn" data-target="panelPublisher" title="Phân phối đa kênh & Dàn Clone">🌐 Đa Kênh</button>
         </div>
 
         <!-- TAB 1: Media Library -->
@@ -212,6 +213,27 @@
             <button class="studio-btn primary-btn full-btn" id="btnApplyAudioDub">
               <span>✔ Cập Nhật Nhạc Vào Timeline</span>
             </button>
+          </div>
+
+          <!-- Section C: AI Vietnamese Voiceover TTS -->
+          <div class="branding-card" style="margin-top: 12px;">
+            <h4>🗣️ Lồng Tiếng AI Tiếng Việt (TTS)</h4>
+            <p class="section-desc">Tự động đọc phụ đề bằng giọng đọc AI tiếng Việt theo nhịp video.</p>
+            <div class="form-row grid-2">
+              <div>
+                <label>Tốc độ đọc:</label>
+                <select id="ttsSpeedSelect" class="studio-select sm-select">
+                  <option value="0.9">0.9x (Chậm rãi)</option>
+                  <option value="1.0" selected>1.0x (Tự nhiên)</option>
+                  <option value="1.2">1.2x (Nhanh, TikTok)</option>
+                </select>
+              </div>
+              <div style="display: flex; align-items: flex-end;">
+                <button class="studio-btn sm-btn primary-btn full-btn" id="btnPlayTTSVoiceover">
+                  <span>🔊 Đọc Thử Phụ Đề</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -332,6 +354,154 @@
             <p class="ag-desc">Tối ưu hóa caption và bộ hashtag leo top thịnh hành TikTok.</p>
             <button class="studio-btn sm-btn secondary-btn" id="btnGenerateSeo">Tạo Caption & Hashtag</button>
             <div class="seo-results-box hidden" id="seoResultsBox"></div>
+          </div>
+        </div>
+
+        <!-- TAB 5: Multi-Platform Publisher & Clone Engagement Engine -->
+        <div class="tab-content" id="panelPublisher">
+          <div class="panel-section-header">
+            <h3>🌐 Phân Phối Đa Kênh & Clone</h3>
+            <span class="badge-status-online" id="cloneStatusBadge">🟢 5 Clone Live</span>
+          </div>
+
+          <!-- Section 1: Kênh Phân Phối -->
+          <div class="branding-card">
+            <h4>1. Chọn Kênh / Profile Đăng</h4>
+            
+            <div class="form-row">
+              <label>Kênh chỉ định:</label>
+              <select id="publisherAccountSelect" class="studio-select full-select">
+                <option value="tt-main" data-platform="TikTok">🎵 TikTok: Kênh Chính @nhacnghedixe</option>
+                <option value="tt-clone1" data-platform="TikTok">🎵 TikTok Vệ Tinh 1: @vinahouse_club</option>
+                <option value="tt-clone2" data-platform="TikTok">🎵 TikTok Vệ Tinh 2: @nhacbay_phong</option>
+                <option value="yt-shorts" data-platform="YouTube">▶️ YouTube Shorts: Kênh Âm Nhạc Official</option>
+                <option value="fb-reels" data-platform="Facebook">👥 Facebook: Fanpage Reels @nhacnghedixe</option>
+                <option value="all-blast" data-platform="All">⚡ ĐĂNG TẤT CẢ (Multi-Channel Blast)</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <label>Tiêu đề & Caption:</label>
+              <textarea id="pubCaptionInput" class="studio-textarea" rows="3" placeholder="Nhập caption cho bài đăng..."></textarea>
+            </div>
+
+            <div class="form-row">
+              <label>Hashtags leo xu hướng:</label>
+              <input type="text" id="pubHashtagsInput" class="studio-input" value="#xuhuong #fyp #nhacnghedixe #vinahouse #trending">
+            </div>
+
+            <div class="form-row grid-2">
+              <div>
+                <label>Thời điểm đăng:</label>
+                <select id="pubScheduleSelect" class="studio-select sm-select">
+                  <option value="now">⚡ Đăng ngay lập tức</option>
+                  <option value="prime-noon">⏰ Khung giờ trưa (11:30)</option>
+                  <option value="prime-evening">⏰ Khung giờ tối (19:30)</option>
+                </select>
+              </div>
+              <div>
+                <label>Bản quyền / Duet:</label>
+                <select id="pubDuetSelect" class="studio-select sm-select">
+                  <option value="allow">Cho phép Duet / Stitch</option>
+                  <option value="disable">Tắt Duet</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="btn-group-row" style="margin-top: 10px;">
+              <button class="studio-btn primary-btn full-btn" id="btnPublishPost">
+                <span>🚀 Đăng Lên Kênh Chỉ Định</span>
+              </button>
+            </div>
+            <div id="pubStatusBox" class="pub-status-box hidden"></div>
+          </div>
+
+          <!-- Section 2: Dàn Clone Chạy Tương Tác Tự Động -->
+          <div class="branding-card">
+            <h4>2. Dàn Clone Chạy Tương Tác (Seeding)</h4>
+            <p class="section-desc">Kích hoạt dàn clone xem video, giữ chân thời lượng cao (High Retention), thả tim, chia sẻ và seeding bình luận tạo bão thảo luận.</p>
+
+            <div class="form-row grid-2">
+              <div>
+                <label>Số lượng clone:</label>
+                <select id="cloneCountSelect" class="studio-select sm-select">
+                  <option value="3">3 Profile Clone</option>
+                  <option value="5" selected>5 Profile Clone</option>
+                  <option value="10">10 Profile Clone</option>
+                </select>
+              </div>
+              <div>
+                <label>Giữ chân người xem:</label>
+                <select id="cloneWatchTimeSelect" class="studio-select sm-select">
+                  <option value="85" selected>85% Video (Khuyên dùng)</option>
+                  <option value="100">100% Video (Full Loop)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Interaction Checkboxes -->
+            <div class="checkbox-group">
+              <label class="cb-label">
+                <input type="checkbox" id="cbCloneLike" checked>
+                <span>❤️ Thả tim tự nhiên (Sau 50% thời lượng)</span>
+              </label>
+              <label class="cb-label">
+                <input type="checkbox" id="cbCloneSave" checked>
+                <span>⭐ Lưu vào mục Yêu thích (Trọng số FYP cao nhất)</span>
+              </label>
+              <label class="cb-label">
+                <input type="checkbox" id="cbCloneShare" checked>
+                <span>🔄 Chia sẻ & Copy Link (Kéo Reach thuật toán)</span>
+              </label>
+            </div>
+
+            <!-- Seeding Comments -->
+            <div class="form-row" style="margin-top: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <label style="margin: 0;">💬 Seeding Bình Luận Tranh Luận:</label>
+                <button class="studio-btn sm-btn secondary-btn" id="btnGenSeedingComments">✨ AI Viết Bình Luận</button>
+              </div>
+              <textarea id="seedingCommentsInput" class="studio-textarea" rows="3" placeholder="Mỗi dòng là 1 comment của từng clone..."></textarea>
+            </div>
+
+            <button class="studio-btn success-btn full-btn" id="btnLaunchCloneCampaign" style="margin-top: 10px;">
+              <span>⚡ Khởi Chạy Kéo Tương Tác Clone</span>
+            </button>
+
+            <!-- Campaign Live Terminal -->
+            <div id="campaignTerminal" class="campaign-terminal hidden">
+              <div class="terminal-header">
+                <span>🟢 TIẾN TRÌNH CLONE TƯƠNG TÁC REALTIME</span>
+                <span id="terminalProgressBadge">0%</span>
+              </div>
+              <div class="terminal-body" id="terminalLogList"></div>
+            </div>
+          </div>
+
+          <!-- Section 3: Thêm Tài Khoản Clone Mới -->
+          <div class="branding-card">
+            <h4>3. Nạp Profile Clone / Proxy Mới</h4>
+            <div class="form-row grid-2">
+              <div>
+                <label>Nền tảng:</label>
+                <select id="newClonePlatform" class="studio-select sm-select">
+                  <option value="TikTok">TikTok</option>
+                  <option value="YouTube">YouTube</option>
+                  <option value="Facebook">Facebook</option>
+                </select>
+              </div>
+              <div>
+                <label>Username / Kênh:</label>
+                <input type="text" id="newCloneUsername" class="studio-input sm-input" placeholder="@clone_pro">
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Proxy (IP:Port / SOCKS5):</label>
+              <input type="text" id="newCloneProxy" class="studio-input" placeholder="103.142.26.11:8080 (VN Residential)">
+            </div>
+            <button class="studio-btn secondary-btn full-btn" id="btnAddCloneProfile">
+              <span>➕ Thêm Profile Vào Dàn Nuôi</span>
+            </button>
           </div>
         </div>
       </aside>
@@ -506,6 +676,9 @@
             <div class="rewrite-actions">
               <button class="studio-btn success-btn full-btn" id="btnApplyToTimeline">
                 <span>⚡ Chuyển Thành Phụ Đề Khớp Timeline</span>
+              </button>
+              <button class="studio-btn sm-btn primary-btn" id="btnSpeakHumanizedText" title="Phát âm toàn bộ bản dịch bằng giọng đọc AI">
+                <span>🔊 Đọc Bản Dịch</span>
               </button>
               <button class="studio-btn sm-btn secondary-btn" id="btnCopyCleanText">📋 Sao chép</button>
             </div>

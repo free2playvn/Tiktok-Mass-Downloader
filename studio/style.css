@@ -386,15 +386,22 @@ body.theme-windows .window-titlebar {
   display: flex;
   background: var(--bg-input);
   border-bottom: 1px solid var(--border-subtle);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.panel-tabs::-webkit-scrollbar {
+  display: none;
 }
 .tab-btn {
   flex: 1;
+  text-align: center;
+  white-space: nowrap;
   background: transparent;
   border: none;
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  padding: 12px;
+  padding: 11px 3px;
   cursor: pointer;
   border-bottom: 2px solid transparent;
   transition: all var(--transition-fast);
@@ -1655,4 +1662,103 @@ body.theme-windows .window-titlebar {
   font-size: 10px;
   word-break: break-all;
 }
+
+/* ===================================================================
+   14. MULTI-PLATFORM PUBLISHER & CLONE CAMPAIGN STYLES
+   =================================================================== */
+.badge-status-online {
+  font-size: 10px;
+  font-weight: 700;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+
+.cb-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.cb-label input[type="checkbox"] {
+  accent-color: var(--accent-purple);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+.pub-status-box {
+  margin-top: 8px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 11px;
+  color: #34d399;
+}
+.pub-status-box a {
+  color: #60a5fa;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.campaign-terminal {
+  margin-top: 10px;
+  background: #090d16;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  font-family: var(--font-mono);
+}
+
+.terminal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #0f172a;
+  padding: 6px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #38bdf8;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.terminal-body {
+  max-height: 160px;
+  overflow-y: auto;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.terminal-log-row {
+  font-size: 10px;
+  line-height: 1.4;
+  color: #94a3b8;
+}
+.terminal-log-row.stealth_launch { color: #c084fc; }
+.terminal-log-row.watch_video { color: #38bdf8; }
+.terminal-log-row.like { color: #f43f5e; }
+.terminal-log-row.comment { color: #fbbf24; }
+.terminal-log-row.save { color: #34d399; }
+.terminal-log-row.share { color: #60a5fa; }
+.terminal-log-row.success { color: #4ade80; font-weight: 700; }
+
 

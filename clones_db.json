@@ -1,0 +1,57 @@
+[
+  {
+    "id": "tt_clone_01",
+    "platform": "TikTok",
+    "username": "@vinahouse_club",
+    "name": "VinaHouse Club Vệ Tinh 1",
+    "status": "Online",
+    "proxy": "103.142.26.11:8080 (VN Residential)",
+    "fingerprint": "Chrome 128 / Windows 11 / Canvas Hash 0x9f2a",
+    "lastActive": "Vừa xong",
+    "trustScore": 98
+  },
+  {
+    "id": "tt_clone_02",
+    "platform": "TikTok",
+    "username": "@nhacbay_phong",
+    "name": "Nhạc Bay Phòng Vệ Tinh 2",
+    "status": "Online",
+    "proxy": "118.69.182.45:8080 (VN 4G Mobile)",
+    "fingerprint": "Safari 17.5 / macOS Sonoma / Canvas Hash 0x8a1b",
+    "lastActive": "2 phút trước",
+    "trustScore": 95
+  },
+  {
+    "id": "yt_clone_01",
+    "platform": "YouTube",
+    "username": "Shorts_Music_Pro",
+    "name": "YouTube Shorts Vệ Tinh 1",
+    "status": "Online",
+    "proxy": "14.225.254.10:8080 (VN Viettel)",
+    "fingerprint": "Edge 128 / Windows 11 / Canvas Hash 0x7c4e",
+    "lastActive": "5 phút trước",
+    "trustScore": 99
+  },
+  {
+    "id": "fb_clone_01",
+    "platform": "Facebook",
+    "username": "reels_nhacvui",
+    "name": "Facebook Reels Clone 1",
+    "status": "Online",
+    "proxy": "42.115.18.99:8080 (VN FPT)",
+    "fingerprint": "Chrome 128 / Android 14 / Mobile Fingerprint",
+    "lastActive": "1 phút trước",
+    "trustScore": 94
+  },
+  {
+    "id": "fb_clone_02",
+    "platform": "Facebook",
+    "username": "reels_amnhacviet",
+    "name": "Facebook Reels Clone 2",
+    "status": "Online",
+    "proxy": "113.161.72.33:8080 (VN VNPT)",
+    "fingerprint": "Chrome 128 / Windows 10 / Canvas Hash 0x3d1a",
+    "lastActive": "10 phút trước",
+    "trustScore": 96
+  }
+]

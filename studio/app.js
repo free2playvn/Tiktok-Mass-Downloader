@@ -134,6 +134,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setupAudioDubbing();
     setupBrandingAndAds();
     setupAIAgentsSuite();
+    setupPublisherAndClones();
+    setupTTSVoiceover();
     setupVideoCutting();
     setupModals();
     loadActiveVideo();
@@ -1162,6 +1164,239 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Vui lòng bấm chọn một đoạn phụ đề hoặc clip để xóa.');
       }
     });
+  }
+
+  /* ===================================================================
+     12. MULTI-PLATFORM PUBLISHER & CLONE ENGAGEMENT ENGINE
+     =================================================================== */
+  function setupPublisherAndClones() {
+    const publisherAccountSelect = document.getElementById('publisherAccountSelect');
+    const pubCaptionInput = document.getElementById('pubCaptionInput');
+    const pubHashtagsInput = document.getElementById('pubHashtagsInput');
+    const pubScheduleSelect = document.getElementById('pubScheduleSelect');
+    const btnPublishPost = document.getElementById('btnPublishPost');
+    const pubStatusBox = document.getElementById('pubStatusBox');
+
+    const cloneCountSelect = document.getElementById('cloneCountSelect');
+    const cloneWatchTimeSelect = document.getElementById('cloneWatchTimeSelect');
+    const cbCloneLike = document.getElementById('cbCloneLike');
+    const cbCloneSave = document.getElementById('cbCloneSave');
+    const cbCloneShare = document.getElementById('cbCloneShare');
+    const btnGenSeedingComments = document.getElementById('btnGenSeedingComments');
+    const seedingCommentsInput = document.getElementById('seedingCommentsInput');
+    const btnLaunchCloneCampaign = document.getElementById('btnLaunchCloneCampaign');
+    const campaignTerminal = document.getElementById('campaignTerminal');
+    const terminalProgressBadge = document.getElementById('terminalProgressBadge');
+    const terminalLogList = document.getElementById('terminalLogList');
+
+    const newClonePlatform = document.getElementById('newClonePlatform');
+    const newCloneUsername = document.getElementById('newCloneUsername');
+    const newCloneProxy = document.getElementById('newCloneProxy');
+    const btnAddCloneProfile = document.getElementById('btnAddCloneProfile');
+    const cloneStatusBadge = document.getElementById('cloneStatusBadge');
+
+    // Pre-populate caption from current title
+    if (pubCaptionInput && !pubCaptionInput.value) {
+      pubCaptionInput.value = `${state.currentVideoTitle} 🔥 Anh em nghe thử xem có cuốn không nhé!`;
+    }
+
+    // 1. Publish to Selected Channel
+    if (btnPublishPost) {
+      btnPublishPost.addEventListener('click', async () => {
+        const selectedOption = publisherAccountSelect.options[publisherAccountSelect.selectedIndex];
+        const platform = selectedOption.dataset.platform || 'TikTok';
+        const accountName = selectedOption.textContent.trim();
+        const caption = pubCaptionInput.value.trim();
+        const hashtags = pubHashtagsInput.value.trim();
+        const scheduleTime = pubScheduleSelect.options[pubScheduleSelect.selectedIndex].textContent;
+
+        btnPublishPost.disabled = true;
+        btnPublishPost.innerHTML = `<span>⏳ Đang xử lý đăng lên ${platform}...</span>`;
+
+        try {
+          const res = await fetch('/api/publish', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              videoSrc: state.currentVideoSrc,
+              platform,
+              accountId: accountName,
+              title: state.currentVideoTitle,
+              caption,
+              hashtags,
+              scheduleTime
+            })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            pubStatusBox.classList.remove('hidden');
+            pubStatusBox.innerHTML = `
+              <strong>✅ ${data.message}</strong><br>
+              <small>Thời gian: ${data.log.scheduleTime}</small><br>
+              <small>Link video: <a href="${data.log.postUrl}" target="_blank">${data.log.postUrl}</a></small>
+            `;
+          } else {
+            alert('Lỗi đăng video: ' + (data.message || 'Không rõ nguyên nhân'));
+          }
+        } catch (err) {
+          pubStatusBox.classList.remove('hidden');
+          pubStatusBox.innerHTML = `<strong>✅ Mô phỏng đăng thành công lên ${accountName}!</strong>`;
+        } finally {
+          btnPublishPost.disabled = false;
+          btnPublishPost.innerHTML = `<span>🚀 Đăng Lên Kênh Chỉ Định</span>`;
+        }
+      });
+    }
+
+    // 2. Generate AI Seeding Comments
+    if (btnGenSeedingComments) {
+      btnGenSeedingComments.addEventListener('click', () => {
+        const boosters = state.aiAgents.generateEngagementBoosters(state.currentVideoTitle);
+        seedingCommentsInput.value = boosters.pinnedComments.map(c => c.replace(/^📌\s*/, '')).join('\n');
+      });
+    }
+
+    // 3. Launch Clone Engagement Campaign
+    if (btnLaunchCloneCampaign) {
+      btnLaunchCloneCampaign.addEventListener('click', async () => {
+        const cloneCount = parseInt(cloneCountSelect.value, 10);
+        const watchTimePercent = parseInt(cloneWatchTimeSelect.value, 10);
+        const enableLike = cbCloneLike.checked;
+        const enableSave = cbCloneSave.checked;
+        const enableShare = cbCloneShare.checked;
+        const comments = seedingCommentsInput.value.split('\n').map(s => s.trim()).filter(Boolean);
+
+        btnLaunchCloneCampaign.disabled = true;
+        btnLaunchCloneCampaign.innerHTML = `<span>⏳ Dàn Clone Đang Chạy Tương Tác...</span>`;
+        campaignTerminal.classList.remove('hidden');
+        terminalLogList.innerHTML = '';
+        terminalProgressBadge.textContent = '0%';
+
+        try {
+          const res = await fetch('/api/clones/campaign', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              videoTitle: state.currentVideoTitle,
+              videoSrc: state.currentVideoSrc,
+              cloneCount,
+              watchTimePercent,
+              enableLike,
+              enableSave,
+              enableShare,
+              comments
+            })
+          });
+          const data = await res.json();
+          const logs = data.logs || [];
+
+          let currentStep = 0;
+          const totalSteps = logs.length;
+
+          function playNextLog() {
+            if (currentStep >= totalSteps) {
+              terminalProgressBadge.textContent = '100% HOÀN TẤT';
+              btnLaunchCloneCampaign.disabled = false;
+              btnLaunchCloneCampaign.innerHTML = `<span>⚡ Khởi Chạy Kéo Tương Tác Clone</span>`;
+              return;
+            }
+
+            const log = logs[currentStep];
+            currentStep++;
+            const row = document.createElement('div');
+            row.className = `terminal-log-row ${log.type}`;
+            row.textContent = `[${log.time}] ${log.msg}`;
+            terminalLogList.appendChild(row);
+            terminalLogList.scrollTop = terminalLogList.scrollHeight;
+
+            const percent = Math.min(100, Math.round((currentStep / totalSteps) * 100));
+            terminalProgressBadge.textContent = `${percent}%`;
+
+            setTimeout(playNextLog, 300);
+          }
+
+          playNextLog();
+        } catch (err) {
+          terminalProgressBadge.textContent = 'LỖI MẠNG';
+          btnLaunchCloneCampaign.disabled = false;
+          btnLaunchCloneCampaign.innerHTML = `<span>⚡ Khởi Chạy Kéo Tương Tác Clone</span>`;
+        }
+      });
+    }
+
+    // 4. Add New Clone Profile
+    if (btnAddCloneProfile) {
+      btnAddCloneProfile.addEventListener('click', async () => {
+        const platform = newClonePlatform.value;
+        const username = newCloneUsername.value.trim();
+        const proxy = newCloneProxy.value.trim();
+
+        if (!username) {
+          alert('Vui lòng nhập Username hoặc tên kênh của clone!');
+          return;
+        }
+
+        try {
+          const res = await fetch('/api/clones', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              platform,
+              username,
+              name: `${platform} Clone (${username})`,
+              status: 'Online',
+              proxy: proxy || '103.142.26.11:8080 (VN Residential)',
+              fingerprint: 'Custom Stealth Profile 0x' + Math.random().toString(16).slice(2, 6)
+            })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            alert(`Đã thêm thành công Profile [${username}] vào dàn clone nuôi tương tác!`);
+            newCloneUsername.value = '';
+            newCloneProxy.value = '';
+            if (cloneStatusBadge) cloneStatusBadge.textContent = '🟢 Đã Cập Nhật';
+          }
+        } catch (e) {
+          alert('Lỗi thêm clone profile: ' + e.message);
+        }
+      });
+    }
+  }
+
+  /* ===================================================================
+     13. TEXT-TO-SPEECH (TTS) VOICEOVER ENGINE
+     =================================================================== */
+  function setupTTSVoiceover() {
+    const btnPlayTTSVoiceover = document.getElementById('btnPlayTTSVoiceover');
+    const ttsSpeedSelect = document.getElementById('ttsSpeedSelect');
+    const btnSpeakHumanizedText = document.getElementById('btnSpeakHumanizedText');
+
+    if (btnPlayTTSVoiceover) {
+      btnPlayTTSVoiceover.addEventListener('click', () => {
+        let textToSpeak = 'Chào mừng bạn đến với TMD Studio Pro!';
+        if (state.selectedCueId) {
+          const cue = state.subtitleCues.find(c => c.id === state.selectedCueId);
+          if (cue) textToSpeak = cue.text;
+        } else if (state.subtitleCues.length > 0) {
+          const nearCue = state.subtitleCues.find(c => state.currentTime >= c.startTime && state.currentTime <= c.endTime) || state.subtitleCues[0];
+          textToSpeak = nearCue.text;
+        }
+
+        const rate = parseFloat(ttsSpeedSelect ? ttsSpeedSelect.value : 1.0);
+        state.aiAgents.speakVietnamese(textToSpeak, { rate });
+      });
+    }
+
+    if (btnSpeakHumanizedText) {
+      btnSpeakHumanizedText.addEventListener('click', () => {
+        const cleanText = cleanRewriteDisplay.innerText.trim();
+        if (!cleanText || cleanText.includes('Nhấn nút "Làm Mượt')) {
+          alert('Vui lòng bấm nút "✨ Làm Mượt & Việt Hóa" trước để có bản dịch hoàn chỉnh!');
+          return;
+        }
+        state.aiAgents.speakVietnamese(cleanText, { rate: 1.0 });
+      });
+    }
   }
 
   // Start app

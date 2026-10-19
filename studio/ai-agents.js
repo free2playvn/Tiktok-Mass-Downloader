@@ -1,10 +1,12 @@
 /**
  * TMD Studio Pro - Creative AI Agents Suite
- * Inspired by modern AI video editing workflows and vietnamese-humanizer:
- * 1. HookCraftAgent: Tạo câu mở đầu giật tít 3 giây đầu cho video TikTok/Reels.
+ * 1. HookCraftAgent: Tạo 5 câu mở đầu giật tít 3 giây đầu giữ chân người xem.
  * 2. SmartHighlightAgent: Phân tích và gợi ý các mốc thời gian cắt video ngắn (15s, 30s, 60s).
  * 3. VoiceoverScriptAgent: Soạn kịch bản lồng tiếng tiếng Việt tự nhiên chuẩn văn phong nói.
  * 4. SeoTrendAgent: Tạo tiêu đề giật tít, caption và hashtag leo xu hướng #xuhuong.
+ * 5. MultiPlatformPublisherAgent: Quản lý đa kênh (TikTok, YouTube Shorts, Facebook Reels) & clone distribution.
+ * 6. OrganicEngagementAgent: Tăng tương tác thật tự nhiên, comment ghim kích thích tranh luận, kịch bản kéo view.
+ * 7. TextToSpeechAgent: Bộ phát âm lồng tiếng AI tiếng Việt thời gian thực (Web Speech API).
  */
 
 class CreativeAIAgents {
@@ -17,11 +19,13 @@ class CreativeAIAgents {
       { style: 'Gợi mở cảm xúc', template: (topic) => `Bản nhạc này sinh ra là dành riêng cho những ai đang ${topic}...` }
     ];
 
-    this.musicVibes = [
-      { name: 'EDM Viet Mix Sôi Động', bpm: 135, style: 'Bass căng, thích hợp video nhảy, xe độ, biến hình' },
-      { name: 'Lofi Chill Buồn', bpm: 85, style: 'Êm dịu, thích hợp tâm trạng, đêm muộn, ngắm phố' },
-      { name: 'Remix Hot Trend TikTok', bpm: 128, style: 'Giai điệu bắt tai, dễ kéo view' },
-      { name: 'Acoustic Mộc Mạc', bpm: 90, style: 'Kể chuyện, chia sẻ kiến thức, vlog đời thường' }
+    // Multi-Account & Multi-Platform Profiles Preset
+    this.channelProfiles = [
+      { id: 'tt-main', platform: 'TikTok', name: 'Kênh Chính @nhacnghedixe', type: 'Main Channel', status: 'Sẵn sàng' },
+      { id: 'tt-clone1', platform: 'TikTok', name: 'Kênh Vệ Tinh 1 @vinahouse_club', type: 'Clone / Satellite', status: 'Sẵn sàng' },
+      { id: 'tt-clone2', platform: 'TikTok', name: 'Kênh Vệ Tinh 2 @nhacbay_phong', type: 'Clone / Satellite', status: 'Sẵn sàng' },
+      { id: 'yt-shorts', platform: 'YouTube', name: 'Kênh YouTube Shorts Official', type: 'Shorts Channel', status: 'Sẵn sàng' },
+      { id: 'fb-reels', platform: 'Facebook', name: 'Fanpage Nhạc Nghe Đi Xe Reels', type: 'Page Reels', status: 'Sẵn sàng' }
     ];
   }
 
@@ -110,6 +114,92 @@ class CreativeAIAgents {
       hashtags: [customTag, ...baseHashtags].join(' '),
       idealPostingTime: '11:30 - 13:00 (Trưa) hoặc 19:30 - 21:30 (Tối)'
     };
+  }
+
+  /**
+   * Agent 5: MultiPlatformPublisherAgent - Tối ưu hóa phân phối cho từng nền tảng
+   */
+  formatPlatformPayload(platform, title, caption, hashtags) {
+    const cleanTitle = (title || 'Video Mới').replace(/\[\d+\]/g, '').trim();
+    
+    if (platform === 'TikTok') {
+      return {
+        platform: 'TikTok',
+        text: `${cleanTitle} 🔥 ${hashtags}`,
+        maxChars: 2200,
+        features: ['Sound Sync', 'Duet Allowed', 'Stitch Allowed'],
+        recommendedAspect: '9:16'
+      };
+    } else if (platform === 'YouTube') {
+      return {
+        platform: 'YouTube Shorts',
+        title: `${cleanTitle.slice(0, 90)} #Shorts`,
+        description: `${cleanTitle}\n\nĐăng ký kênh để thưởng thức thêm nhiều bản nhạc chất lượng cao!\n\n${hashtags}\n#Shorts #YouTubeShorts`,
+        maxChars: 5000,
+        features: ['Chapters Supported', 'High Bitrate 1080p60'],
+        recommendedAspect: '9:16 hoặc 16:9'
+      };
+    } else {
+      // Facebook Reels
+      return {
+        platform: 'Facebook Reels',
+        text: `${cleanTitle}\n\nBấm chia sẻ về trang cá nhân để nghe lại lúc rảnh nhé cả nhà! ❤️\n\n${hashtags}`,
+        maxChars: 2000,
+        features: ['Feed & Reels Cross-Post', 'Page Distribution'],
+        recommendedAspect: '9:16 hoặc 4:5'
+      };
+    }
+  }
+
+  /**
+   * Agent 6: OrganicEngagementAgent - Kịch bản tương tác thật, tăng reach tự nhiên
+   */
+  generateEngagementBoosters(title) {
+    const clean = (title || 'bản nhạc này').replace(/#\w+/g, '').replace(/\[\d+\]/g, '').trim();
+    return {
+      pinnedComments: [
+        `📌 Câu hỏi thảo luận: Anh em chấm ${clean} này được mấy điểm trên thang điểm 10? Comment thật lòng bên dưới nhé! 👇`,
+        `📌 Đố anh em nhận ra bài hát gốc ở giây thứ 15 là bài gì? Ai trả lời đúng đầu tiên mình ghim comment luôn! 🏆`,
+        `📌 Ai nghe xong bài này mà thấy người lâng lâng thì để lại 1 cánh tay điểm danh nào! 🙋‍♂️`
+      ],
+      replyTemplates: [
+        'Cảm ơn bạn nhiều nha! Chúc bạn một ngày tràn đầy năng lượng ❤️',
+        'Quá chuẩn luôn bạn ơi! Bài này mở trên xe là hết nước chấm!',
+        'Nghe với tai nghe hoặc loa sub bao phê luôn bác ơi! 🎧'
+      ],
+      viralAdvice: 'Thuật toán TikTok và Reels đánh giá cao thời lượng xem hết (Completion Rate) và số lượt Chia sẻ (Shares). Hãy luôn đặt câu hỏi mở ở 3 giây cuối video để kích thích bình luận.'
+    };
+  }
+
+  /**
+   * Agent 7: TextToSpeechAgent - Lồng tiếng AI tiếng Việt bằng Web Speech API
+   */
+  speakVietnamese(text, options = {}) {
+    if (!('speechSynthesis' in window)) {
+      alert('Trình duyệt của bạn chưa hỗ trợ Speech Synthesis API.');
+      return;
+    }
+
+    window.speechSynthesis.cancel(); // Stop any ongoing speech
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'vi-VN';
+    utterance.rate = options.rate || 1.0;
+    utterance.pitch = options.pitch || 1.0;
+
+    // Find Vietnamese voice if available in system
+    const voices = window.speechSynthesis.getVoices();
+    const viVoice = voices.find(v => v.lang.includes('vi') || v.lang.includes('VN'));
+    if (viVoice) utterance.voice = viVoice;
+
+    window.speechSynthesis.speak(utterance);
+    return utterance;
+  }
+
+  stopSpeech() {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
   }
 }
 

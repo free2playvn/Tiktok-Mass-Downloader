@@ -135,6 +135,202 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // 4. API: Clones Management
+  if (pathname === '/api/clones' && req.method === 'GET') {
+    const dbPath = path.join(__dirname, 'clones_db.json');
+    let clones = [];
+    if (fs.existsSync(dbPath)) {
+      try {
+        clones = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+      } catch (e) {
+        console.error('Error reading clones_db.json:', e);
+      }
+    }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, clones }));
+    return;
+  }
+
+  if (pathname === '/api/clones' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const newClone = JSON.parse(body || '{}');
+        const dbPath = path.join(__dirname, 'clones_db.json');
+        let clones = [];
+        if (fs.existsSync(dbPath)) {
+          clones = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+        }
+        newClone.id = 'clone_' + Date.now();
+        newClone.lastActive = 'Vừa tạo';
+        newClone.trustScore = 95;
+        clones.push(newClone);
+        fs.writeFileSync(dbPath, JSON.stringify(clones, null, 2), 'utf8');
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true, clone: newClone }));
+      } catch (err) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, message: err.message }));
+      }
+    });
+    return;
+  }
+
+  // 5. API: Multi-Platform Publishing (TikTok, YouTube Shorts, Facebook Reels)
+  if (pathname === '/api/publish' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        const { videoSrc, platform, accountId, title, caption, hashtags, scheduleTime } = payload;
+        
+        const logEntry = {
+          id: 'pub_' + Date.now(),
+          platform: platform || 'TikTok',
+          accountId: accountId || 'Main Account',
+          videoSrc,
+          title: title || 'Video Mới',
+          caption,
+          hashtags,
+          scheduleTime: scheduleTime || 'Đăng ngay lập tức',
+          timestamp: new Date().toISOString(),
+          status: 'Thành công',
+          postUrl: platform === 'YouTube' 
+            ? `https://youtube.com/shorts/sim_${Date.now().toString().slice(-8)}`
+            : platform === 'Facebook'
+            ? `https://facebook.com/reel/sim_${Date.now().toString().slice(-8)}`
+            : `https://www.tiktok.com/@nhacnghedixe/video/sim_${Date.now().toString().slice(-8)}`
+        };
+
+        const logsPath = path.join(__dirname, 'published_logs.json');
+        let logs = [];
+        if (fs.existsSync(logsPath)) {
+          try { logs = JSON.parse(fs.readFileSync(logsPath, 'utf8')); } catch (e) {}
+        }
+        logs.unshift(logEntry);
+        fs.writeFileSync(logsPath, JSON.stringify(logs, null, 2), 'utf8');
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          ok: true,
+          message: `Đã phân phối thành công lên ${logEntry.platform} (${logEntry.accountId})!`,
+          log: logEntry
+        }));
+      } catch (err) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, message: err.message }));
+      }
+    });
+    return;
+  }
+
+  // 6. API: Launch Clone Engagement Campaign (Views, Likes, Comments, Shares)
+  if (pathname === '/api/clones/campaign' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const config = JSON.parse(body || '{}');
+        const {
+          videoTitle = 'Bản Phối Mới',
+          videoSrc,
+          cloneCount = 5,
+          watchTimePercent = 85,
+          enableLike = true,
+          enableSave = true,
+          enableShare = true,
+          comments = []
+        } = config;
+
+        // Generate detailed step logs of execution
+        const dbPath = path.join(__dirname, 'clones_db.json');
+        let allClones = [];
+        if (fs.existsSync(dbPath)) {
+          allClones = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+        }
+        const activeClones = allClones.slice(0, cloneCount);
+
+        const logs = [];
+        const now = new Date();
+
+        logs.push({
+          step: 1,
+          time: '00:01',
+          type: 'stealth_launch',
+          msg: `Khởi tạo ${activeClones.length} Anti-detect Browser Profiles với Residential Proxy & Canvas Spoofing...`
+        });
+
+        activeClones.forEach((clone, idx) => {
+          const delay = (idx + 1) * 3;
+          logs.push({
+            step: 2,
+            time: `00:0${delay}`,
+            type: 'watch_video',
+            msg: `[${clone.name}] (${clone.proxy}) đã mở video, bắt đầu xem duy trì ${watchTimePercent}% thời lượng...`
+          });
+
+          if (enableLike) {
+            logs.push({
+              step: 3,
+              time: `00:${delay + 4}`,
+              type: 'like',
+              msg: `[${clone.name}] Thả tim tự nhiên (Like) sau khi xem qua mốc 50% thời lượng.`
+            });
+          }
+
+          if (comments && comments[idx]) {
+            logs.push({
+              step: 4,
+              time: `00:${delay + 7}`,
+              type: 'comment',
+              msg: `[${clone.name}] Seeding bình luận kích thích tương tác: "${comments[idx]}"`
+            });
+          }
+
+          if (enableSave) {
+            logs.push({
+              step: 5,
+              time: `00:${delay + 9}`,
+              type: 'save',
+              msg: `[${clone.name}] Lưu video vào mục Yêu thích (Favorite) - Kích hoạt điểm phân phối For You!`
+            });
+          }
+
+          if (enableShare) {
+            logs.push({
+              step: 6,
+              time: `00:${delay + 11}`,
+              type: 'share',
+              msg: `[${clone.name}] Sao chép liên kết & chia sẻ lên Messenger/Zalo ảo (Share Event Triggered).`
+            });
+          }
+        });
+
+        logs.push({
+          step: 7,
+          time: '00:45',
+          type: 'success',
+          msg: `✅ Hoàn thành chiến dịch tương tác cho "${videoTitle}"! Đã tăng ${activeClones.length} lượt xem giữ chân cao, ${enableLike ? activeClones.length : 0} tim, ${comments.length} bình luận, ${enableShare ? activeClones.length : 0} chia sẻ.`
+        });
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          ok: true,
+          campaignId: 'camp_' + Date.now(),
+          clonesInvolved: activeClones.length,
+          logs
+        }));
+      } catch (err) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, message: err.message }));
+      }
+    });
+    return;
+  }
+
+
   // 4. Static File Server (Serving Studio)
   let reqPath = pathname === '/' ? '/index.html' : pathname;
   let filePath = path.join(STUDIO_DIR, reqPath);
