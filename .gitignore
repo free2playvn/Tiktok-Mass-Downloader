@@ -3,3 +3,5 @@ names.txt
 @*
 *.mp4
 .DS_Store
+release-dist/
+dist/

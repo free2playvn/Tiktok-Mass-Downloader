@@ -130,6 +130,19 @@ document.addEventListener('DOMContentLoaded', () => {
       btnMacMode.classList.remove('active');
       state.osMode = 'windows';
     });
+
+    // Native Window Buttons (Electron IPC)
+    if (window.electronAPI) {
+      document.querySelectorAll('.close-btn, .win-close').forEach((btn) => {
+        btn.addEventListener('click', () => window.electronAPI.close());
+      });
+      document.querySelectorAll('.min-btn, .win-btn:not(.win-close):first-child').forEach((btn) => {
+        btn.addEventListener('click', () => window.electronAPI.minimize());
+      });
+      document.querySelectorAll('.max-btn, .win-btn:nth-child(2)').forEach((btn) => {
+        btn.addEventListener('click', () => window.electronAPI.maximize());
+      });
+    }
   }
 
   function setupAspectRatio() {

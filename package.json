@@ -1,24 +1,72 @@
 {
-  "name": "tiktok-mass-downloader",
-  "version": "3.0.0",
-  "description": "Fast and lightweight tool to mass download TikTok videos without watermark using Node.js and Puppeteer",
-  "main": "TMD.js",
+  "name": "tmd-studio-pro",
+  "version": "3.2.0",
+  "description": "TMD Studio Pro - Desktop Video Editor, Subtitle Generator & Vietnamese Humanizer with Mass TikTok Downloader",
+  "main": "main.js",
   "scripts": {
     "start": "node TMD.js",
     "studio": "node server.js",
+    "gui": "electron .",
+    "pack:win": "electron-builder --dir",
+    "dist:win": "electron-builder --win nsis portable",
     "test": "node TMD.js https://www.tiktok.com/@tiktok 1"
   },
   "keywords": [
     "tiktok",
     "tiktok-downloader",
     "mass-downloader",
-    "no-watermark",
-    "puppeteer",
+    "video-editor",
+    "vietnamese-humanizer",
+    "subtitles",
+    "electron",
     "nodejs"
   ],
   "author": "free2playvn",
   "license": "MIT",
   "dependencies": {
     "puppeteer": "^19.0.0"
+  },
+  "devDependencies": {
+    "electron": "^44.9.0",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.tmd.studiopro",
+    "productName": "TMD Studio Pro",
+    "directories": {
+      "output": "release-dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "server.js",
+      "TMD.js",
+      "studio/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "studio/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "TMD Studio Pro"
+    }
   }
 }
