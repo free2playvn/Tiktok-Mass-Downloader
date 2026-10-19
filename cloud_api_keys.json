@@ -1,0 +1,35 @@
+{
+  "hybridMode": true,
+  "openai": {
+    "key": "",
+    "model": "sora-2.0-turbo",
+    "status": "NOT_CONFIGURED",
+    "quotaRemaining": "N/A"
+  },
+  "kling": {
+    "accessKey": "",
+    "secretKey": "",
+    "status": "NOT_CONFIGURED",
+    "quotaRemaining": "N/A"
+  },
+  "runway": {
+    "key": "",
+    "status": "NOT_CONFIGURED",
+    "quotaRemaining": "N/A"
+  },
+  "luma": {
+    "key": "",
+    "status": "NOT_CONFIGURED",
+    "quotaRemaining": "N/A"
+  },
+  "elevenlabs": {
+    "key": "",
+    "status": "NOT_CONFIGURED",
+    "quotaRemaining": "N/A"
+  },
+  "pika": {
+    "key": "",
+    "status": "NOT_CONFIGURED",
+    "quotaRemaining": "N/A"
+  }
+}

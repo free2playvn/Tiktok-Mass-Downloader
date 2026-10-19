@@ -48,6 +48,9 @@ const cvProductPinning = require('./modules/cv_product_pinning');
 const simFarmFingerprint = require('./modules/sim_farm_fingerprint');
 const profitMarginTracker = require('./modules/profit_margin_tracker');
 const aiTextToVideoDirector = require('./modules/ai_text_to_video_director');
+const aiSoundDesigner = require('./modules/ai_sound_designer');
+const cloudAiGateway = require('./modules/cloud_ai_gateway');
+const autoMultiPublisher = require('./modules/auto_multi_publisher');
 
 const PORT = process.env.PORT || 3000;
 const STUDIO_DIR = path.join(__dirname, 'studio');
@@ -1902,6 +1905,83 @@ const server = http.createServer(async (req, res) => {
   if (pathname === '/api/enterprise/ai-video/gallery' && req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(aiTextToVideoDirector.getVideoGallery()));
+    return;
+  }
+
+  // --- SOUND DESIGNER ---
+  if (pathname === '/api/enterprise/sound-design/library' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(aiSoundDesigner.getSoundLibrary()));
+    return;
+  }
+  if (pathname === '/api/enterprise/sound-design/generate' && req.method === 'POST') {
+    try {
+      const params = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(aiSoundDesigner.generateSoundtrack(params)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // --- CLOUD AI GATEWAY (BYOK) ---
+  if (pathname === '/api/enterprise/cloud-ai/config' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(cloudAiGateway.getConfigStatus()));
+    return;
+  }
+  if (pathname === '/api/enterprise/cloud-ai/config' && req.method === 'POST') {
+    try {
+      const keys = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(cloudAiGateway.updateKeys(keys)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+  if (pathname === '/api/enterprise/cloud-ai/test-connection' && req.method === 'POST') {
+    try {
+      const { provider } = await readJsonBody();
+      const result = await cloudAiGateway.testConnection(provider);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // --- AUTO MULTI-PLATFORM PUBLISHER ---
+  if (pathname === '/api/enterprise/publisher/generate-metadata' && req.method === 'POST') {
+    try {
+      const params = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(autoMultiPublisher.generateViralMetadata(params)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+  if (pathname === '/api/enterprise/publisher/publish-multi' && req.method === 'POST') {
+    try {
+      const params = await readJsonBody();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(autoMultiPublisher.publishMultiPlatform(params)));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+  if (pathname === '/api/enterprise/publisher/history' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(autoMultiPublisher.getPublishHistory()));
     return;
   }
 

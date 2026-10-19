@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  tmd-studio:
+    build: .
+    container_name: tmd_studio_pro_app
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    volumes:
+      - ./output:/app/output
+      - ./cloud_api_keys.json:/app/cloud_api_keys.json
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 4096M

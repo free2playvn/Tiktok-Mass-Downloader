@@ -149,6 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupMegaSuiteModule();
     setupLiveStudioModule();
     setupAiVideoCinemaStudio();
+    setupCloudAiGatewayModule();
     setupModals();
     loadActiveVideo();
     drawSimulatedWaveform();
@@ -7262,8 +7263,368 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    // ===================================================================
+    // AI SOUND DESIGN & FOLEY SYNC INTEGRATION
+    // ===================================================================
+    const modalSoundDesignStudio = document.getElementById('modalSoundDesignStudio');
+    const btnOpenSoundDesignModal = document.getElementById('btnOpenSoundDesignModal');
+    const btnCloseSoundDesignModal = document.getElementById('btnCloseSoundDesignModal');
+    const btnCloseSoundDesignModalBottom = document.getElementById('btnCloseSoundDesignModalBottom');
+    const soundTargetVideoTitle = document.getElementById('soundTargetVideoTitle');
+    const selectSoundBgm = document.getElementById('selectSoundBgm');
+    const selectSoundVoice = document.getElementById('selectSoundVoice');
+    const chkEnableVoiceover = document.getElementById('chkEnableVoiceover');
+    const chkEnableFoley = document.getElementById('chkEnableFoley');
+    const chkEnableBgm = document.getElementById('chkEnableBgm');
+    const btnStartSoundDesign = document.getElementById('btnStartSoundDesign');
+    const soundDesignResultBox = document.getElementById('soundDesignResultBox');
+
+    function openSoundDesignModal() {
+      if (!currentCinemaVideo) {
+        alert('Vui lòng chọn hoặc tạo một video trong phòng chiếu phim trước!');
+        return;
+      }
+      if (soundTargetVideoTitle) {
+        soundTargetVideoTitle.textContent = `Video: ${currentCinemaVideo.title}`;
+      }
+      if (modalSoundDesignStudio) {
+        modalSoundDesignStudio.classList.add('open');
+        loadSoundLibrary();
+      }
+    }
+
+    function closeSoundDesignModal() {
+      if (modalSoundDesignStudio) modalSoundDesignStudio.classList.remove('open');
+    }
+
+    if (btnOpenSoundDesignModal) btnOpenSoundDesignModal.addEventListener('click', openSoundDesignModal);
+    if (btnCloseSoundDesignModal) btnCloseSoundDesignModal.addEventListener('click', closeSoundDesignModal);
+    if (btnCloseSoundDesignModalBottom) btnCloseSoundDesignModalBottom.addEventListener('click', closeSoundDesignModal);
+
+    async function loadSoundLibrary() {
+      try {
+        const res = await fetch('/api/enterprise/sound-design/library');
+        const data = await res.json();
+        if (data.ok) {
+          if (selectSoundBgm) {
+            selectSoundBgm.innerHTML = data.bgmList.map(b => `
+              <option value="${b.id}">${escapeHtml(b.name)} [${escapeHtml(b.mood)}]</option>
+            `).join('');
+          }
+          if (selectSoundVoice) {
+            selectSoundVoice.innerHTML = data.voices.map(v => `
+              <option value="${v.id}">${escapeHtml(v.name)}</option>
+            `).join('');
+          }
+        }
+      } catch (e) {
+        console.error('Error loading sound library:', e);
+      }
+    }
+
+    if (btnStartSoundDesign) {
+      btnStartSoundDesign.addEventListener('click', async () => {
+        if (!currentCinemaVideo) return;
+        btnStartSoundDesign.disabled = true;
+        btnStartSoundDesign.innerHTML = '<span>⏳ Đang phân tích kịch bản & hòa âm Dolby Atmos...</span>';
+
+        try {
+          const res = await fetch('/api/enterprise/sound-design/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              prompt: currentCinemaVideo.prompt || currentCinemaVideo.title,
+              genreId: currentCinemaVideo.genre || selectedGenre,
+              voiceId: selectSoundVoice ? selectSoundVoice.value : 'vi_male_narrator',
+              enableVoiceover: chkEnableVoiceover ? chkEnableVoiceover.checked : true,
+              enableFoley: chkEnableFoley ? chkEnableFoley.checked : true,
+              enableBgm: chkEnableBgm ? chkEnableBgm.checked : true,
+              durationSec: currentCinemaVideo.durationSec || 10
+            })
+          });
+          const data = await res.json();
+          if (data.ok && data.soundtrack) {
+            const st = data.soundtrack;
+            if (soundDesignResultBox) {
+              soundDesignResultBox.innerHTML = `
+                <div style="font-size:12px; font-weight:700; color:#10b981; margin-bottom:4px;">
+                  🎉 ${escapeHtml(data.message)}
+                </div>
+                <div style="font-size:11px; color:#e2e8f0; line-height:1.5;">
+                  • <strong>Nhạc nền BGM:</strong> ${st.bgm ? escapeHtml(st.bgm.title) + ' (Ducking 15%)' : 'Tắt'}<br>
+                  • <strong>Lồng tiếng AI:</strong> ${st.voiceover ? escapeHtml(st.voiceover.voiceName) : 'Tắt'}<br>
+                  • <strong>Hiệu ứng Foley:</strong> Đã chèn ${st.foleyTrack.length} âm thanh môi trường (${st.foleyTrack.map(f => f.name).join(', ')})<br>
+                  • <strong>Chuẩn âm thanh:</strong> ${escapeHtml(st.mixerTimeline.surroundFormat)}
+                </div>
+              `;
+              soundDesignResultBox.className = 'pub-status-box success';
+              soundDesignResultBox.classList.remove('hidden');
+            }
+          }
+        } catch (e) {
+          alert('Lỗi hòa âm: ' + e.message);
+        } finally {
+          btnStartSoundDesign.disabled = false;
+          btnStartSoundDesign.innerHTML = '<span>⚡ KÍCH HOẠT HÒA ÂM & LỒNG TIẾNG TỰ ĐỘNG</span>';
+        }
+      });
+    }
+
+    // ===================================================================
+    // 1-CLICK MULTI-PLATFORM AUTO PUBLISHER INTEGRATION
+    // ===================================================================
+    const modalOneClickPublisher = document.getElementById('modalOneClickPublisher');
+    const btnOpenOneClickPublishModal = document.getElementById('btnOpenOneClickPublishModal');
+    const btnCloseOneClickPublishModal = document.getElementById('btnCloseOneClickPublishModal');
+    const btnCloseOneClickPublishModalBottom = document.getElementById('btnCloseOneClickPublishModalBottom');
+    const btnAiGenerateViralMeta = document.getElementById('btnAiGenerateViralMeta');
+    const pubViralTitleInput = document.getElementById('pubViralTitleInput');
+    const pubCaptionInput = document.getElementById('pubCaptionInput');
+    const btnConfirmPublishMulti = document.getElementById('btnConfirmPublishMulti');
+    const pubMultiStatusBox = document.getElementById('pubMultiStatusBox');
+
+    function openOneClickPublishModal() {
+      if (!currentCinemaVideo) {
+        alert('Vui lòng chọn hoặc tạo một video trước khi xuất bản!');
+        return;
+      }
+      if (modalOneClickPublisher) {
+        modalOneClickPublisher.classList.add('open');
+        triggerGenerateViralMetadata();
+      }
+    }
+
+    function closeOneClickPublishModal() {
+      if (modalOneClickPublisher) modalOneClickPublisher.classList.remove('open');
+    }
+
+    if (btnOpenOneClickPublishModal) btnOpenOneClickPublishModal.addEventListener('click', openOneClickPublishModal);
+    if (btnCloseOneClickPublishModal) btnCloseOneClickPublishModal.addEventListener('click', closeOneClickPublishModal);
+    if (btnCloseOneClickPublishModalBottom) btnCloseOneClickPublishModalBottom.addEventListener('click', closeOneClickPublishModal);
+
+    async function triggerGenerateViralMetadata() {
+      if (!currentCinemaVideo) return;
+      try {
+        const res = await fetch('/api/enterprise/publisher/generate-metadata', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: currentCinemaVideo.title,
+            prompt: currentCinemaVideo.prompt,
+            genreId: currentCinemaVideo.genre || selectedGenre
+          })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          if (pubViralTitleInput) pubViralTitleInput.value = data.viralTitle;
+          if (pubCaptionInput) pubCaptionInput.value = `${data.caption}\n\n${data.hashtags.join(' ')}`;
+        }
+      } catch (e) {
+        console.error('Error generating metadata:', e);
+      }
+    }
+
+    if (btnAiGenerateViralMeta) {
+      btnAiGenerateViralMeta.addEventListener('click', triggerGenerateViralMetadata);
+    }
+
+    if (btnConfirmPublishMulti) {
+      btnConfirmPublishMulti.addEventListener('click', async () => {
+        if (!currentCinemaVideo) return;
+        const channels = [];
+        if (document.getElementById('pubChannelTikTok')?.checked) channels.push('tiktok');
+        if (document.getElementById('pubChannelYoutube')?.checked) channels.push('youtube_shorts');
+        if (document.getElementById('pubChannelFacebook')?.checked) channels.push('facebook_reels');
+        if (document.getElementById('pubChannelInstagram')?.checked) channels.push('instagram_reels');
+
+        if (channels.length === 0) {
+          alert('Vui lòng chọn ít nhất 1 kênh để xuất bản!');
+          return;
+        }
+
+        btnConfirmPublishMulti.disabled = true;
+        btnConfirmPublishMulti.innerHTML = '<span>⏳ Đang đóng gói & phân phối lên các nền tảng...</span>';
+
+        try {
+          const res = await fetch('/api/enterprise/publisher/publish-multi', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              videoId: currentCinemaVideo.id,
+              videoTitle: currentCinemaVideo.title,
+              channels,
+              metadata: {
+                viralTitle: pubViralTitleInput ? pubViralTitleInput.value : currentCinemaVideo.title,
+                caption: pubCaptionInput ? pubCaptionInput.value : ''
+              }
+            })
+          });
+          const data = await res.json();
+          if (data.ok && data.record) {
+            if (pubMultiStatusBox) {
+              pubMultiStatusBox.innerHTML = `
+                <div style="font-weight:700; color:#10b981; font-size:13px; margin-bottom:6px;">
+                  ${escapeHtml(data.message)}
+                </div>
+                <div style="font-size:11px; color:#cbd5e1; line-height:1.6;">
+                  ${data.record.platformResults.map(p => `
+                    <div>• <strong>${escapeHtml(p.platform.toUpperCase())}:</strong> Mã phản hồi: <code>${p.status}</code> — <a href="${p.directUrl}" target="_blank" style="color:#38bdf8; text-decoration:underline;">Xem bài đăng trực tiếp ↗</a></div>
+                  `).join('')}
+                </div>
+              `;
+              pubMultiStatusBox.className = 'pub-status-box success';
+              pubMultiStatusBox.classList.remove('hidden');
+            }
+          }
+        } catch (e) {
+          alert('Lỗi xuất bản đa kênh: ' + e.message);
+        } finally {
+          btnConfirmPublishMulti.disabled = false;
+          btnConfirmPublishMulti.innerHTML = '<span>🚀 BẮT ĐẦU XUẤT BẢN ĐỒNG LOẠT 1-CLICK NGAY</span>';
+        }
+      });
+    }
+
     // Initial load
     loadCinemaData();
+  }
+
+  /* ===================================================================
+     31. CLOUD AI GATEWAY & BYOK API KEY MANAGER
+     =================================================================== */
+  function setupCloudAiGatewayModule() {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    const modalCloudAiConfig = document.getElementById('modalCloudAiConfig');
+    const btnOpenCloudAiModal = document.getElementById('btnOpenCloudAiModal');
+    const btnCloseCloudAiModal = document.getElementById('btnCloseCloudAiModal');
+    const btnCloseCloudAiModalBottom = document.getElementById('btnCloseCloudAiModalBottom');
+
+    const chkSmartHybridMode = document.getElementById('chkSmartHybridMode');
+    const inputOpenAiKey = document.getElementById('inputOpenAiKey');
+    const inputRunwayKey = document.getElementById('inputRunwayKey');
+    const inputKlingAccessKey = document.getElementById('inputKlingAccessKey');
+    const inputKlingSecretKey = document.getElementById('inputKlingSecretKey');
+    const inputLumaKey = document.getElementById('inputLumaKey');
+    const inputElevenLabsKey = document.getElementById('inputElevenLabsKey');
+    const inputPikaKey = document.getElementById('inputPikaKey');
+    const btnSaveCloudAiKeys = document.getElementById('btnSaveCloudAiKeys');
+    const cloudAiStatusBox = document.getElementById('cloudAiStatusBox');
+
+    function openModal() {
+      if (modalCloudAiConfig) {
+        modalCloudAiConfig.classList.add('open');
+        loadKeysConfig();
+      }
+    }
+
+    function closeModal() {
+      if (modalCloudAiConfig) modalCloudAiConfig.classList.remove('open');
+    }
+
+    if (btnOpenCloudAiModal) btnOpenCloudAiModal.addEventListener('click', openModal);
+    if (btnCloseCloudAiModal) btnCloseCloudAiModal.addEventListener('click', closeModal);
+    if (btnCloseCloudAiModalBottom) btnCloseCloudAiModalBottom.addEventListener('click', closeModal);
+
+    if (modalCloudAiConfig) {
+      modalCloudAiConfig.addEventListener('click', (e) => {
+        if (e.target === modalCloudAiConfig) closeModal();
+      });
+    }
+
+    async function loadKeysConfig() {
+      try {
+        const res = await fetch('/api/enterprise/cloud-ai/config');
+        const data = await res.json();
+        if (data.ok) {
+          if (chkSmartHybridMode) chkSmartHybridMode.checked = !!data.hybridMode;
+          const p = data.providers;
+          if (p.openai?.maskedKey && inputOpenAiKey) inputOpenAiKey.value = p.openai.maskedKey;
+          if (p.runway?.maskedKey && inputRunwayKey) inputRunwayKey.value = p.runway.maskedKey;
+          if (p.kling?.maskedAccessKey && inputKlingAccessKey) inputKlingAccessKey.value = p.kling.maskedAccessKey;
+          if (p.luma?.maskedKey && inputLumaKey) inputLumaKey.value = p.luma.maskedKey;
+          if (p.elevenlabs?.maskedKey && inputElevenLabsKey) inputElevenLabsKey.value = p.elevenlabs.maskedKey;
+          if (p.pika?.maskedKey && inputPikaKey) inputPikaKey.value = p.pika.maskedKey;
+        }
+      } catch (e) {
+        console.error('Error loading cloud AI config:', e);
+      }
+    }
+
+    if (btnSaveCloudAiKeys) {
+      btnSaveCloudAiKeys.addEventListener('click', async () => {
+        btnSaveCloudAiKeys.disabled = true;
+        btnSaveCloudAiKeys.innerHTML = '<span>⏳ Đang lưu...</span>';
+
+        try {
+          const res = await fetch('/api/enterprise/cloud-ai/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              hybridMode: chkSmartHybridMode ? chkSmartHybridMode.checked : true,
+              openaiKey: inputOpenAiKey ? inputOpenAiKey.value : '',
+              runwayKey: inputRunwayKey ? inputRunwayKey.value : '',
+              klingAccessKey: inputKlingAccessKey ? inputKlingAccessKey.value : '',
+              klingSecretKey: inputKlingSecretKey ? inputKlingSecretKey.value : '',
+              lumaKey: inputLumaKey ? inputLumaKey.value : '',
+              elevenlabsKey: inputElevenLabsKey ? inputElevenLabsKey.value : '',
+              pikaKey: inputPikaKey ? inputPikaKey.value : ''
+            })
+          });
+          const data = await res.json();
+          if (cloudAiStatusBox) {
+            cloudAiStatusBox.innerHTML = `✅ <strong>Thành Công:</strong> ${data.message || 'Đã lưu cấu hình API Keys!'}`;
+            cloudAiStatusBox.className = 'pub-status-box success';
+            cloudAiStatusBox.classList.remove('hidden');
+          }
+        } catch (e) {
+          alert('Lỗi lưu cấu hình: ' + e.message);
+        } finally {
+          btnSaveCloudAiKeys.disabled = false;
+          btnSaveCloudAiKeys.innerHTML = '<span>💾 Lưu Cấu Hình Keys</span>';
+        }
+      });
+    }
+
+    // Ping test handlers
+    function setupPingTest(btnId, provider) {
+      const btn = document.getElementById(btnId);
+      if (btn) {
+        btn.addEventListener('click', async () => {
+          btn.disabled = true;
+          btn.textContent = '...';
+          try {
+            const res = await fetch('/api/enterprise/cloud-ai/test-connection', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ provider })
+            });
+            const data = await res.json();
+            alert(`${data.message} (Độ trễ: ${data.latencyMs}ms)`);
+          } catch (e) {
+            alert('Lỗi ping: ' + e.message);
+          } finally {
+            btn.disabled = false;
+            btn.textContent = 'Test';
+          }
+        });
+      }
+    }
+
+    setupPingTest('btnTestOpenAi', 'openai');
+    setupPingTest('btnTestRunway', 'runway');
+    setupPingTest('btnTestKling', 'kling');
+    setupPingTest('btnTestLuma', 'luma');
+    setupPingTest('btnTestElevenLabs', 'elevenlabs');
+    setupPingTest('btnTestPika', 'pika');
   }
 
   // Start app

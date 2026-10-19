@@ -131,6 +131,12 @@
           <span class="badge-mini-3d" style="background: linear-gradient(135deg, #a855f7, #ec4899); color: #fff;">SORA 2 & VEO 3</span>
         </button>
 
+        <!-- Cloud AI Gateway (BYOK) Button -->
+        <button class="studio-btn cloud-key-btn" id="btnOpenCloudAiModal" title="Cổng Quản Lý API Keys Điện Toán Đám Mây (OpenAI Sora 2, Kling, Runway, ElevenLabs)">
+          <span>🔑 Cloud API Keys</span>
+          <span class="badge-mini-3d" style="background: #0284c7; color: #fff;">BYOK</span>
+        </button>
+
         <div class="tool-divider"></div>
 
         <!-- User Profile Pill & Dropdown -->
@@ -3985,6 +3991,12 @@
                 <button class="studio-btn success-btn sm-btn" id="btnInsertClipToEditorTimeline">
                   <span>📥 Chèn Vào Timeline TMD Studio Pro Ngay</span>
                 </button>
+                <button class="studio-btn primary-btn sm-btn" id="btnOpenSoundDesignModal">
+                  <span>🎵 AI Lồng Tiếng & Foley</span>
+                </button>
+                <button class="studio-btn enterprise-btn sm-btn" id="btnOpenOneClickPublishModal">
+                  <span>🚀 Xuất Bản 1-Click Đa Kênh</span>
+                </button>
                 <button class="studio-btn secondary-btn sm-btn" id="btnDownloadCurrentAiVideo">
                   <span>⬇ Tải MP4</span>
                 </button>
@@ -4011,6 +4023,248 @@
         <div class="modal-footer cinema-footer">
           <span class="footer-hint">💡 Hệ thống kết nối đa mô hình (Multi-Engine Orchestrator): OpenAI Sora 2.0, Google DeepMind Veo 3, Kuaishou Kling 2.5, Runway Gen-3 Alpha, Luma 2.0, Pika 2.0, ByteDance Seedance 2.5 & Muse.ai.</span>
           <button class="studio-btn secondary-btn" id="btnCloseAiVideoStudioBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL 1: CLOUD AI GATEWAY & BYOK KEY MANAGER
+         =================================================================== -->
+    <div class="studio-modal-backdrop" id="modalCloudAiConfig">
+      <div class="studio-modal" style="max-width: 900px; background:#0c0a09; border:1px solid rgba(2, 132, 199, 0.4); box-shadow:0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(2, 132, 199, 0.2);">
+        <div class="modal-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="badge-mini-3d" style="background:#0284c7; color:#fff;">BYOK CLOUD</span>
+            <div>
+              <h3 style="margin:0; font-size:16px; color:#fff;">🔑 Cổng Quản Lý API Keys Đám Mây (Cloud AI Gateway)</h3>
+              <div style="font-size:11px; color:var(--text-muted);">Kết nối API chính thức của OpenAI Sora 2.0, Kling AI, RunwayML, Luma, ElevenLabs hoặc dùng Smart Hybrid Fallback</div>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseCloudAiModal">✕</button>
+        </div>
+
+        <div class="modal-body" style="padding: 18px;">
+          <!-- Smart Hybrid Banner -->
+          <div style="background: rgba(2, 132, 199, 0.1); border: 1px solid rgba(2, 132, 199, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong style="color: #38bdf8; font-size: 13px;">⚡ Chế Độ Smart Hybrid Tự Động Fallback:</strong>
+              <div style="font-size: 11px; color: #cbd5e1; margin-top: 2px;">Khi bật, nếu API Key Cloud hết hạn hoặc chưa cấu hình, hệ thống tự động chuyển sang Local Neuro-Simulation Engine mà không bao giờ bị dừng gián đoạn.</div>
+            </div>
+            <label class="switch-toggle" style="margin-left: 14px;">
+              <input type="checkbox" id="chkSmartHybridMode" checked>
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <!-- Keys Input Grid -->
+          <div class="form-row-2">
+            <div class="form-field">
+              <label class="form-label">OpenAI API Key (Sora 2.0 / GPT-4o):</label>
+              <div style="display:flex; gap:6px;">
+                <input type="password" id="inputOpenAiKey" placeholder="sk-proj-..." class="studio-input" style="flex:1;">
+                <button class="studio-btn secondary-btn sm-btn" id="btnTestOpenAi">Test</button>
+              </div>
+            </div>
+            <div class="form-field">
+              <label class="form-label">RunwayML API Key (Gen-3 Alpha):</label>
+              <div style="display:flex; gap:6px;">
+                <input type="password" id="inputRunwayKey" placeholder="runway-..." class="studio-input" style="flex:1;">
+                <button class="studio-btn secondary-btn sm-btn" id="btnTestRunway">Test</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row-2" style="margin-top: 10px;">
+            <div class="form-field">
+              <label class="form-label">Kuaishou Kling AI (AccessKey & SecretKey):</label>
+              <div style="display:flex; gap:6px;">
+                <input type="text" id="inputKlingAccessKey" placeholder="AccessKey..." class="studio-input" style="flex:1;">
+                <input type="password" id="inputKlingSecretKey" placeholder="SecretKey..." class="studio-input" style="flex:1;">
+                <button class="studio-btn secondary-btn sm-btn" id="btnTestKling">Test</button>
+              </div>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Luma Dream Machine API Key:</label>
+              <div style="display:flex; gap:6px;">
+                <input type="password" id="inputLumaKey" placeholder="luma-..." class="studio-input" style="flex:1;">
+                <button class="studio-btn secondary-btn sm-btn" id="btnTestLuma">Test</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row-2" style="margin-top: 10px;">
+            <div class="form-field">
+              <label class="form-label">ElevenLabs Voice AI Key:</label>
+              <div style="display:flex; gap:6px;">
+                <input type="password" id="inputElevenLabsKey" placeholder="xi-..." class="studio-input" style="flex:1;">
+                <button class="studio-btn secondary-btn sm-btn" id="btnTestElevenLabs">Test</button>
+              </div>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Pika Labs Pikaffects Key:</label>
+              <div style="display:flex; gap:6px;">
+                <input type="password" id="inputPikaKey" placeholder="pika-..." class="studio-input" style="flex:1;">
+                <button class="studio-btn secondary-btn sm-btn" id="btnTestPika">Test</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="cloudAiStatusBox" class="pub-status-box hidden" style="margin-top: 12px;"></div>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:space-between;">
+          <span style="font-size:11px; color:var(--text-muted);">🔒 API Keys được mã hóa lưu trữ nội bộ trên máy của bạn, không gửi về bất kỳ máy chủ bên thứ ba nào.</span>
+          <div style="display:flex; gap:8px;">
+            <button class="studio-btn secondary-btn" id="btnCloseCloudAiModalBottom">Đóng</button>
+            <button class="studio-btn primary-btn glow-btn" id="btnSaveCloudAiKeys">
+              <span>💾 Lưu Cấu Hình Keys</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL 2: AI SOUND DESIGN & FOLEY SYNC STUDIO
+         =================================================================== -->
+    <div class="studio-modal-backdrop" id="modalSoundDesignStudio">
+      <div class="studio-modal" style="max-width: 900px; background:#09090b; border:1px solid rgba(236, 72, 153, 0.4); box-shadow:0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(236, 72, 153, 0.2);">
+        <div class="modal-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="badge-mini-3d" style="background:#ec4899; color:#fff;">DOLBY 5.1</span>
+            <div>
+              <h3 style="margin:0; font-size:16px; color:#fff;">🎵 Xưởng Hòa Âm & Foley AI (AI Sound Design & Foley Sync Engine)</h3>
+              <div style="font-size:11px; color:var(--text-muted);">Tự động phân tích kịch bản để tạo nhạc nền BGM, tiếng động môi trường Foley và lồng tiếng AI với Audio Ducking</div>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseSoundDesignModal">✕</button>
+        </div>
+
+        <div class="modal-body" style="padding: 18px;">
+          <!-- Video Target Meta -->
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px; margin-bottom: 12px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <strong style="color:#fff; font-size:13px;" id="soundTargetVideoTitle">Video: Chú Rồng Mây Tìm Mẹ</strong>
+              <div style="font-size:11px; color:var(--text-muted);">Độ dài: 10 giây | Thể loại: Phim Hoạt Hình 3D Pixar</div>
+            </div>
+            <span class="badge-mini-3d" style="background:#10b981; color:#fff;">AUTO DUCKING BẬT</span>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-field">
+              <label class="form-label">Chọn Nhạc Nền (BGM Preset):</label>
+              <select id="selectSoundBgm" class="studio-select">
+                <!-- Injected via JS -->
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Chọn Giọng Đọc Lồng Tiếng AI (Vietnamese Voice):</label>
+              <select id="selectSoundVoice" class="studio-select">
+                <!-- Injected via JS -->
+              </select>
+            </div>
+          </div>
+
+          <!-- Audio Track Toggles -->
+          <div style="display:flex; gap:16px; margin-top:12px; background:rgba(0,0,0,0.3); padding:10px; border-radius:8px;">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#fff; cursor:pointer;">
+              <input type="checkbox" id="chkEnableVoiceover" checked>
+              <span>🎙️ Lồng tiếng AI tiếng Việt (100% Volume)</span>
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#fff; cursor:pointer;">
+              <input type="checkbox" id="chkEnableFoley" checked>
+              <span>🐾 Âm thanh môi trường Foley (75% Volume)</span>
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#fff; cursor:pointer;">
+              <input type="checkbox" id="chkEnableBgm" checked>
+              <span>🎼 Nhạc nền BGM (35% Volume, Ducking 15%)</span>
+            </label>
+          </div>
+
+          <div style="margin-top: 14px;">
+            <button class="studio-btn primary-btn glow-btn full-btn" id="btnStartSoundDesign">
+              <span>⚡ KÍCH HOẠT HÒA ÂM & LỒNG TIẾNG TỰ ĐỘNG</span>
+            </button>
+          </div>
+
+          <!-- Result Mix Summary -->
+          <div id="soundDesignResultBox" class="pub-status-box hidden" style="margin-top: 12px;"></div>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:space-between;">
+          <span style="font-size:11px; color:var(--text-muted);">💡 Kỹ thuật Audio Ducking tự động hạ âm lượng nhạc nền khi nhân vật nói để đảm bảo phát âm rõ ràng chuẩn rạp chiếu.</span>
+          <button class="studio-btn secondary-btn" id="btnCloseSoundDesignModalBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         MODAL 3: 1-CLICK MULTI-PLATFORM AUTO PUBLISHER
+         =================================================================== -->
+    <div class="studio-modal-backdrop" id="modalOneClickPublisher">
+      <div class="studio-modal" style="max-width: 900px; background:#0f172a; border:1px solid rgba(139, 92, 246, 0.4); box-shadow:0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(139, 92, 246, 0.2);">
+        <div class="modal-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="badge-mini-3d" style="background:#8b5cf6; color:#fff;">1-CLICK MULTI-POST</span>
+            <div>
+              <h3 style="margin:0; font-size:16px; color:#fff;">🚀 Xuất Bản 1-Click Lên Đa Kênh (1-Click Multi-Platform Auto Publisher)</h3>
+              <div style="font-size:11px; color:var(--text-muted);">Tự động sinh tiêu đề giật tít, caption và 10 hashtags thịnh hành rồi đăng đồng loạt lên TikTok, Reels, Shorts</div>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseOneClickPublishModal">✕</button>
+        </div>
+
+        <div class="modal-body" style="padding: 18px;">
+          <!-- Target Channels Selector -->
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+            <div style="font-size:12px; font-weight:700; color:#fff; margin-bottom:8px;">Chọn Các Kênh Xuất Bản Đồng Thời:</div>
+            <div style="display:flex; gap:16px; flex-wrap:wrap;">
+              <label style="display:flex; align-items:center; gap:6px; color:#fff; font-size:12px; cursor:pointer;">
+                <input type="checkbox" id="pubChannelTikTok" checked>
+                <span>🎵 TikTok Video (9:16 / 16:9)</span>
+              </label>
+              <label style="display:flex; align-items:center; gap:6px; color:#fff; font-size:12px; cursor:pointer;">
+                <input type="checkbox" id="pubChannelYoutube" checked>
+                <span>▶️ YouTube Shorts / Cinema</span>
+              </label>
+              <label style="display:flex; align-items:center; gap:6px; color:#fff; font-size:12px; cursor:pointer;">
+                <input type="checkbox" id="pubChannelFacebook" checked>
+                <span>👥 Facebook Reels</span>
+              </label>
+              <label style="display:flex; align-items:center; gap:6px; color:#fff; font-size:12px; cursor:pointer;">
+                <input type="checkbox" id="pubChannelInstagram" checked>
+                <span>📷 Instagram Reels</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Viral Metadata Generator -->
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label class="form-label" style="margin:0;">Nội Dung Đăng Bài (AI Viral Metadata):</label>
+            <button class="studio-btn secondary-btn sm-btn" id="btnAiGenerateViralMeta">
+              <span>✨ AI Sinh Tiêu Đề & Hashtags Triệu View</span>
+            </button>
+          </div>
+
+          <div class="form-field">
+            <input type="text" id="pubViralTitleInput" class="studio-input" placeholder="Tiêu đề giật tít..." style="font-weight:700; color:#38bdf8;">
+          </div>
+          <div class="form-field" style="margin-top: 8px;">
+            <textarea id="pubCaptionInput" class="studio-textarea" rows="4" placeholder="Nội dung caption & hashtags thịnh hành..."></textarea>
+          </div>
+
+          <div style="margin-top: 14px;">
+            <button class="studio-btn success-btn glow-btn full-btn" id="btnConfirmPublishMulti" style="padding:12px; font-size:14px; font-weight:800;">
+              <span>🚀 BẮT ĐẦU XUẤT BẢN ĐỒNG LOẠT 1-CLICK NGAY</span>
+            </button>
+          </div>
+
+          <div id="pubMultiStatusBox" class="pub-status-box hidden" style="margin-top: 12px;"></div>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:space-between;">
+          <span style="font-size:11px; color:var(--text-muted);">💡 Hệ thống tự động phân luồng mạng và mã hóa chuẩn bitrate cho từng nền tảng để đạt chất lượng hiển thị tối đa.</span>
+          <button class="studio-btn secondary-btn" id="btnCloseOneClickPublishModalBottom">Đóng</button>
         </div>
       </div>
     </div>
