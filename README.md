@@ -1,18 +1,20 @@
 # TikTok Mass Downloader (TMD)
 
-Modern, fast, and lightweight Node.js tool to **mass download TikTok videos without watermark** in high definition.
+Modern, fast, and robust Node.js tool to **collect profile info, list all video links, bypass profile download restrictions, and mass download clean watermark-free videos** in high definition.
 
 ---
 
 ## ✨ Features
 
-- **100% Watermark-Free HD**: Downloads clean video streams without the TikTok watermark/logo.
-- **Profile Mass Download**: Scrapes and downloads all or a specified number ($N$) of videos from any public TikTok profile.
-- **Single Video Download**: Instantly downloads a single video when given a direct video URL.
-- **Smart Auto-Scroll & Pop-up Handling**: Automatically bypasses login prompts and dialogs during profile scanning.
-- **Live Stream Progress**: Real-time progress bar displaying speed, downloaded size, percentage, and estimated time remaining (ETA).
-- **Duplicate Skipping**: Skips already downloaded videos when re-running for the same profile.
-- **Metadata Archiving**: Automatically appends video titles and descriptions to `names.txt` in the creator's folder.
+- **100% Watermark-Free HD**: Fetches direct clean video streams without the TikTok watermark/logo.
+- **Profile Info Card**: Collects and displays complete profile information (user ID, nickname, follower count, hearts, total published videos, bio, and verification status).
+- **Video Links Collector**: Scans and displays numbered links for all profile videos, exporting them to `links.txt`.
+- **Download Restriction Bypass**: Automatically bypasses creator-level "Allow video downloads: OFF" restrictions via deep browser session cookie and rehydration stream resolution.
+- **Info-Only Mode (`--info`)**: Collects profile metadata and full video links without downloading the video files.
+- **Smart Auto-Scroll & Pop-up Handling**: Automatically dismisses login prompts, app banners, and modal dialogs during scanning.
+- **Real-Time Stream Progress**: Displays download speed, downloaded size, percentage, and ETA.
+- **Duplicate Skipping**: Skips previously downloaded videos automatically when re-running a profile.
+- **Atomic File Writing**: Downloads into `.tmp` files first to avoid saving incomplete/corrupted video files.
 
 ---
 
@@ -40,57 +42,65 @@ Modern, fast, and lightweight Node.js tool to **mass download TikTok videos with
 
 ## 💡 How to Use
 
-### 1. Mass Download from Profile
+### 1. Collect Profile Info & Links Only (Without Downloading Videos)
 
-Download all available videos from a user's profile:
+Use the `--info` flag to inspect a profile and export its full video list to `links.txt`:
 ```bash
-node TMD.js https://www.tiktok.com/@username
+node TMD.js "https://www.tiktok.com/@username" --info
 ```
 
-Or limit the download to $N$ videos (e.g. 5 videos):
+---
+
+### 2. Mass Download Profile (All or Limited $N$ Videos)
+
+Download all videos from a profile without watermark:
 ```bash
-node TMD.js https://www.tiktok.com/@username 5
+node TMD.js "https://www.tiktok.com/@username"
 ```
 
-You can also use shorthand username formats:
+Or limit the download to $N$ videos (e.g. 10 videos):
 ```bash
-node TMD.js @username 10
+node TMD.js "https://www.tiktok.com/@username" 10
+```
+
+Shorthand username formats are also supported (enclose in quotes if using PowerShell):
+```bash
+node TMD.js "@username" 5
 node TMD.js username 3
 ```
 
 ---
 
-### 2. Single Video Download
+### 3. Single Video Direct Download (Watermark-Free HD)
 
-Download a specific video directly without watermark:
+Download a single video directly:
 ```bash
-node TMD.js https://www.tiktok.com/@username/video/7675792462593428756
+node TMD.js "https://www.tiktok.com/@username/video/7675792462593428756"
 ```
 
 Shortened links (`vm.tiktok.com` or `vt.tiktok.com`) are also supported:
 ```bash
-node TMD.js https://vm.tiktok.com/xxxxxx/
+node TMD.js "https://vm.tiktok.com/xxxxxx/"
 ```
 
 ---
 
 ## 📁 Output Directory
 
-All downloads are neatly organized in the root directory under the creator's handle:
+All downloads and exported data are organized in the root directory under the creator's handle:
 
 ```text
 Tiktok-Mass-Downloader/
 ├── @username/
-│   ├── 7675792462593428756.mp4
-│   ├── 7696392556535418113.mp4
-│   └── names.txt
+│   ├── 7675792462593428756.mp4     # Watermark-free HD video file
+│   ├── 7696392556535418113.mp4     # Watermark-free HD video file
+│   ├── profile_info.json           # Complete profile metadata JSON
+│   ├── links.txt                   # List of all extracted video links
+│   └── names.txt                   # Captions and video IDs
 ├── TMD.js
 ├── package.json
 └── README.md
 ```
-
-- Each video is saved as `<videoId>.mp4`.
-- `names.txt` stores each video ID and its caption/description.
 
 ---
 

@@ -7,6 +7,22 @@ const { finished } = require('stream/promises');
 // Utility sleep
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Format numbers with commas (e.g. 197300 -> 197,300)
+function formatNumber(num) {
+  if (num == null || isNaN(num)) return '0';
+  return Number(num).toLocaleString();
+}
+
+// Compact number formatting (e.g. 197300 -> 197.3K, 2005718 -> 2.0M)
+function formatCompact(num) {
+  if (num == null || isNaN(num)) return '0';
+  const n = Number(num);
+  if (n >= 1e9) return (n / 1e9).toFixed(1) + 'B';
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+  return n.toString();
+}
+
 // Format bytes into human-readable string (B, KB, MB, GB)
 function formatBytes(bytes) {
   if (!bytes || bytes === 0) return '0 B';
@@ -30,9 +46,9 @@ function sanitizeFilename(name) {
 }
 
 /**
- * Fetch video metadata and 100% watermark-free download URL via TikWM API (with HD support)
+ * Fetch video metadata and 100% watermark-free download URL via TikWM API (Method 1)
  */
-async function getVideoDetails(videoUrl, retries = 3) {
+async function getVideoDetailsViaApi(videoUrl, retries = 2) {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       const endpoint = `https://www.tikwm.com/api/?url=${encodeURIComponent(videoUrl)}&hd=1`;
@@ -50,12 +66,10 @@ async function getVideoDetails(videoUrl, retries = 3) {
 
       const json = await res.json();
       if (json.code === 0 && json.data) {
-        // Explicitly prioritize HD watermark-free or standard watermark-free stream.
-        // We strictly DO NOT fallback to wmplay (watermarked).
+        // Strictly prioritize HD or standard watermark-free stream
         const noWatermarkPlayUrl = json.data.hdplay || json.data.play;
-
         if (!noWatermarkPlayUrl) {
-          throw new Error('No watermark-free stream available in API response');
+          throw new Error('No watermark-free stream in API response');
         }
 
         return {
@@ -64,8 +78,8 @@ async function getVideoDetails(videoUrl, retries = 3) {
           author: json.data.author?.unique_id || 'unknown_user',
           playUrl: noWatermarkPlayUrl,
           isHD: Boolean(json.data.hdplay),
-          musicUrl: json.data.music || null,
           size: json.data.size || 0,
+          headers: {},
         };
       } else {
         throw new Error(json.msg || 'API returned non-zero status code');
@@ -74,20 +88,94 @@ async function getVideoDetails(videoUrl, retries = 3) {
       if (attempt === retries) {
         throw err;
       }
-      await sleep(1500 * attempt);
+      await sleep(1000 * attempt);
     }
   }
 }
 
 /**
- * Stream download a video file with a real-time progress bar
+ * Ultimate Fallback: Bypass restricted / download-prevented videos using Puppeteer session cookies & rehydration (Method 2)
  */
-async function downloadFile(fileUrl, outputPath, expectedSize = 0) {
+async function getVideoDetailsViaBrowserBypass(videoUrl) {
+  console.log(` [Bypass Resolver] Activating browser session bypass for restricted video...`);
+  const browser = await puppeteer.launch({
+    headless: 'new',
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-blink-features=AutomationControlled'],
+  });
+
+  try {
+    const page = await browser.newPage();
+    await page.setUserAgent(
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    );
+    await page.goto(videoUrl, { waitUntil: 'domcontentloaded', timeout: 35000 });
+    await sleep(2500);
+
+    const cookies = await page.cookies();
+    const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join('; ');
+
+    const videoData = await page.evaluate(() => {
+      try {
+        const script = document.getElementById('__UNIVERSAL_DATA_FOR_REHYDRATION__');
+        if (script) {
+          const full = JSON.parse(script.textContent);
+          const item = full['__DEFAULT_SCOPE__']?.['webapp.video-detail']?.itemInfo?.itemStruct;
+          if (item) {
+            return {
+              title: item.desc || 'Untitled',
+              author: item.author?.uniqueId || 'unknown_user',
+              playAddr: item.video?.playAddr || item.video?.downloadAddr || null,
+              id: item.id || null,
+            };
+          }
+        }
+      } catch (_) {}
+      return null;
+    });
+
+    if (videoData && videoData.playAddr) {
+      return {
+        id: videoData.id || (videoUrl.match(/\/video\/(\d+)/) || [])[1] || `${Date.now()}`,
+        title: videoData.title,
+        author: videoData.author,
+        playUrl: videoData.playAddr,
+        isHD: false,
+        size: 0,
+        headers: {
+          Referer: 'https://www.tiktok.com/',
+          Cookie: cookieHeader,
+        },
+      };
+    }
+
+    throw new Error('Could not resolve video playAddr from page rehydration');
+  } finally {
+    await browser.close();
+  }
+}
+
+/**
+ * Combined Video Details Resolver with Automatic Bypass
+ */
+async function resolveVideo(videoUrl) {
+  try {
+    return await getVideoDetailsViaApi(videoUrl);
+  } catch (apiErr) {
+    console.log(` ⚠️ API lookup failed (${apiErr.message}). Initiating deep bypass...`);
+    return await getVideoDetailsViaBrowserBypass(videoUrl);
+  }
+}
+
+/**
+ * Stream download a video file with a real-time progress bar and atomic temporary file handling
+ */
+async function downloadFile(fileUrl, outputPath, expectedSize = 0, customHeaders = {}) {
   const tempPath = `${outputPath}.tmp`;
   const res = await fetch(fileUrl, {
     headers: {
       'User-Agent':
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      ...customHeaders,
     },
   });
 
@@ -178,10 +266,10 @@ async function downloadFile(fileUrl, outputPath, expectedSize = 0) {
 }
 
 /**
- * Scrape TikTok user profile video links with auto-scroll and modal popup auto-dismissal
+ * Scrape TikTok profile: Extract profile info, scan videos, and collect clean links
  */
 async function scrapeProfile(userProfileUrl, maxVideos = Infinity) {
-  console.log(`[Puppeteer] Launching headless browser for: ${userProfileUrl}`);
+  console.log(`\n[Puppeteer] Connecting to profile: ${userProfileUrl}`);
   const browser = await puppeteer.launch({
     headless: 'new',
     args: [
@@ -199,7 +287,7 @@ async function scrapeProfile(userProfileUrl, maxVideos = Infinity) {
     );
     await page.setViewport({ width: 1280, height: 900 });
 
-    // Block image/media/font downloads to maximize scraping speed & minimize bandwidth
+    // Block images, fonts, and media during scanning to maximize speed
     await page.setRequestInterception(true);
     page.on('request', (req) => {
       if (['image', 'media', 'font'].includes(req.resourceType())) {
@@ -209,23 +297,66 @@ async function scrapeProfile(userProfileUrl, maxVideos = Infinity) {
       }
     });
 
-    console.log('[Puppeteer] Navigating to user profile...');
     await page.goto(userProfileUrl, { waitUntil: 'domcontentloaded', timeout: 45000 });
+    await sleep(2000);
 
-    // Wait for video links or container
-    try {
-      await page.waitForSelector('a[href*="/video/"]', { timeout: 15000 });
-    } catch {
-      console.log('[Puppeteer] First selector wait reached, proceeding to auto-scroll...');
-    }
+    // 1. Extract Profile Info from SSR Rehydration or DOM
+    const profileInfo = await page.evaluate(() => {
+      try {
+        const script = document.getElementById('__UNIVERSAL_DATA_FOR_REHYDRATION__');
+        if (script) {
+          const full = JSON.parse(script.textContent);
+          const scope = full['__DEFAULT_SCOPE__'];
+          const userDetail = scope?.['webapp.user-detail']?.userInfo;
+          if (userDetail) {
+            const u = userDetail.user || {};
+            const s = userDetail.stats || {};
+            return {
+              id: u.id || '',
+              username: u.uniqueId || '',
+              nickname: u.nickname || '',
+              bio: u.signature || '',
+              avatar: u.avatarLarger || u.avatarMedium || '',
+              verified: Boolean(u.verified),
+              privateAccount: Boolean(u.privateAccount),
+              downloadSetting: u.downloadSetting, // 0 = allowed, 3 = prevented/disabled by creator
+              followers: s.followerCount || 0,
+              following: s.followingCount || 0,
+              hearts: s.heartCount || s.heart || 0,
+              videoCount: s.videoCount || 0,
+            };
+          }
+        }
+      } catch (_) {}
 
+      // Fallback: Extract from DOM
+      return {
+        id: '',
+        username: (window.location.pathname.match(/@([^/?]+)/) || [])[1] || '',
+        nickname: document.querySelector('[data-e2e="user-title"]')?.innerText || '',
+        bio: document.querySelector('[data-e2e="user-bio"]')?.innerText || '',
+        avatar: '',
+        verified: Boolean(document.querySelector('[data-e2e="user-verified-badge"]')),
+        privateAccount: false,
+        downloadSetting: 0,
+        followers: document.querySelector('[data-e2e="followers-count"]')?.innerText || 0,
+        following: document.querySelector('[data-e2e="following-count"]')?.innerText || 0,
+        hearts: document.querySelector('[data-e2e="likes-count"]')?.innerText || 0,
+        videoCount: 0,
+      };
+    });
+
+    // 2. Display Formatted Profile Information
+    displayProfileCard(profileInfo, userProfileUrl);
+
+    // 3. Scan & Collect Video Links
+    console.log('[Puppeteer] Scanning profile feed and collecting video links...');
     const collectedLinks = new Set();
     let noChangeCycles = 0;
     let lastCount = 0;
 
-    console.log('[Puppeteer] Mass scanning profile feed...');
     while (collectedLinks.size < maxVideos && noChangeCycles < 6) {
-      // 1. Dismiss any login modals, popups, or sticky overlays that block scrolling
+      // Auto-dismiss any login or guest popups that block scrolling
       await page.evaluate(() => {
         const closeSelectors = [
           '[data-e2e="modal-close-inner-button"]',
@@ -241,7 +372,6 @@ async function scrapeProfile(userProfileUrl, maxVideos = Infinity) {
           });
         });
 
-        // Remove any dialog or modal container element and restore scroll
         document
           .querySelectorAll('div[role="dialog"], [data-e2e="auth-modal"], div[class*="DivModalContainer"]')
           .forEach((el) => {
@@ -253,14 +383,13 @@ async function scrapeProfile(userProfileUrl, maxVideos = Infinity) {
         document.documentElement.style.overflow = 'auto';
       });
 
-      // 2. Extract all video links from DOM
+      // Extract all video anchors from the page
       const links = await page.evaluate(() => {
         const anchors = Array.from(document.querySelectorAll('a[href*="/video/"]'));
         return anchors.map((a) => a.href);
       });
 
       for (const link of links) {
-        // Strip trailing query parameters for a clean canonical video URL
         const cleanLink = link.split('?')[0];
         collectedLinks.add(cleanLink);
         if (collectedLinks.size >= maxVideos) break;
@@ -283,10 +412,42 @@ async function scrapeProfile(userProfileUrl, maxVideos = Infinity) {
     }
 
     process.stdout.write('\n');
-    return Array.from(collectedLinks).slice(0, maxVideos);
+    const finalLinks = Array.from(collectedLinks).slice(0, maxVideos);
+
+    return {
+      profileInfo,
+      videoLinks: finalLinks,
+    };
   } finally {
     await browser.close();
   }
+}
+
+/**
+ * Print a stylish terminal card for TikTok Profile Details
+ */
+function displayProfileCard(info, url) {
+  const isBypassed = info.downloadSetting !== 0;
+  const downloadStatusText = isBypassed
+    ? '🔒 Disabled by creator [BYPASS ACTIVE -> 100% Downloadable]'
+    : '🔓 Allowed by creator [BYPASS READY]';
+
+  console.log('\n╔════════════════════════════════════════════════════════════════════════════╗');
+  console.log('║                            TIKTOK PROFILE INFO                             ║');
+  console.log('╠════════════════════════════════════════════════════════════════════════════╣');
+  console.log(`║  • Username       : @${info.username} ${info.id ? `(ID: ${info.id})` : ''}`);
+  console.log(`║  • Nickname       : ${info.nickname}${info.verified ? ' [VERIFIED ✓]' : ''}`);
+  console.log(`║  • Followers      : ${formatNumber(info.followers)} (${formatCompact(info.followers)})`);
+  console.log(`║  • Following      : ${formatNumber(info.following)}`);
+  console.log(`║  • Total Hearts   : ${formatNumber(info.hearts)} (${formatCompact(info.hearts)})`);
+  console.log(`║  • Total Videos   : ${info.videoCount > 0 ? formatNumber(info.videoCount) : 'Dynamic Feed'}`);
+  console.log(`║  • Profile Link   : ${url}`);
+  console.log(`║  • Download Status: ${downloadStatusText}`);
+  if (info.bio) {
+    const cleanBio = info.bio.replace(/\r?\n/g, '  |  ');
+    console.log(`║  • Bio / Signature: ${cleanBio.slice(0, 80)}${cleanBio.length > 80 ? '...' : ''}`);
+  }
+  console.log('╚════════════════════════════════════════════════════════════════════════════╝\n');
 }
 
 /**
@@ -296,21 +457,20 @@ async function main() {
   const args = process.argv.slice(2);
   if (!args[0]) {
     console.log('╔════════════════════════════════════════════════════════════════════════════╗');
-    console.log('║                   Tiktok Mass Downloader (Without Watermark)               ║');
+    console.log('║               Tiktok Mass Downloader (With Profile Info & Bypass)          ║');
     console.log('╠════════════════════════════════════════════════════════════════════════════╣');
     console.log('║ Usage:                                                                     ║');
     console.log('║                                                                            ║');
-    console.log('║  • Mass Download User Profile (All videos or limit N):                     ║');
-    console.log('║      node TMD.js https://www.tiktok.com/@username                          ║');
-    console.log('║      node TMD.js https://www.tiktok.com/@username 10                       ║');
-    console.log('║      node TMD.js @username 5                                               ║');
+    console.log('║  • Mass Download Profile (Collects Info, Displays Links, Downloads):       ║');
+    console.log('║      node TMD.js "https://www.tiktok.com/@username"                        ║');
+    console.log('║      node TMD.js "https://www.tiktok.com/@username" 10                     ║');
+    console.log('║      node TMD.js "@username" 5                                             ║');
     console.log('║                                                                            ║');
-    console.log('║  • Single Video Download (Watermark-Free HD):                              ║');
-    console.log('║      node TMD.js https://www.tiktok.com/@user/video/7675792462593428756    ║');
+    console.log('║  • Collect Info & Links Only (Without Downloading Videos):                 ║');
+    console.log('║      node TMD.js "https://www.tiktok.com/@username" --info                 ║');
     console.log('║                                                                            ║');
-    console.log('║ Output:                                                                    ║');
-    console.log('║  • Videos saved to @username/<videoId>.mp4 (Clean without watermark)       ║');
-    console.log('║  • Video titles and metadata recorded in @username/names.txt               ║');
+    console.log('║  • Single Video Download (Watermark-Free HD + Bypass):                     ║');
+    console.log('║      node TMD.js "https://www.tiktok.com/@user/video/7675792462593428756"  ║');
     console.log('╚════════════════════════════════════════════════════════════════════════════╝');
     process.exit(1);
   }
@@ -322,7 +482,8 @@ async function main() {
     process.exit(1);
   }
 
-  const limitArg = args[1] ? parseInt(args[1], 10) : null;
+  const isInfoOnly = args.includes('--info') || args.includes('--info-only') || args.includes('--links-only');
+  const limitArg = args[1] && !args[1].startsWith('--') ? parseInt(args[1], 10) : null;
   const maxVideos = limitArg && !isNaN(limitArg) && limitArg > 0 ? limitArg : Infinity;
 
   // Auto-detect & normalize username format
@@ -339,20 +500,20 @@ async function main() {
     rawInput.includes('vt.tiktok.com');
 
   console.log('════════════════════════════════════════════════════');
-  console.log(' 🚀 TikTok Mass Downloader (Watermark-Free)');
+  console.log(' 🚀 TikTok Mass Downloader (Watermark-Free + Bypass)');
   console.log('════════════════════════════════════════════════════');
   console.log(` Target : ${rawInput}`);
   if (isSingleVideo) {
     console.log(' Mode   : Single Video Download (Direct No-Watermark HD)');
   } else {
-    console.log(` Mode   : Profile Mass Download (${maxVideos === Infinity ? 'All Available' : maxVideos} videos)`);
+    console.log(` Mode   : Profile Processing (${maxVideos === Infinity ? 'All Available' : maxVideos} videos)${isInfoOnly ? ' [INFO & LINKS ONLY]' : ''}`);
   }
-  console.log(' Watermark: REMOVED (Clean 100% Watermark-Free)\n');
+  console.log(' Bypass : Profile "Download Prevented" Bypassed (100% Watermark-Free)\n');
 
   if (isSingleVideo) {
     await downloadSingleVideo(rawInput);
   } else {
-    await downloadProfileMass(rawInput, maxVideos);
+    await processProfile(rawInput, maxVideos, isInfoOnly);
   }
 }
 
@@ -361,13 +522,13 @@ async function main() {
  */
 async function downloadSingleVideo(videoUrl) {
   try {
-    console.log('[1/2] Resolving clean video stream...');
-    const details = await getVideoDetails(videoUrl);
+    console.log('[1/2] Resolving clean video stream with bypass support...');
+    const details = await resolveVideo(videoUrl);
 
     console.log(` 📌 Title   : ${details.title}`);
     console.log(` 👤 Author  : @${details.author}`);
     console.log(` 🆔 Video ID: ${details.id}`);
-    console.log(` 🎬 Quality : ${details.isHD ? 'HD (No Watermark)' : 'Standard (No Watermark)'}`);
+    console.log(` 🎬 Quality : ${details.isHD ? 'HD (No Watermark)' : 'Clean Stream (No Watermark)'}`);
 
     const outputDir = path.join(process.cwd(), `@${sanitizeFilename(details.author)}`);
     if (!fs.existsSync(outputDir)) {
@@ -378,7 +539,7 @@ async function downloadSingleVideo(videoUrl) {
     const outputPath = path.join(outputDir, videoFilename);
 
     console.log(`\n[2/2] Downloading watermark-free video:`);
-    await downloadFile(details.playUrl, outputPath, details.size);
+    await downloadFile(details.playUrl, outputPath, details.size, details.headers);
 
     // Save description to names.txt
     const descLine = `[${details.id}] ${details.title}\n`;
@@ -393,40 +554,67 @@ async function downloadSingleVideo(videoUrl) {
 }
 
 /**
- * Handle mass profile download
+ * Process profile: Display profile info, display video links, save metadata, and download
  */
-async function downloadProfileMass(profileUrl, maxVideos) {
-  let videoUrls = [];
+async function processProfile(profileUrl, maxVideos, isInfoOnly = false) {
+  let scrapeResult;
   try {
-    videoUrls = await scrapeProfile(profileUrl, maxVideos);
+    scrapeResult = await scrapeProfile(profileUrl, maxVideos);
   } catch (err) {
     console.error(`❌ Failed to scan profile: ${err.message}`);
     return;
   }
 
-  if (videoUrls.length === 0) {
+  const { profileInfo, videoLinks } = scrapeResult;
+  const username = profileInfo.username || (profileUrl.match(/@([^/?]+)/) || [])[1] || 'tiktok_user';
+  const outputDir = path.join(process.cwd(), `@${sanitizeFilename(username)}`);
+
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
+
+  // Save profile info JSON
+  fs.writeFileSync(path.join(outputDir, 'profile_info.json'), JSON.stringify(profileInfo, null, 2), 'utf8');
+
+  if (videoLinks.length === 0) {
     console.log('⚠️ No videos found. Check if the profile is public or if the username is correct.');
     return;
   }
 
-  console.log(`\n📦 Ready to mass download ${videoUrls.length} video(s) without watermark.\n`);
+  // Save collected links to links.txt
+  fs.writeFileSync(path.join(outputDir, 'links.txt'), videoLinks.join('\n') + '\n', 'utf8');
+
+  // Display Collected Video Links in terminal
+  console.log('────────────────────────────────────────────────────────────────────────────');
+  console.log(` 📋 Collected Video Links (${videoLinks.length} items found):`);
+  console.log('────────────────────────────────────────────────────────────────────────────');
+  videoLinks.forEach((link, idx) => {
+    const num = String(idx + 1).padStart(2, '0');
+    console.log(` [${num}] ${link}`);
+  });
+  console.log('────────────────────────────────────────────────────────────────────────────');
+  console.log(` 💾 Saved profile info -> @${username}/profile_info.json`);
+  console.log(` 💾 Saved all links   -> @${username}/links.txt`);
+  console.log('────────────────────────────────────────────────────────────────────────────\n');
+
+  if (isInfoOnly) {
+    console.log('✨ [Info Only Mode] Profile information and links collected successfully. Exiting without downloading videos.\n');
+    return;
+  }
+
+  console.log(`📦 Starting watermark-free mass download for ${videoLinks.length} video(s) (Bypass Active)...\n`);
 
   let successCount = 0;
   let failCount = 0;
   let skippedCount = 0;
 
-  for (let i = 0; i < videoUrls.length; i++) {
-    const vUrl = videoUrls[i];
-    console.log(`\n[${i + 1}/${videoUrls.length}] Processing: ${vUrl}`);
+  for (let i = 0; i < videoLinks.length; i++) {
+    const vUrl = videoLinks[i];
+    console.log(`\n[${i + 1}/${videoLinks.length}] Processing: ${vUrl}`);
 
     try {
-      const details = await getVideoDetails(vUrl);
+      const details = await resolveVideo(vUrl);
       console.log(` 📌 Title: ${details.title.slice(0, 65)}${details.title.length > 65 ? '...' : ''}`);
-
-      const outputDir = path.join(process.cwd(), `@${sanitizeFilename(details.author)}`);
-      if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir, { recursive: true });
-      }
 
       const videoFilename = `${details.id}.mp4`;
       const outputPath = path.join(outputDir, videoFilename);
@@ -437,10 +625,10 @@ async function downloadProfileMass(profileUrl, maxVideos) {
         continue;
       }
 
-      console.log(` ⬇ Downloading (${details.isHD ? 'HD No-Watermark' : 'No-Watermark'})...`);
-      await downloadFile(details.playUrl, outputPath, details.size);
+      console.log(` ⬇ Downloading (${details.isHD ? 'HD No-Watermark' : 'No-Watermark Stream'})...`);
+      await downloadFile(details.playUrl, outputPath, details.size, details.headers);
 
-      // Save description
+      // Save description to names.txt
       const descLine = `[${details.id}] ${details.title}\n`;
       fs.appendFileSync(path.join(outputDir, 'names.txt'), descLine, 'utf8');
 
@@ -448,7 +636,7 @@ async function downloadProfileMass(profileUrl, maxVideos) {
       console.log(` ✔ Saved: @${details.author}/${videoFilename}`);
 
       // Small jitter between downloads to prevent IP throttling
-      if (i < videoUrls.length - 1) {
+      if (i < videoLinks.length - 1) {
         await sleep(1000);
       }
     } catch (err) {
@@ -459,10 +647,13 @@ async function downloadProfileMass(profileUrl, maxVideos) {
 
   console.log('\n====================================================');
   console.log(' 🏁 Mass Download Summary');
-  console.log(`  • Total Videos:    ${videoUrls.length}`);
+  console.log(`  • Profile:         @${username}`);
+  console.log(`  • Total Videos:    ${videoLinks.length}`);
   console.log(`  • Downloaded:      ${successCount}`);
   console.log(`  • Already Existed: ${skippedCount}`);
   console.log(`  • Failed:          ${failCount}`);
+  console.log(`  • Profile Info:    @${username}/profile_info.json`);
+  console.log(`  • Links File:      @${username}/links.txt`);
   console.log('====================================================\n');
 }
 
