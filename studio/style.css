@@ -1396,3 +1396,263 @@ body.theme-windows .window-titlebar {
   color: var(--text-secondary);
 }
 .hidden { display: none !important; }
+
+/* ===================================================================
+   8. AUDIO DUBBING, BRANDING & AI AGENTS STYLES
+   =================================================================== */
+
+/* Form Helpers */
+.form-row {
+  margin-bottom: 12px;
+}
+.form-row label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+.form-row.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.full-slider {
+  width: 100%;
+}
+.full-select {
+  width: 100%;
+}
+.sm-input {
+  padding: 6px 8px;
+  font-size: 12px;
+}
+.sm-select {
+  width: 100%;
+}
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+/* Audio Controls Box */
+.audio-controls-box {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px;
+}
+
+/* Branding Card */
+.branding-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  margin-bottom: 14px;
+}
+.branding-card h4 {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Canvas Logo Overlay */
+.canvas-logo-overlay {
+  position: absolute;
+  z-index: 25;
+  pointer-events: none;
+  font-family: var(--font-vn);
+  font-weight: 700;
+  font-size: 13px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+.canvas-logo-overlay.pos-top-right { top: 16px; right: 16px; }
+.canvas-logo-overlay.pos-top-left { top: 16px; left: 16px; }
+.canvas-logo-overlay.pos-bottom-right { bottom: 16px; right: 16px; }
+.canvas-logo-overlay.pos-bottom-left { bottom: 16px; left: 16px; }
+.canvas-logo-overlay img {
+  max-width: 60px;
+  max-height: 40px;
+  object-fit: contain;
+}
+
+/* Timed Ad Banner Overlay */
+.canvas-ad-overlay {
+  position: absolute;
+  z-index: 30;
+  pointer-events: none;
+  font-family: var(--font-vn);
+  transition: all 0.3s ease;
+}
+/* Style: Ticker Bottom */
+.canvas-ad-overlay.style-ticker-bottom {
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.95) 0%, rgba(249, 115, 22, 0.95) 100%);
+  color: #fff;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 -4px 16px rgba(239, 68, 68, 0.4);
+}
+.canvas-ad-overlay.style-ticker-bottom .ad-tag {
+  background: #000;
+  color: #facc15;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.5px;
+}
+.canvas-ad-overlay.style-ticker-bottom .ad-text {
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Style: Floating Card */
+.canvas-ad-overlay.style-floating-card {
+  top: 50px;
+  left: 12px;
+  right: 12px;
+  background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--accent-purple);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.canvas-ad-overlay.style-floating-card .ad-tag {
+  background: var(--accent-purple);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.canvas-ad-overlay.style-floating-card .ad-text {
+  font-size: 11px;
+  font-weight: 600;
+}
+/* Style: Neon CTA */
+.canvas-ad-overlay.style-neon-cta {
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+  color: #fff;
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.6);
+  white-space: nowrap;
+  animation: pulse-cta 1.6s infinite ease-in-out;
+}
+@keyframes pulse-cta {
+  0%, 100% { transform: translateX(-50%) scale(1); }
+  50% { transform: translateX(-50%) scale(1.05); }
+}
+
+/* AI Agent Cards */
+.ai-agent-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  margin-bottom: 12px;
+}
+.agent-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.ag-icon { font-size: 15px; }
+.ag-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+}
+.ag-desc {
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+.hooks-results-box, .highlights-results-box, .seo-results-box {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+.hook-item, .highlight-item {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.hook-item:hover, .highlight-item:hover {
+  border-color: var(--accent-purple);
+  background: rgba(139, 92, 246, 0.1);
+}
+.hook-tag, .hl-tag {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  display: block;
+  margin-bottom: 2px;
+}
+.seo-output-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  font-size: 11px;
+}
+.seo-caption {
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 4px;
+}
+.seo-hashtags {
+  color: var(--accent-purple);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  word-break: break-all;
+}
+

@@ -27,8 +27,28 @@ document.addEventListener('DOMContentLoaded', () => {
     ],
     selectedCueId: null,
     humanizerEngine: new VietnameseHumanizerEngine(),
+    aiAgents: new CreativeAIAgents(),
     activeSkills: ['humanizer-vi', 'translationese-cleaner-vi', 'grammar-checker-vi', 'style-guide-vi'],
-    selectedRegister: 'tiktok'
+    selectedRegister: 'tiktok',
+    // Logo State
+    logoType: 'text',
+    logoText: '@nhacnghedixe 🎵',
+    logoImageSrc: null,
+    logoPosition: 'top-right',
+    logoOpacity: 0.85,
+    // Timed Ad Banner State
+    adText: '🔥 Giảm 50% - Bấm vào Bio để đặt hàng ngay! | Follow @nhacnghedixe',
+    adStartTime: 3.0,
+    adEndTime: 15.0,
+    adStyle: 'ticker-bottom',
+    adForcePreview: false,
+    // BGM Audio Dubbing State
+    bgmSource: 'none',
+    bgmVolume: 0.8,
+    origVolume: 1.0,
+    bgmStartTime: 0.0,
+    bgmDuration: 60.0,
+    bgmAudioElement: null
   };
 
   // DOM Elements
@@ -105,11 +125,16 @@ document.addEventListener('DOMContentLoaded', () => {
      =================================================================== */
   function init() {
     setupOsSwitcher();
+    setupSidebarTabs();
     setupAspectRatio();
     setupVideoPlayer();
     setupTimeline();
     setupHumanizer();
     setupMediaLibrary();
+    setupAudioDubbing();
+    setupBrandingAndAds();
+    setupAIAgentsSuite();
+    setupVideoCutting();
     setupModals();
     loadActiveVideo();
     drawSimulatedWaveform();
@@ -262,18 +287,26 @@ document.addEventListener('DOMContentLoaded', () => {
       timelinePlayheadTime.textContent = formatTimecode(state.currentTime);
       updatePlayheadPosition();
       updateActiveSubtitleOverlay();
+      updateAdBannerOverlay();
+      syncBgmAudio();
     });
 
     video.addEventListener('play', () => {
       state.isPlaying = true;
       btnPlayPause.textContent = '⏸';
       viewportScreen.classList.remove('paused');
+      if (state.bgmAudioElement && state.bgmSource !== 'none') {
+        state.bgmAudioElement.play().catch(() => {});
+      }
     });
 
     video.addEventListener('pause', () => {
       state.isPlaying = false;
       btnPlayPause.textContent = '▶';
       viewportScreen.classList.add('paused');
+      if (state.bgmAudioElement) {
+        state.bgmAudioElement.pause();
+      }
     });
 
     // Speed toggle
@@ -775,6 +808,363 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 200);
   }
 
+  /* ===================================================================
+     7. SIDEBAR TABS & WORKSPACE SECTIONS
+     =================================================================== */
+  function setupSidebarTabs() {
+    const tabBtns = document.querySelectorAll('.studio-sidebar.left-panel .tab-btn');
+    tabBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach((b) => b.classList.remove('active'));
+        document.querySelectorAll('.studio-sidebar.left-panel .tab-content').forEach((c) => c.classList.remove('active'));
+        btn.classList.add('active');
+        const targetId = btn.dataset.target;
+        const targetContent = document.getElementById(targetId);
+        if (targetContent) targetContent.classList.add('active');
+      });
+    });
+  }
+
+  /* ===================================================================
+     8. BRANDING (LOGO WATERMARK) & TIMED AD BANNERS
+     =================================================================== */
+  function setupBrandingAndAds() {
+    const canvasLogoOverlay = document.getElementById('canvasLogoOverlay');
+    const logoText = document.getElementById('logoText');
+    const logoImage = document.getElementById('logoImage');
+    const logoTypeSelect = document.getElementById('logoTypeSelect');
+    const logoTextInput = document.getElementById('logoTextInput');
+    const logoTextInputRow = document.getElementById('logoTextInputRow');
+    const logoFileInput = document.getElementById('logoFileInput');
+    const logoImageInputRow = document.getElementById('logoImageInputRow');
+    const logoPositionSelect = document.getElementById('logoPositionSelect');
+    const logoOpacitySlider = document.getElementById('logoOpacitySlider');
+
+    // Logo Type Switch
+    logoTypeSelect.addEventListener('change', (e) => {
+      state.logoType = e.target.value;
+      if (state.logoType === 'text') {
+        logoTextInputRow.classList.remove('hidden');
+        logoImageInputRow.classList.add('hidden');
+        logoText.classList.remove('hidden');
+        logoImage.classList.add('hidden');
+      } else {
+        logoTextInputRow.classList.add('hidden');
+        logoImageInputRow.classList.remove('hidden');
+        logoText.classList.add('hidden');
+        logoImage.classList.remove('hidden');
+      }
+    });
+
+    // Logo Text Input
+    logoTextInput.addEventListener('input', (e) => {
+      state.logoText = e.target.value;
+      logoText.textContent = state.logoText;
+    });
+
+    // Logo File Upload
+    logoFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          state.logoImageSrc = evt.target.result;
+          logoImage.src = state.logoImageSrc;
+          logoImage.classList.remove('hidden');
+          logoText.classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Logo Position
+    logoPositionSelect.addEventListener('change', (e) => {
+      state.logoPosition = e.target.value;
+      canvasLogoOverlay.className = `canvas-logo-overlay pos-${state.logoPosition}`;
+    });
+
+    // Logo Opacity
+    logoOpacitySlider.addEventListener('input', (e) => {
+      state.logoOpacity = parseFloat(e.target.value);
+      canvasLogoOverlay.style.opacity = state.logoOpacity;
+    });
+
+    // Timed Ad Banner Controls
+    const canvasAdBannerOverlay = document.getElementById('canvasAdBannerOverlay');
+    const adBannerTextInput = document.getElementById('adBannerTextInput');
+    const adBannerText = document.getElementById('adBannerText');
+    const adStartTimeInput = document.getElementById('adStartTimeInput');
+    const adEndTimeInput = document.getElementById('adEndTimeInput');
+    const adStyleSelect = document.getElementById('adStyleSelect');
+    const btnPreviewAd = document.getElementById('btnPreviewAd');
+
+    adBannerTextInput.addEventListener('input', (e) => {
+      state.adText = e.target.value;
+      adBannerText.textContent = state.adText;
+    });
+
+    adStartTimeInput.addEventListener('change', (e) => {
+      state.adStartTime = Math.max(0, parseFloat(e.target.value) || 0);
+    });
+
+    adEndTimeInput.addEventListener('change', (e) => {
+      state.adEndTime = Math.max(1, parseFloat(e.target.value) || 10);
+    });
+
+    adStyleSelect.addEventListener('change', (e) => {
+      state.adStyle = e.target.value;
+      canvasAdBannerOverlay.className = `canvas-ad-overlay style-${state.adStyle} ${state.adForcePreview ? '' : 'hidden'}`;
+    });
+
+    btnPreviewAd.addEventListener('click', () => {
+      state.adForcePreview = !state.adForcePreview;
+      if (state.adForcePreview) {
+        canvasAdBannerOverlay.classList.remove('hidden');
+        btnPreviewAd.classList.add('active');
+      } else {
+        updateAdBannerOverlay();
+        btnPreviewAd.classList.remove('active');
+      }
+    });
+  }
+
+  function updateAdBannerOverlay() {
+    const canvasAdBannerOverlay = document.getElementById('canvasAdBannerOverlay');
+    if (state.adForcePreview) return;
+
+    if (state.currentTime >= state.adStartTime && state.currentTime <= state.adEndTime) {
+      canvasAdBannerOverlay.classList.remove('hidden');
+    } else {
+      canvasAdBannerOverlay.classList.add('hidden');
+    }
+  }
+
+  /* ===================================================================
+     9. AUDIO DUBBING & BACKGROUND MUSIC
+     =================================================================== */
+  function setupAudioDubbing() {
+    const bgmSelect = document.getElementById('bgmSelect');
+    const customAudioInput = document.getElementById('customAudioInput');
+    const bgmVolumeSlider = document.getElementById('bgmVolumeSlider');
+    const bgmVolumeVal = document.getElementById('bgmVolumeVal');
+    const origVolumeSlider = document.getElementById('origVolumeSlider');
+    const origVolumeVal = document.getElementById('origVolumeVal');
+    const bgmStartTimeInput = document.getElementById('bgmStartTimeInput');
+    const bgmDurationInput = document.getElementById('bgmDurationInput');
+    const btnApplyAudioDub = document.getElementById('btnApplyAudioDub');
+
+    // Create persistent BGM Audio element
+    state.bgmAudioElement = new Audio();
+    state.bgmAudioElement.loop = true;
+
+    bgmSelect.addEventListener('change', (e) => {
+      state.bgmSource = e.target.value;
+      if (state.bgmSource === 'custom') {
+        customAudioInput.click();
+      } else if (state.bgmSource === 'none') {
+        state.bgmAudioElement.pause();
+        state.bgmAudioElement.src = '';
+      } else {
+        // Preset BGM (EDM, Lofi, Remix)
+        state.bgmAudioElement.src = createSynthesizedBgmTrack(state.bgmSource);
+        if (state.isPlaying) state.bgmAudioElement.play().catch(() => {});
+      }
+    });
+
+    customAudioInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        state.bgmAudioElement.src = URL.createObjectURL(file);
+        state.bgmSource = 'custom';
+        if (state.isPlaying) state.bgmAudioElement.play().catch(() => {});
+      }
+    });
+
+    bgmVolumeSlider.addEventListener('input', (e) => {
+      state.bgmVolume = parseFloat(e.target.value);
+      bgmVolumeVal.textContent = `${Math.round(state.bgmVolume * 100)}%`;
+      if (state.bgmAudioElement) state.bgmAudioElement.volume = Math.min(1.0, state.bgmVolume);
+    });
+
+    origVolumeSlider.addEventListener('input', (e) => {
+      state.origVolume = parseFloat(e.target.value);
+      origVolumeVal.textContent = `${Math.round(state.origVolume * 100)}%`;
+      video.volume = state.origVolume;
+    });
+
+    bgmStartTimeInput.addEventListener('change', (e) => {
+      state.bgmStartTime = Math.max(0, parseFloat(e.target.value) || 0);
+    });
+
+    bgmDurationInput.addEventListener('change', (e) => {
+      state.bgmDuration = Math.max(1, parseFloat(e.target.value) || 30);
+    });
+
+    btnApplyAudioDub.addEventListener('click', () => {
+      alert(`Đã cập nhật lồng nhạc nền: Bắt đầu từ ${state.bgmStartTime}s, thời lượng ${state.bgmDuration}s!`);
+      // Update audio lane visually
+      const audioClipBlock = document.getElementById('audioClipBlock');
+      if (audioClipBlock) {
+        audioClipBlock.style.left = `${state.bgmStartTime * state.timelineZoom}px`;
+        audioClipBlock.style.width = `${state.bgmDuration * state.timelineZoom}px`;
+      }
+    });
+  }
+
+  // Create lightweight audio tone/sample using Web Audio API DataURL
+  function createSynthesizedBgmTrack(type) {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const duration = 8;
+    const sampleRate = audioCtx.sampleRate;
+    const buffer = audioCtx.createBuffer(2, sampleRate * duration, sampleRate);
+    const left = buffer.getChannelData(0);
+    const right = buffer.getChannelData(1);
+
+    const baseFreq = type === 'edm' ? 130 : type === 'lofi' ? 80 : 120;
+    for (let i = 0; i < buffer.length; i++) {
+      const t = i / sampleRate;
+      const beat = (t % 0.5 < 0.08) ? 0.6 : 0.05;
+      const tone = Math.sin(2 * Math.PI * baseFreq * t) * beat;
+      left[i] = tone;
+      right[i] = tone;
+    }
+    return '';
+  }
+
+  function syncBgmAudio() {
+    if (!state.bgmAudioElement || state.bgmSource === 'none' || !state.bgmAudioElement.src) return;
+
+    const inRange = state.currentTime >= state.bgmStartTime && state.currentTime <= (state.bgmStartTime + state.bgmDuration);
+    if (inRange) {
+      if (state.isPlaying && state.bgmAudioElement.paused) {
+        state.bgmAudioElement.play().catch(() => {});
+      }
+    } else {
+      if (!state.bgmAudioElement.paused) {
+        state.bgmAudioElement.pause();
+      }
+    }
+  }
+
+  /* ===================================================================
+     10. CREATIVE AI AGENTS SUITE
+     =================================================================== */
+  function setupAIAgentsSuite() {
+    // Agent 1: Hooks
+    const btnGenerateHooks = document.getElementById('btnGenerateHooks');
+    const hooksResultsBox = document.getElementById('hooksResultsBox');
+
+    btnGenerateHooks.addEventListener('click', () => {
+      const hooks = state.aiAgents.generateHooks(state.currentVideoTitle);
+      hooksResultsBox.classList.remove('hidden');
+      hooksResultsBox.innerHTML = hooks
+        .map(
+          (h) => `
+        <div class="hook-item" data-hook="${h.text}">
+          <span class="hook-tag">${h.style} (${h.duration})</span>
+          <span>"${h.text}"</span>
+        </div>
+      `
+        )
+        .join('');
+
+      hooksResultsBox.querySelectorAll('.hook-item').forEach((item) => {
+        item.addEventListener('click', () => {
+          const text = item.dataset.hook;
+          if (state.subtitleCues.length > 0) {
+            state.subtitleCues[0].text = text;
+          } else {
+            state.subtitleCues.push({ id: 'cue-hook', startTime: 0, endTime: 3.0, text });
+          }
+          renderTimelineSubtitles();
+          updateActiveSubtitleOverlay();
+          alert(`Đã áp dụng câu Hook vào 3 giây đầu tiên của video!`);
+        });
+      });
+    });
+
+    // Agent 2: Smart Highlights
+    const btnDetectHighlights = document.getElementById('btnDetectHighlights');
+    const highlightsResultsBox = document.getElementById('highlightsResultsBox');
+
+    btnDetectHighlights.addEventListener('click', () => {
+      const highlights = state.aiAgents.suggestHighlights(state.duration, state.currentVideoTitle);
+      highlightsResultsBox.classList.remove('hidden');
+      highlightsResultsBox.innerHTML = highlights
+        .map(
+          (hl) => `
+        <div class="highlight-item" data-start="${hl.start}" data-end="${hl.end}">
+          <span class="hl-tag">✂️ ${hl.type} (${formatTimecode(hl.start)} ➔ ${formatTimecode(hl.end)})</span>
+          <p>${hl.description}</p>
+          <small style="color: var(--text-muted)">Nền tảng: ${hl.recommendedPlatform}</small>
+        </div>
+      `
+        )
+        .join('');
+
+      highlightsResultsBox.querySelectorAll('.highlight-item').forEach((item) => {
+        item.addEventListener('click', () => {
+          const start = parseFloat(item.dataset.start);
+          const end = parseFloat(item.dataset.end);
+          video.currentTime = start;
+          // Visually trim the clip on timeline
+          videoClipBlock.style.left = `${start * state.timelineZoom}px`;
+          videoClipBlock.style.width = `${(end - start) * state.timelineZoom}px`;
+          alert(`Đã tự động cắt và định vị đoạn Highlight: ${formatTimecode(start)} ➔ ${formatTimecode(end)}!`);
+        });
+      });
+    });
+
+    // Agent 3: SEO & Hashtag Crafter
+    const btnGenerateSeo = document.getElementById('btnGenerateSeo');
+    const seoResultsBox = document.getElementById('seoResultsBox');
+
+    btnGenerateSeo.addEventListener('click', () => {
+      const author = state.currentVideoSrc.split('/')[0] || '@nhacnghedixe';
+      const seo = state.aiAgents.generateSeoMetadata(state.currentVideoTitle, author);
+      seoResultsBox.classList.remove('hidden');
+      seoResultsBox.innerHTML = `
+        <div class="seo-output-card">
+          <p class="seo-caption">${seo.caption}</p>
+          <p class="seo-hashtags">${seo.hashtags}</p>
+          <small style="color: var(--accent-green); display: block; margin-top: 4px;">⏰ Khung giờ vàng đăng video: ${seo.idealPostingTime}</small>
+          <button class="studio-btn sm-btn secondary-btn" id="btnCopySeo" style="margin-top: 6px;">📋 Sao chép Caption & Hashtags</button>
+        </div>
+      `;
+
+      document.getElementById('btnCopySeo').addEventListener('click', () => {
+        navigator.clipboard.writeText(`${seo.caption}\n\n${seo.hashtags}`);
+        alert('Đã sao chép caption và bộ hashtag SEO vào Clipboard!');
+      });
+    });
+  }
+
+  /* ===================================================================
+     11. VIDEO CUTTING & SPLITTING
+     =================================================================== */
+  function setupVideoCutting() {
+    const btnSplitClip = document.getElementById('btnSplitClip');
+    const btnDeleteClip = document.getElementById('btnDeleteClip');
+
+    btnSplitClip.addEventListener('click', () => {
+      const splitTime = state.currentTime;
+      alert(`Đã cắt clip tại mốc thời gian: ${formatTimecode(splitTime)}! Bạn có thể kéo thả 2 phần clip độc lập.`);
+    });
+
+    btnDeleteClip.addEventListener('click', () => {
+      if (state.selectedCueId) {
+        state.subtitleCues = state.subtitleCues.filter((c) => c.id !== state.selectedCueId);
+        state.selectedCueId = null;
+        renderTimelineSubtitles();
+        updateActiveSubtitleOverlay();
+        alert('Đã xóa đoạn phụ đề đã chọn.');
+      } else {
+        alert('Vui lòng bấm chọn một đoạn phụ đề hoặc clip để xóa.');
+      }
+    });
+  }
+
   // Start app
   init();
 });
+

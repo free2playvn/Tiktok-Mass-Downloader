@@ -102,11 +102,13 @@
     <!-- Studio Main Workspace (3-Column Layout) -->
     <main class="studio-workspace">
       
-      <!-- LEFT COLUMN: Media Library & Subtitle Inspector -->
+      <!-- LEFT COLUMN: Media Library, Audio Dubbing, Branding/Ads, and AI Agents -->
       <aside class="studio-sidebar left-panel">
         <div class="panel-tabs">
-          <button class="tab-btn active" data-target="panelMedia">📁 Media (TikTok)</button>
-          <button class="tab-btn" data-target="panelSubtitles">💬 Danh sách phụ đề</button>
+          <button class="tab-btn active" data-target="panelMedia" title="Thư viện video">📁 Media</button>
+          <button class="tab-btn" data-target="panelAudio" title="Lồng nhạc nền & Âm thanh">🎵 Nhạc nền</button>
+          <button class="tab-btn" data-target="panelBranding" title="Chèn Logo & Quảng cáo">🏷️ Logo / Ads</button>
+          <button class="tab-btn" data-target="panelAIAgents" title="Trợ lý AI & Cắt tự động">🤖 AI Agent</button>
         </div>
 
         <!-- TAB 1: Media Library -->
@@ -154,15 +156,182 @@
           </div>
         </div>
 
-        <!-- TAB 2: Subtitles List -->
-        <div class="tab-content" id="panelSubtitles">
+        <!-- TAB 2: Audio & Music Dubbing -->
+        <div class="tab-content" id="panelAudio">
           <div class="panel-section-header">
-            <h3>Timeline Phụ Đề</h3>
-            <button class="studio-btn sm-btn" id="btnAddSubtitleCue">+ Thêm câu</button>
+            <h3>🎵 Lồng Nhạc Theo Thời Gian</h3>
           </div>
 
-          <div class="subtitles-list" id="subtitlesListContainer">
-            <!-- Dynamic subtitle cue cards -->
+          <div class="audio-controls-box">
+            <div class="form-row">
+              <label>Nguồn âm thanh:</label>
+              <select id="bgmSelect" class="studio-select full-select">
+                <option value="none">-- Tắt nhạc nền (Dùng tiếng gốc) --</option>
+                <option value="edm">🔥 EDM Viet Mix Bass Căng (Hot Trend)</option>
+                <option value="lofi">🌙 Lofi Chill Tâm Trạng (Nhẹ nhàng)</option>
+                <option value="remix">⚡ Remix Hottrend Vinahouse</option>
+                <option value="custom">📁 Tải file nhạc mp3 từ máy...</option>
+              </select>
+              <input type="file" id="customAudioInput" accept="audio/mp3,audio/wav,audio/aac" hidden>
+            </div>
+
+            <div class="form-row">
+              <div class="slider-header">
+                <label>Âm lượng nhạc nền:</label>
+                <span id="bgmVolumeVal" class="slider-val">80%</span>
+              </div>
+              <input type="range" id="bgmVolumeSlider" min="0" max="1.5" step="0.05" value="0.8" class="studio-slider full-slider">
+            </div>
+
+            <div class="form-row">
+              <div class="slider-header">
+                <label>Âm lượng video gốc:</label>
+                <span id="origVolumeVal" class="slider-val">100%</span>
+              </div>
+              <input type="range" id="origVolumeSlider" min="0" max="1" step="0.05" value="1" class="studio-slider full-slider">
+            </div>
+
+            <div class="form-row grid-2">
+              <div>
+                <label>Bắt đầu (Giây):</label>
+                <input type="number" id="bgmStartTimeInput" class="studio-input sm-input" value="0" min="0" step="0.5">
+              </div>
+              <div>
+                <label>Thời lượng (Giây):</label>
+                <input type="number" id="bgmDurationInput" class="studio-input sm-input" value="60" min="1" step="1">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="checkbox-label">
+                <input type="checkbox" id="checkFadeInOut" checked>
+                Hiệu ứng mờ dần (Fade In / Fade Out)
+              </label>
+            </div>
+
+            <button class="studio-btn primary-btn full-btn" id="btnApplyAudioDub">
+              <span>✔ Cập Nhật Nhạc Vào Timeline</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB 3: Logo & Ad Banners -->
+        <div class="tab-content" id="panelBranding">
+          <div class="panel-section-header">
+            <h3>🏷️ Chèn Logo & Quảng Cáo</h3>
+          </div>
+
+          <!-- Section A: Logo Watermark -->
+          <div class="branding-card">
+            <h4>1. Logo / Watermark Nhận Diện</h4>
+            
+            <div class="form-row">
+              <label>Loại Logo:</label>
+              <select id="logoTypeSelect" class="studio-select full-select">
+                <option value="text">Logo dạng chữ (Text Watermark)</option>
+                <option value="image">Logo hình ảnh (Upload PNG)</option>
+              </select>
+            </div>
+
+            <div class="form-row" id="logoTextInputRow">
+              <label>Chữ Logo:</label>
+              <input type="text" id="logoTextInput" class="studio-input" value="@nhacnghedixe 🎵" placeholder="Nhập tên thương hiệu / kênh...">
+            </div>
+
+            <div class="form-row hidden" id="logoImageInputRow">
+              <label>Tệp Logo (PNG không nền):</label>
+              <input type="file" id="logoFileInput" accept="image/png,image/jpeg,image/webp" class="studio-input">
+            </div>
+
+            <div class="form-row grid-2">
+              <div>
+                <label>Vị trí:</label>
+                <select id="logoPositionSelect" class="studio-select sm-select">
+                  <option value="top-right">Góc trên phải</option>
+                  <option value="top-left">Góc trên trái</option>
+                  <option value="bottom-right">Góc dưới phải</option>
+                  <option value="bottom-left">Góc dưới trái</option>
+                </select>
+              </div>
+              <div>
+                <label>Độ mờ (Opacity):</label>
+                <input type="range" id="logoOpacitySlider" min="0.1" max="1" step="0.05" value="0.85" class="studio-slider">
+              </div>
+            </div>
+          </div>
+
+          <!-- Section B: Timed Ad Banners / CTA -->
+          <div class="branding-card">
+            <h4>2. Quảng Cáo & Kêu Gọi Hành Động (CTA)</h4>
+            
+            <div class="form-row">
+              <label>Nội dung quảng cáo / CTA:</label>
+              <input type="text" id="adBannerTextInput" class="studio-input" value="🔥 Giảm 50% - Bấm vào Bio để đặt hàng ngay! | Follow @nhacnghedixe">
+            </div>
+
+            <div class="form-row grid-2">
+              <div>
+                <label>Xuất hiện từ (giây):</label>
+                <input type="number" id="adStartTimeInput" class="studio-input sm-input" value="3" min="0">
+              </div>
+              <div>
+                <label>Ẩn sau (giây):</label>
+                <input type="number" id="adEndTimeInput" class="studio-input sm-input" value="15" min="1">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label>Kiểu hiển thị banner:</label>
+              <select id="adStyleSelect" class="studio-select full-select">
+                <option value="ticker-bottom">Dải chữ chạy ngang chân video (Marquee Ticker)</option>
+                <option value="floating-card">Hộp thẻ nổi bật góc trên (Floating Badge)</option>
+                <option value="neon-cta">Nút bấm nhấp nháy Neon (Pulsing CTA)</option>
+              </select>
+            </div>
+
+            <button class="studio-btn secondary-btn full-btn" id="btnPreviewAd">
+              <span>👁️ Bật/Tắt Xem Thử Quảng Cáo</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB 4: Creative AI Agents -->
+        <div class="tab-content" id="panelAIAgents">
+          <div class="panel-section-header">
+            <h3>🤖 Bộ Trợ Lý AI Studio</h3>
+          </div>
+
+          <!-- Agent 1: Hook Generator -->
+          <div class="ai-agent-card">
+            <div class="agent-badge">
+              <span class="ag-icon">⚡</span>
+              <span class="ag-name">AI Hook Generator</span>
+            </div>
+            <p class="ag-desc">Tự động sinh 5 câu mở đầu giật tít 3 giây đầu giữ chân người xem.</p>
+            <button class="studio-btn sm-btn primary-btn" id="btnGenerateHooks">Gợi ý 5 câu Hook</button>
+            <div class="hooks-results-box hidden" id="hooksResultsBox"></div>
+          </div>
+
+          <!-- Agent 2: Smart Highlight Detector -->
+          <div class="ai-agent-card">
+            <div class="agent-badge">
+              <span class="ag-icon">✂️</span>
+              <span class="ag-name">AI Smart Highlight</span>
+            </div>
+            <p class="ag-desc">Tự động phát hiện đoạn cao trào, gợi ý cắt short 15s/30s/60s.</p>
+            <button class="studio-btn sm-btn secondary-btn" id="btnDetectHighlights">Tìm đoạn hay nhất</button>
+            <div class="highlights-results-box hidden" id="highlightsResultsBox"></div>
+          </div>
+
+          <!-- Agent 3: TikTok SEO & Hashtag Generator -->
+          <div class="ai-agent-card">
+            <div class="agent-badge">
+              <span class="ag-icon">📈</span>
+              <span class="ag-name">AI SEO & Hashtag Crafter</span>
+            </div>
+            <p class="ag-desc">Tối ưu hóa caption và bộ hashtag leo top thịnh hành TikTok.</p>
+            <button class="studio-btn sm-btn secondary-btn" id="btnGenerateSeo">Tạo Caption & Hashtag</button>
+            <div class="seo-results-box hidden" id="seoResultsBox"></div>
           </div>
         </div>
       </aside>
@@ -178,6 +347,18 @@
             <!-- Realtime Subtitle Overlay on Video -->
             <div id="canvasSubtitleOverlay" class="subtitle-overlay style-yellow-box pos-bottom">
               <span id="subtitleText">Chào mừng bạn đến với TMD Studio Pro!</span>
+            </div>
+
+            <!-- Brand Logo Watermark Overlay -->
+            <div id="canvasLogoOverlay" class="canvas-logo-overlay pos-top-right">
+              <span id="logoText">@nhacnghedixe 🎵</span>
+              <img id="logoImage" class="hidden" alt="Logo">
+            </div>
+
+            <!-- Timed Ad Banner Overlay -->
+            <div id="canvasAdBannerOverlay" class="canvas-ad-overlay style-ticker-bottom hidden">
+              <span class="ad-tag">QUẢNG CÁO</span>
+              <span id="adBannerText" class="ad-text">🔥 Giảm 50% - Bấm vào Bio để đặt hàng ngay! | Follow @nhacnghedixe</span>
             </div>
 
             <!-- Playhead center indicator -->
@@ -500,6 +681,7 @@
 
   <!-- Scripts -->
   <script src="humanizer-engine.js"></script>
+  <script src="ai-agents.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
