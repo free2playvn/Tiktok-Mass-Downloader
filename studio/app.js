@@ -144,6 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupTeamWorkspace();
     setupVietQRBilling();
     setupConcatBridge();
+    setupProSuite();
     setupModals();
     loadActiveVideo();
     drawSimulatedWaveform();
@@ -2805,7 +2806,607 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /* ===================================================================
+     20. PRO SUITE - 7 ENTERPRISE EXPANSION WEAPONS
+     =================================================================== */
+  function setupProSuite() {
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // 0. Quick Navigation & Topbar Button
+    const btnOpenProSuiteModal = document.getElementById('btnOpenProSuiteModal');
+    if (btnOpenProSuiteModal) {
+      btnOpenProSuiteModal.addEventListener('click', () => {
+        const tabBtn = document.querySelector('.studio-sidebar.left-panel .tab-btn[data-target="panelProSuite"]');
+        if (tabBtn) tabBtn.click();
+      });
+    }
+
+    document.querySelectorAll('.weapon-chip[data-scroll]').forEach((chip) => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.weapon-chip').forEach((c) => c.classList.remove('active'));
+        chip.classList.add('active');
+        const targetEl = document.getElementById(chip.dataset.scroll);
+        if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    // Web Audio synthesizer for instant sound effects
+    let audioCtx = null;
+    function playSyntheticSfx(type) {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+        if (type.includes('whoosh') || type.includes('swoosh')) {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(450, now);
+          osc.frequency.exponentialRampToValueAtTime(150, now + 0.35);
+          gain.gain.setValueAtTime(0.3, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type.includes('pop') || type.includes('bubble')) {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(300, now);
+          osc.frequency.exponentialRampToValueAtTime(800, now + 0.12);
+          gain.gain.setValueAtTime(0.4, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
+          osc.start(now);
+          osc.stop(now + 0.12);
+        } else if (type.includes('cash') || type.includes('bell') || type.includes('ding')) {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(987.77, now); // B5 note
+          osc.frequency.setValueAtTime(1318.51, now + 0.1); // E6 note
+          gain.gain.setValueAtTime(0.35, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+          osc.start(now);
+          osc.stop(now + 0.6);
+        } else {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(120, now);
+          osc.frequency.linearRampToValueAtTime(40, now + 0.25);
+          gain.gain.setValueAtTime(0.4, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        }
+      } catch (e) {
+        console.warn('AudioContext SFX notice:', e.message);
+      }
+    }
+
+    // 1. WEAPON 1: DOUYIN & GLOBAL TREND RADAR
+    const inputDouyinUrl = document.getElementById('inputDouyinUrl');
+    const btnResolveDouyin = document.getElementById('btnResolveDouyin');
+    const douyinResolveStatus = document.getElementById('douyinResolveStatus');
+    const btnRefreshDouyinRadar = document.getElementById('btnRefreshDouyinRadar');
+    const douyinRadarFeedList = document.getElementById('douyinRadarFeedList');
+
+    async function loadDouyinRadar() {
+      if (!douyinRadarFeedList) return;
+      try {
+        const res = await fetch('/api/douyin/radar');
+        const data = await res.json();
+        if (data.ok && data.radar) {
+          douyinRadarFeedList.innerHTML = data.radar.map((item) => `
+            <div class="radar-card">
+              <img src="${item.coverUrl}" class="radar-thumb" alt="cover">
+              <div class="radar-meta">
+                <h5>${escapeHtml(item.title)}</h5>
+                <p>👤 ${escapeHtml(item.author)} | 👁️ ${item.views} | ❤️ ${item.likes}</p>
+                <small>${item.platform === 'douyin' ? '🇨🇳 Douyin Viral' : '🇺🇸 TikTok US'}</small>
+                <div style="margin-top: 4px;">
+                  <button class="studio-btn primary-btn sm-btn" data-action="import-dy" data-id="${item.id}" data-title="${escapeHtml(item.title)}" data-sub="${escapeHtml(item.vietnameseTranscript)}">
+                    📥 Nạp Vào Timeline & Dịch
+                  </button>
+                </div>
+              </div>
+            </div>
+          `).join('');
+
+          douyinRadarFeedList.querySelectorAll('button[data-action="import-dy"]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const title = btn.dataset.title;
+              const sub = btn.dataset.sub;
+              state.currentVideoTitle = title;
+              const topbarTitle = document.querySelector('.topbar-badge span:nth-child(2)');
+              if (topbarTitle) topbarTitle.textContent = `Dự án: ${title.slice(0, 30)}...`;
+              if (humanizerInput) {
+                humanizerInput.value = sub;
+                btnRunHumanize.click();
+              }
+              alert(`🎉 Đã nạp thành công video "${title}" vào Timeline! Tự động dịch và làm mượt kịch bản sang tiếng Việt.`);
+            });
+          });
+        }
+      } catch (e) {
+        console.error('Lỗi tải Douyin radar:', e);
+      }
+    }
+
+    if (btnRefreshDouyinRadar) btnRefreshDouyinRadar.addEventListener('click', loadDouyinRadar);
+
+    if (btnResolveDouyin) {
+      btnResolveDouyin.addEventListener('click', async () => {
+        const url = inputDouyinUrl.value.trim();
+        if (!url) return;
+        douyinResolveStatus.className = 'pub-status-box pending';
+        douyinResolveStatus.classList.remove('hidden');
+        douyinResolveStatus.textContent = '⏳ Đang phân tích mã Douyin và bypass logo watermark...';
+
+        try {
+          const res = await fetch('/api/douyin/resolve', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            douyinResolveStatus.className = 'pub-status-box success';
+            douyinResolveStatus.innerHTML = `
+              🎉 <strong>CÀO THÀNH CÔNG (100% SẠCH LOGO)!</strong><br>
+              • Tiêu đề: ${escapeHtml(data.title)}<br>
+              • Chất lượng: <strong>${data.quality}</strong> | Tác giả: <strong>${data.originalAuthor}</strong><br>
+              • Tự động dịch sang Tiếng Việt: <em>"${data.translatedVietnamese}"</em>
+            `;
+            state.currentVideoTitle = data.title;
+            if (humanizerInput) {
+              humanizerInput.value = data.translatedVietnamese;
+              btnRunHumanize.click();
+            }
+          } else {
+            douyinResolveStatus.className = 'pub-status-box error';
+            douyinResolveStatus.textContent = `❌ Lỗi: ${data.message}`;
+          }
+        } catch (err) {
+          douyinResolveStatus.className = 'pub-status-box error';
+          douyinResolveStatus.textContent = `❌ Lỗi kết nối: ${err.message}`;
+        }
+      });
+    }
+
+    // 2. WEAPON 2: SILENCE REMOVER, SFX & B-ROLL
+    const btnDetectSilence = document.getElementById('btnDetectSilence');
+    const silenceProgressStatus = document.getElementById('silenceProgressStatus');
+    const btnSuggestBroll = document.getElementById('btnSuggestBroll');
+    const brollSuggestionsContainer = document.getElementById('brollSuggestionsContainer');
+    const brollListCards = document.getElementById('brollListCards');
+    const sfxPaletteGrid = document.getElementById('sfxPaletteGrid');
+    const btnAutoSyncSfx = document.getElementById('btnAutoSyncSfx');
+
+    async function loadSfxLibrary() {
+      if (!sfxPaletteGrid) return;
+      try {
+        const res = await fetch('/api/sfx/library');
+        const data = await res.json();
+        if (data.ok && data.sfx) {
+          sfxPaletteGrid.innerHTML = data.sfx.map((s) => `
+            <button class="sfx-btn" data-sfx-id="${s.id}" title="Nghe thử âm thanh">
+              <span>${s.icon}</span>
+              <span>${escapeHtml(s.name)}</span>
+            </button>
+          `).join('');
+
+          sfxPaletteGrid.querySelectorAll('.sfx-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const sfxId = btn.dataset.sfxId;
+              playSyntheticSfx(sfxId);
+              btn.style.transform = 'scale(0.95)';
+              setTimeout(() => { btn.style.transform = ''; }, 150);
+            });
+          });
+        }
+      } catch (e) {
+        console.error('Lỗi nạp SFX:', e);
+      }
+    }
+
+    if (btnDetectSilence) {
+      btnDetectSilence.addEventListener('click', async () => {
+        silenceProgressStatus.className = 'pub-status-box pending';
+        silenceProgressStatus.classList.remove('hidden');
+        silenceProgressStatus.textContent = '⏳ Đang quét sóng âm phát hiện khoảng lặng...';
+
+        try {
+          const res = await fetch('/api/audio/detect-silence', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ duration: video ? video.duration || 60 : 60 })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            silenceProgressStatus.className = 'pub-status-box success';
+            silenceProgressStatus.innerHTML = `
+              ⚡ <strong>HOÀN THÀNH SMART JUMPCUT!</strong><br>
+              • Đã tìm thấy: <strong>${data.totalSilenceFound}</strong> khoảng lặng chết<br>
+              • Đã cắt bỏ: <strong>${data.savedTimeSeconds}s</strong> thời gian thừa<br>
+              • Tốc độ giữ chân người xem (Retention Pace): <strong>+${data.tempoIncreasePercent}%</strong>
+            `;
+          }
+        } catch (e) {
+          silenceProgressStatus.className = 'pub-status-box error';
+          silenceProgressStatus.textContent = '❌ Lỗi quét âm thanh: ' + e.message;
+        }
+      });
+    }
+
+    if (btnSuggestBroll) {
+      btnSuggestBroll.addEventListener('click', async () => {
+        try {
+          const res = await fetch('/api/broll/suggest', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cues: state.subtitleCues })
+          });
+          const data = await res.json();
+          if (data.ok && data.suggestions) {
+            brollSuggestionsContainer.classList.remove('hidden');
+            if (data.suggestions.length === 0) {
+              brollListCards.innerHTML = '<div style="font-size: 11px; color: var(--text-muted);">Không tìm thấy từ khóa khớp. Nhập thêm từ khóa "tiền", "xe", "công nghệ" vào phụ đề!</div>';
+            } else {
+              brollListCards.innerHTML = data.suggestions.map((s) => `
+                <div class="broll-card">
+                  <div>
+                    <strong>🎬 ${escapeHtml(s.broll.title)}</strong><br>
+                    <span style="font-size: 10px; color: var(--accent-purple);">Tại giây ${s.insertAt}s (${s.duration}s) | Từ khóa: "${escapeHtml(s.broll.keyword)}"</span>
+                  </div>
+                  <button class="studio-btn secondary-btn sm-btn" onclick="alert('Đã chèn B-Roll vào timeline ở giây ${s.insertAt}!')">
+                    ➕ Chèn
+                  </button>
+                </div>
+              `).join('');
+            }
+          }
+        } catch (e) {
+          console.error('Lỗi gợi ý B-Roll:', e);
+        }
+      });
+    }
+
+    if (btnAutoSyncSfx) {
+      btnAutoSyncSfx.addEventListener('click', () => {
+        playSyntheticSfx('whoosh');
+        alert('🎉 Đã tự động phân bổ âm thanh chuyển cảnh Whoosh & Pop vào 3 điểm xuất hiện phụ đề kịch tính nhất!');
+      });
+    }
+
+    // 3. WEAPON 3: AI VOICE CLONING & TALKING HEAD AVATAR
+    const proVoiceSelector = document.getElementById('proVoiceSelector');
+    const inputCloneVoiceName = document.getElementById('inputCloneVoiceName');
+    const selectCloneAccent = document.getElementById('selectCloneAccent');
+    const btnTriggerCloneVoice = document.getElementById('btnTriggerCloneVoice');
+    const voiceCloneStatusBox = document.getElementById('voiceCloneStatusBox');
+    const proAvatarSelector = document.getElementById('proAvatarSelector');
+    const proAvatarPosition = document.getElementById('proAvatarPosition');
+    const checkEnableAvatarOverlay = document.getElementById('checkEnableAvatarOverlay');
+    const btnPreviewAvatarOverlay = document.getElementById('btnPreviewAvatarOverlay');
+
+    let currentAvatarEl = null;
+
+    async function loadVoicesAndAvatars() {
+      try {
+        const res = await fetch('/api/voice-avatar/list');
+        const data = await res.json();
+        if (data.ok) {
+          if (proVoiceSelector) {
+            proVoiceSelector.innerHTML = data.voices.map((v) => `
+              <option value="${v.id}">${v.name}</option>
+            `).join('');
+          }
+          if (proAvatarSelector) {
+            proAvatarSelector.innerHTML = data.avatars.map((a) => `
+              <option value="${a.id}">${a.name}</option>
+            `).join('');
+          }
+        }
+      } catch (e) {
+        console.error('Lỗi nạp Voices/Avatars:', e);
+      }
+    }
+
+    if (btnTriggerCloneVoice) {
+      btnTriggerCloneVoice.addEventListener('click', async () => {
+        const name = inputCloneVoiceName.value.trim() || 'Giọng Bạn Vừa Clone';
+        const accent = selectCloneAccent.value;
+        voiceCloneStatusBox.className = 'pub-status-box pending';
+        voiceCloneStatusBox.classList.remove('hidden');
+        voiceCloneStatusBox.textContent = '⏳ Đang trích xuất đặc trưng âm sắc (Timbre Embedding) 3 giây...';
+
+        try {
+          const res = await fetch('/api/voice/clone', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, accent, audioSource: 'sample_3s.wav' })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            voiceCloneStatusBox.className = 'pub-status-box success';
+            voiceCloneStatusBox.innerHTML = `
+              🎉 <strong>CLONE GIỌNG THÀNH CÔNG!</strong><br>
+              • Hồ sơ: <strong>${escapeHtml(data.profile.name)}</strong><br>
+              • Độ tương đồng cảm xúc: <strong>${data.profile.timbreConfidence}</strong><br>
+              • Giọng clone đã được chọn làm giọng đọc mặc định.
+            `;
+            loadVoicesAndAvatars();
+          }
+        } catch (e) {
+          voiceCloneStatusBox.className = 'pub-status-box error';
+          voiceCloneStatusBox.textContent = '❌ Lỗi: ' + e.message;
+        }
+      });
+    }
+
+    if (btnPreviewAvatarOverlay) {
+      btnPreviewAvatarOverlay.addEventListener('click', async () => {
+        const avatarId = proAvatarSelector.value;
+        const position = proAvatarPosition.value;
+        const enabled = checkEnableAvatarOverlay.checked;
+
+        if (currentAvatarEl) {
+          currentAvatarEl.remove();
+          currentAvatarEl = null;
+        }
+
+        if (!enabled) {
+          alert('Đã tắt hiển thị MC Ảo trên khung hình.');
+          return;
+        }
+
+        try {
+          const res = await fetch('/api/avatar/configure', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ avatarId, position })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            const overlay = document.createElement('div');
+            overlay.className = 'avatar-talking-head-overlay';
+            overlay.id = 'liveAvatarOverlay';
+            overlay.style.bottom = data.cssPosition.bottom;
+            if (data.cssPosition.right) overlay.style.right = data.cssPosition.right;
+            if (data.cssPosition.left) overlay.style.left = data.cssPosition.left;
+
+            overlay.innerHTML = `
+              <div class="avatar-pulse-ring"></div>
+              <img src="${data.avatar.avatarImg}" alt="Avatar">
+            `;
+
+            viewportScreen.appendChild(overlay);
+            currentAvatarEl = overlay;
+            alert(`🎥 Đã gắn MC Ảo [${data.avatar.name}] lên góc màn hình video thành công!`);
+          }
+        } catch (e) {
+          console.error('Lỗi cấu hình avatar:', e);
+        }
+      });
+    }
+
+    // 4. WEAPON 4: TIKTOK SHOP & SHOPEE AFFILIATE AUTO-LINKER
+    const btnScanAffiliateProducts = document.getElementById('btnScanAffiliateProducts');
+    const affiliateScanStatusBox = document.getElementById('affiliateScanStatusBox');
+    const affiliateProductCard = document.getElementById('affiliateProductCard');
+
+    if (btnScanAffiliateProducts) {
+      btnScanAffiliateProducts.addEventListener('click', async () => {
+        affiliateScanStatusBox.className = 'pub-status-box pending';
+        affiliateScanStatusBox.classList.remove('hidden');
+        affiliateScanStatusBox.textContent = '⏳ AI Vision đang quét nhận diện sản phẩm trong video...';
+
+        try {
+          const text = (state.currentVideoTitle || '') + ' ' + (humanizerInput ? humanizerInput.value : '');
+          const res = await fetch('/api/affiliate/detect', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text })
+          });
+          const data = await res.json();
+          if (data.ok && data.products && data.products.length > 0) {
+            const prod = data.products[0];
+            const planRes = await fetch('/api/affiliate/seeding-plan', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ product: prod, authorName: state.currentVideoTitle.slice(0, 15) || 'Chủ Kênh' })
+            });
+            const planData = await planRes.json();
+
+            affiliateScanStatusBox.className = 'pub-status-box success';
+            affiliateScanStatusBox.innerHTML = `✅ Đã nhận diện 1 sản phẩm bán chạy có thể gắn link tiếp thị hoa hồng!`;
+
+            affiliateProductCard.classList.remove('hidden');
+            affiliateProductCard.innerHTML = `
+              <div style="background: var(--bg-input); border: 1px solid var(--accent-purple); border-radius: 8px; padding: 10px;">
+                <div style="display: flex; gap: 10px; align-items: center;">
+                  <img src="${prod.thumb}" style="width: 54px; height: 54px; border-radius: 6px; object-fit: cover;">
+                  <div>
+                    <strong style="color: #fff; font-size: 12px;">${escapeHtml(prod.name)}</strong><br>
+                    <span style="color: #10b981; font-weight: 700; font-size: 13px;">${prod.dealPrice.toLocaleString('vi-VN')}đ</span>
+                    <span style="text-decoration: line-through; color: var(--text-muted); font-size: 10px; margin-left: 6px;">${prod.originalPrice.toLocaleString('vi-VN')}đ</span><br>
+                    <span style="color: var(--accent-cyan); font-size: 10px; font-weight: 700;">Hoa hồng: ${prod.commissionRate} | ${prod.soldCount}</span>
+                  </div>
+                </div>
+
+                <div style="margin-top: 8px; background: rgba(139, 92, 246, 0.1); border: 1px dashed var(--accent-purple); border-radius: 6px; padding: 6px; font-size: 11px;">
+                  <strong style="color: var(--accent-purple);">📌 Bình luận ghim tự động:</strong><br>
+                  <em>"${escapeHtml(planData.pinnedComment.text)}"</em>
+                </div>
+
+                <button class="studio-btn primary-btn sm-btn full-btn" style="margin-top: 8px;" onclick="alert('Đã lên lịch tự động ghim bình luận kèm link affiliate TikTok Shop ngay khi video được xuất bản!')">
+                  <span>📌 Kích Hoạt Tự Động Ghim Khi Đăng Video</span>
+                </button>
+              </div>
+            `;
+          }
+        } catch (e) {
+          affiliateScanStatusBox.className = 'pub-status-box error';
+          affiliateScanStatusBox.textContent = '❌ Lỗi quét sản phẩm: ' + e.message;
+        }
+      });
+    }
+
+    // 5. WEAPON 5: PROXY MATRIX & ANTI-DETECT WARM-UP
+    const proxyMatrixList = document.getElementById('proxyMatrixList');
+    const btnRunMatrixWarmup = document.getElementById('btnRunMatrixWarmup');
+    const proxyWarmupAlert = document.getElementById('proxyWarmupAlert');
+
+    async function loadProxyMatrix() {
+      if (!proxyMatrixList) return;
+      try {
+        const res = await fetch('/api/proxy/list');
+        const data = await res.json();
+        if (data.ok && data.proxies) {
+          proxyMatrixList.innerHTML = data.proxies.map((p) => `
+            <div class="proxy-card">
+              <div class="proxy-info">
+                <strong>🛡️ ${escapeHtml(p.name)}</strong>
+                <span>${p.ip}:${p.port} (${p.type}) ➔ Gán cho: <em>${escapeHtml(p.assignedTo)}</em></span>
+              </div>
+              <div class="proxy-ping">🟢 ${p.latencyMs}ms</div>
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        console.error('Lỗi tải Proxy matrix:', e);
+      }
+    }
+
+    if (btnRunMatrixWarmup) {
+      btnRunMatrixWarmup.addEventListener('click', async () => {
+        proxyWarmupAlert.className = 'pub-status-box pending';
+        proxyWarmupAlert.classList.remove('hidden');
+        proxyWarmupAlert.innerHTML = '⏳ Đang khởi chạy trình duyệt giả lập iPhone 15 Pro, kết nối Proxy dân cư và lướt FYP tự động...';
+
+        try {
+          const res = await fetch('/api/proxy/warm-up', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cloneId: 'all' })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            proxyWarmupAlert.className = 'pub-status-box success';
+            proxyWarmupAlert.innerHTML = `
+              🎉 <strong>HOÀN THÀNH PHIÊN NUÔI NICK 15 PHÚT!</strong><br>
+              • Đã xem hết: <strong>${data.actions.videosWatchedFull}</strong> video FYP | Thả tim: <strong>${data.actions.likesGiven}</strong><br>
+              • Điểm tin cậy (Trust Score): <strong>${data.trustScoreIncrease}</strong><br>
+              • Trạng thái chống 0-View: <strong>${data.antiShadowbanStatus}</strong>
+            `;
+          }
+        } catch (e) {
+          proxyWarmupAlert.className = 'pub-status-box error';
+          proxyWarmupAlert.textContent = '❌ Lỗi phiên nuôi nick: ' + e.message;
+        }
+      });
+    }
+
+    // 6. WEAPON 6: TELEGRAM REMOTE COMMANDER BOT
+    const inputTgTestMsg = document.getElementById('inputTgTestMsg');
+    const btnSendTgSimulate = document.getElementById('btnSendTgSimulate');
+    const telegramReplyBox = document.getElementById('telegramReplyBox');
+
+    if (btnSendTgSimulate) {
+      btnSendTgSimulate.addEventListener('click', async () => {
+        const message = inputTgTestMsg.value.trim();
+        if (!message) return;
+
+        telegramReplyBox.className = 'pub-status-box pending';
+        telegramReplyBox.classList.remove('hidden');
+        telegramReplyBox.textContent = '⏳ Đang gửi tin nhắn tới Telegram Bot Server...';
+
+        try {
+          const res = await fetch('/api/telegram/simulate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            telegramReplyBox.className = 'pub-status-box success';
+            telegramReplyBox.innerHTML = `
+              <div style="font-family: monospace; font-size: 11px; white-space: pre-wrap;">${data.replyText}</div>
+              <div style="display: flex; gap: 6px; margin-top: 8px;">
+                <button class="studio-btn primary-btn sm-btn" onclick="alert('Đã gửi lệnh phát hành tới kênh chính!')">🚀 Đăng Ngay</button>
+                <button class="studio-btn secondary-btn sm-btn" onclick="alert('Đã gửi lệnh đồng bộ sang Concat!')">🦀 Mở Concat</button>
+              </div>
+            `;
+          }
+        } catch (e) {
+          telegramReplyBox.className = 'pub-status-box error';
+          telegramReplyBox.textContent = '❌ Lỗi kết nối Telegram: ' + e.message;
+        }
+      });
+    }
+
+    // 7. WEAPON 7: VIRAL A/B HOOK & THUMBNAIL SPLIT TESTER
+    const btnGenerateABVariants = document.getElementById('btnGenerateABVariants');
+    const abVariantsContainer = document.getElementById('abVariantsContainer');
+
+    if (btnGenerateABVariants) {
+      btnGenerateABVariants.addEventListener('click', async () => {
+        abVariantsContainer.classList.remove('hidden');
+        abVariantsContainer.innerHTML = '<div class="pub-status-box pending">⏳ AI đang phân tích kịch bản và sinh 3 biến thể Hook 3s đầu tiên...</div>';
+
+        try {
+          const res = await fetch('/api/ab-test/generate-variants', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: state.currentVideoTitle || 'TikTok Video',
+              script: humanizerInput ? humanizerInput.value : ''
+            })
+          });
+          const data = await res.json();
+          if (data.ok && data.variants) {
+            abVariantsContainer.innerHTML = `
+              <div class="ab-variants-grid">
+                ${data.variants.map((v) => `
+                  <div class="ab-card" style="border-left-color: ${v.thumbnailBorder};">
+                    <div class="ab-card-header">
+                      <h5>${escapeHtml(v.label)}</h5>
+                      <span class="status-pill active" style="font-size: 9px; background: ${v.thumbnailBorder}33; color: ${v.thumbnailBorder};">${v.thumbnailBadge}</span>
+                    </div>
+                    <div class="ab-hook-quote">"${escapeHtml(v.hookText)}"</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--text-muted);">
+                      <span>⏱️ Thời lượng Hook: ${v.hookLengthSec}s</span>
+                      <button class="studio-btn secondary-btn sm-btn" onclick="alert('Đã áp dụng biến thể [${escapeHtml(v.label)}] vào 3 giây đầu của Timeline!')">
+                        ⚡ Dùng Hook Này
+                      </button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+
+              <button class="studio-btn primary-btn full-btn" style="margin-top: 10px;" onclick="alert('🎉 Đã kích hoạt chiến dịch A/B Split Test! Hệ thống tự động phân phối 3 biến thể lên 3 kênh clone và thông báo kết quả sau 2 giờ.')">
+                <span>🚀 Phủ 3 Biến Thể Lên 3 Kênh Clone Để Đo Lường</span>
+              </button>
+            `;
+          }
+        } catch (e) {
+          abVariantsContainer.innerHTML = `<div class="pub-status-box error">❌ Lỗi sinh biến thể A/B: ${e.message}</div>`;
+        }
+      });
+    }
+
+    // Initialize feeds
+    loadDouyinRadar();
+    loadSfxLibrary();
+    loadVoicesAndAvatars();
+    loadProxyMatrix();
+  }
+
   // Start app
   init();
 });
+
 

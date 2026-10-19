@@ -7,6 +7,15 @@ const db = require('./database');
 const ConcatBridge = require('./concat_bridge');
 const concatBridge = new ConcatBridge(__dirname);
 
+// Pro Suite Modules (7 Enterprise Features)
+const douyinGlobalScraper = require('./modules/douyin_global_scraper');
+const smartAudioBroll = require('./modules/smart_audio_broll');
+const voiceAvatarEngine = require('./modules/voice_avatar_engine');
+const affiliateMonetization = require('./modules/affiliate_monetization');
+const proxyAntiDetect = require('./modules/proxy_anti_detect');
+const telegramBotCommander = require('./modules/telegram_bot');
+const viralSplitTester = require('./modules/viral_split_tester');
+
 const PORT = process.env.PORT || 3000;
 const STUDIO_DIR = path.join(__dirname, 'studio');
 
@@ -689,6 +698,236 @@ const server = http.createServer(async (req, res) => {
     }
     return;
   }
+
+  /* ===================================================================
+     PRO SUITE APIS (7 EXPANSION WEAPONS)
+     =================================================================== */
+
+  // 17. API: Douyin & Global Trend Radar
+  if (pathname === '/api/douyin/radar' && req.method === 'GET') {
+    const category = parsedUrl.query.category || 'all';
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, radar: douyinGlobalScraper.getTrendingRadar(category) }));
+    return;
+  }
+
+  if (pathname === '/api/douyin/resolve' && req.method === 'POST') {
+    try {
+      const { url } = await readJsonBody();
+      const resolved = await douyinGlobalScraper.resolveDouyinUrl(url);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(resolved));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 18. API: Smart Silence Remover, SFX & B-Roll
+  if (pathname === '/api/audio/detect-silence' && req.method === 'POST') {
+    try {
+      const { duration = 60 } = await readJsonBody();
+      const resData = smartAudioBroll.detectSilence(duration);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(resData));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  if (pathname === '/api/sfx/library' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, sfx: smartAudioBroll.getSfxLibrary() }));
+    return;
+  }
+
+  if (pathname === '/api/broll/suggest' && req.method === 'POST') {
+    try {
+      const { cues = [] } = await readJsonBody();
+      const suggestions = smartAudioBroll.suggestBroll(cues);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, suggestions }));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 19. API: AI Voice Cloning & Digital Avatar MC
+  if (pathname === '/api/voice-avatar/list' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      ok: true,
+      voices: voiceAvatarEngine.getVoices(),
+      avatars: voiceAvatarEngine.getAvatars()
+    }));
+    return;
+  }
+
+  if (pathname === '/api/voice/clone' && req.method === 'POST') {
+    try {
+      const { name, accent, audioSource } = await readJsonBody();
+      const cloned = voiceAvatarEngine.cloneVoice(name, accent, audioSource);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(cloned));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  if (pathname === '/api/avatar/configure' && req.method === 'POST') {
+    try {
+      const options = await readJsonBody();
+      const configured = voiceAvatarEngine.configureAvatarOverlay(options);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(configured));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 20. API: TikTok Shop & Shopee Affiliate Monetization
+  if (pathname === '/api/affiliate/detect' && req.method === 'POST') {
+    try {
+      const { text = '' } = await readJsonBody();
+      const products = affiliateMonetization.detectProducts(text);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, products }));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  if (pathname === '/api/affiliate/seeding-plan' && req.method === 'POST') {
+    try {
+      const { product, authorName } = await readJsonBody();
+      const plan = affiliateMonetization.generateSeedingPlan(product, authorName);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(plan));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 21. API: Proxy Matrix & Anti-Detect Warm-Up
+  if (pathname === '/api/proxy/list' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      ok: true,
+      proxies: proxyAntiDetect.getProxies(),
+      devices: proxyAntiDetect.getDevices()
+    }));
+    return;
+  }
+
+  if (pathname === '/api/proxy/add' && req.method === 'POST') {
+    try {
+      const proxyData = await readJsonBody();
+      const added = proxyAntiDetect.addProxy(proxyData);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(added));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  if (pathname === '/api/proxy/warm-up' && req.method === 'POST') {
+    try {
+      const { cloneId = 'all' } = await readJsonBody();
+      const session = proxyAntiDetect.simulateWarmUp(cloneId);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(session));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 22. API: Telegram Remote Commander Bot
+  if (pathname === '/api/telegram/status' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      ok: true,
+      config: telegramBotCommander.getConfig(),
+      recentLogs: telegramBotCommander.getRecentLogs()
+    }));
+    return;
+  }
+
+  if (pathname === '/api/telegram/config' && req.method === 'POST') {
+    try {
+      const body = await readJsonBody();
+      const updated = telegramBotCommander.updateConfig(body);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(updated));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  if (pathname === '/api/telegram/simulate' && req.method === 'POST') {
+    try {
+      const { message } = await readJsonBody();
+      const reply = telegramBotCommander.processMessage(message);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(reply));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  // 23. API: Viral A/B Hook & Thumbnail Split Tester
+  if (pathname === '/api/ab-test/campaigns' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, campaigns: viralSplitTester.getCampaigns() }));
+    return;
+  }
+
+  if (pathname === '/api/ab-test/generate-variants' && req.method === 'POST') {
+    try {
+      const { title, script } = await readJsonBody();
+      const variants = viralSplitTester.generateVariants(title, script);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(variants));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
+  if (pathname === '/api/ab-test/create-campaign' && req.method === 'POST') {
+    try {
+      const { title, variants } = await readJsonBody();
+      const camp = viralSplitTester.createCampaign(title, variants);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(camp));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: e.message }));
+    }
+    return;
+  }
+
 
   let reqPath = pathname === '/' ? '/index.html' : pathname;
   let filePath = path.join(STUDIO_DIR, reqPath);

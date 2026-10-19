@@ -107,6 +107,11 @@
           <span>🦀 Concat Engine</span>
         </button>
 
+        <!-- Pro Suite Quick Access Button -->
+        <button class="studio-btn primary-btn glow-btn" id="btnOpenProSuiteModal" title="7 Vũ Khí AI Mở Rộng & Tự Động Hóa">
+          <span>⚡ Vũ Khí Pro</span>
+        </button>
+
         <div class="tool-divider"></div>
 
         <!-- User Profile Pill & Dropdown -->
@@ -163,6 +168,7 @@
           <button class="tab-btn" data-target="panelBranding" title="Chèn Logo & Quảng cáo">🏷️ Logo</button>
           <button class="tab-btn" data-target="panelAIAgents" title="Trợ lý AI & Cắt tự động">🤖 AI</button>
           <button class="tab-btn" data-target="panelPublisher" title="Phân phối đa kênh & Dàn Clone">🌐 Đa Kênh</button>
+          <button class="tab-btn" data-target="panelProSuite" title="7 Vũ Khí AI Mở Rộng">⚡ Vũ Khí Pro</button>
         </div>
 
         <!-- TAB 1: Media Library -->
@@ -672,6 +678,272 @@
               <span>🎭 Kích Hoạt Kịch Bản Drama</span>
             </button>
             <div id="clashDramaStatusBox" class="pub-status-box hidden" style="margin-top: 8px;"></div>
+          </div>
+        </div>
+
+        <!-- TAB 6: 7 VŨ KHÍ PRO SUITE (7 ENTERPRISE EXPANSIONS) -->
+        <div class="tab-content" id="panelProSuite">
+          <div class="panel-section-header">
+            <div>
+              <h3 style="display: flex; align-items: center; gap: 6px;">
+                <span>⚡ Vũ Khí Pro Suite</span>
+                <span class="status-pill active" style="font-size: 9px;">v4.0 AI Enterprise</span>
+              </h3>
+              <p class="section-desc" style="margin-top: 2px;">7 Công cụ đột phá: Douyin Trend, Silence & SFX, Voice Clone 3s, TikTok Shop, Proxy Matrix, Telegram Bot, A/B Tester.</p>
+            </div>
+          </div>
+
+          <!-- Quick Navigation Chips -->
+          <div class="pro-weapon-nav-chips">
+            <button type="button" class="weapon-chip active" data-scroll="proSectionDouyin">🇨🇳 Douyin</button>
+            <button type="button" class="weapon-chip" data-scroll="proSectionSilence">✂️ Cắt Im Lặng & SFX</button>
+            <button type="button" class="weapon-chip" data-scroll="proSectionVoice">🎙️ Voice Clone</button>
+            <button type="button" class="weapon-chip" data-scroll="proSectionAffiliate">🛒 TikTok Shop</button>
+            <button type="button" class="weapon-chip" data-scroll="proSectionProxy">🛡️ Proxy Matrix</button>
+            <button type="button" class="weapon-chip" data-scroll="proSectionTelegram">🤖 Telegram</button>
+            <button type="button" class="weapon-chip" data-scroll="proSectionAB">🧪 A/B Hook</button>
+          </div>
+
+          <!-- WEAPON 1: DOUYIN & GLOBAL TREND RADAR -->
+          <div class="branding-card" id="proSectionDouyin">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <h4 style="margin: 0;">1. 🇨🇳 Trinh Sát Douyin & TikTok US (Trend Radar)</h4>
+              <span class="status-pill active">0 Watermark</span>
+            </div>
+            <p class="section-desc">Tự động cào video xu hướng Douyin (Trung Quốc) & TikTok US/UK, tải file gốc 1080p và dịch phụ đề tiếng Việt tự nhiên.</p>
+            
+            <div class="form-row">
+              <label>Đường dẫn chia sẻ Douyin / TikTok Global:</label>
+              <div style="display: flex; gap: 6px;">
+                <input type="text" id="inputDouyinUrl" class="studio-input" placeholder="https://v.douyin.com/... hoặc https://www.douyin.com/video/...">
+                <button class="studio-btn primary-btn sm-btn" id="btnResolveDouyin">
+                  <span>⚡ Cào Ngay</span>
+                </button>
+              </div>
+            </div>
+            <div id="douyinResolveStatus" class="pub-status-box hidden" style="margin-top: 8px;"></div>
+
+            <!-- Trend Radar Feed -->
+            <div style="margin-top: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label style="font-size: 11px; font-weight: 700; color: #cbd5e1;">🔥 Video Đang Hot Trên Douyin & TikTok US:</label>
+                <button class="icon-refresh-btn" id="btnRefreshDouyinRadar" title="Làm mới">🔄</button>
+              </div>
+              <div class="douyin-radar-list" id="douyinRadarFeedList">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- WEAPON 2: SILENCE REMOVER, SFX & B-ROLL -->
+          <div class="branding-card" id="proSectionSilence">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <h4 style="margin: 0;">2. ✂️ Cắt Khoảng Lặng & Chèn SFX / B-Roll</h4>
+              <span class="status-pill active">Smart Jumpcut</span>
+            </div>
+            <p class="section-desc">Tự động loại bỏ thời gian chết/ậm ừ, chèn âm thanh chuyển cảnh Whoosh/Cash và video minh họa B-Roll.</p>
+
+            <div class="form-row grid-2">
+              <button class="studio-btn primary-btn full-btn" id="btnDetectSilence">
+                <span>✂️ Quét Khoảng Lặng</span>
+              </button>
+              <button class="studio-btn secondary-btn full-btn" id="btnSuggestBroll">
+                <span>🎬 Gợi Ý Video B-Roll</span>
+              </button>
+            </div>
+            <div id="silenceProgressStatus" class="pub-status-box hidden" style="margin-top: 8px;"></div>
+
+            <!-- SFX Sound Palette -->
+            <div style="margin-top: 10px;">
+              <label style="font-size: 11px; font-weight: 700; color: #cbd5e1; margin-bottom: 4px; display: block;">🔊 Bảng Âm Thanh Hiệu Ứng (SFX Quick Trigger):</label>
+              <div class="sfx-palette-grid" id="sfxPaletteGrid">
+                <!-- Dynamically populated via JS -->
+              </div>
+              <button class="studio-btn secondary-btn sm-btn full-btn" id="btnAutoSyncSfx" style="margin-top: 8px;">
+                <span>⚡ Tự Động Gắn SFX Vào Các Điểm Hook Subtitle</span>
+              </button>
+            </div>
+
+            <!-- B-Roll Suggestions Container -->
+            <div id="brollSuggestionsContainer" class="hidden" style="margin-top: 10px;">
+              <label style="font-size: 11px; font-weight: 700; color: var(--accent-cyan); display: block; margin-bottom: 4px;">🎬 Khung Hình B-Roll Khớp Với Kịch Bản:</label>
+              <div class="broll-list-cards" id="brollListCards"></div>
+            </div>
+          </div>
+
+          <!-- WEAPON 3: AI VOICE CLONING & TALKING HEAD AVATAR -->
+          <div class="branding-card" id="proSectionVoice">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <h4 style="margin: 0;">3. 🎙️ Clone Giọng Nói 3s & MC Ảo AI</h4>
+              <span class="status-pill active">Voice & Avatar</span>
+            </div>
+            <p class="section-desc">Nhân bản âm sắc giọng nói chỉ từ 3 giây ghi âm và tạo MC ảo phát biểu góc màn hình (Talking Head).</p>
+
+            <div class="form-row">
+              <label>Giọng Đọc Đang Dùng:</label>
+              <select id="proVoiceSelector" class="studio-select full-select">
+                <!-- Injected via JS -->
+              </select>
+            </div>
+
+            <div class="form-row grid-2">
+              <div>
+                <label>Tên giọng clone:</label>
+                <input type="text" id="inputCloneVoiceName" class="studio-input sm-input" placeholder="Ví dụ: Giọng Anh Tuấn">
+              </div>
+              <div>
+                <label>Vùng miền:</label>
+                <select id="selectCloneAccent" class="studio-select sm-select">
+                  <option value="mien_bac">Miền Bắc (Chuẩn)</option>
+                  <option value="mien_nam">Miền Nam (Truyền Cảm)</option>
+                  <option value="mien_trung">Miền Trung</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="studio-btn secondary-btn full-btn" id="btnTriggerCloneVoice">
+              <span>🎙️ Clone Giọng Ngay (Từ Mẫu 3s)</span>
+            </button>
+            <div id="voiceCloneStatusBox" class="pub-status-box hidden" style="margin-top: 8px;"></div>
+
+            <!-- Digital Avatar Host Setup -->
+            <div style="margin-top: 12px; border-top: 1px solid var(--border-subtle); padding-top: 10px;">
+              <label style="font-size: 11px; font-weight: 700; color: #cbd5e1; margin-bottom: 6px; display: block;">🧑‍💼 MC Ảo Nói Theo Giọng Đọc (Avatar In-Video):</label>
+              <div class="form-row grid-2">
+                <div>
+                  <label>Chọn MC:</label>
+                  <select id="proAvatarSelector" class="studio-select sm-select">
+                    <!-- Injected via JS -->
+                  </select>
+                </div>
+                <div>
+                  <label>Vị trí hiển thị:</label>
+                  <select id="proAvatarPosition" class="studio-select sm-select">
+                    <option value="bottom-right">Góc Phải Dưới</option>
+                    <option value="bottom-left">Góc Trái Dưới</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <label class="cb-label">
+                  <input type="checkbox" id="checkEnableAvatarOverlay">
+                  <span>🎥 Hiển thị MC Ảo dạng khung tròn cử động môi theo audio</span>
+                </label>
+              </div>
+              <button class="studio-btn primary-btn sm-btn full-btn" id="btnPreviewAvatarOverlay">
+                <span>👁️ Kích Hoạt MC Ảo Lên Video</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- WEAPON 4: TIKTOK SHOP & SHOPEE AFFILIATE AUTO-LINKER -->
+          <div class="branding-card" id="proSectionAffiliate">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <h4 style="margin: 0;">4. 🛒 TikTok Shop & Shopee Affiliate</h4>
+              <span class="status-pill active">Kiếm Tiền Tự Động</span>
+            </div>
+            <p class="section-desc">Quét sản phẩm có trong video, sinh link tiếp thị liên kết hoa hồng 20-30% và tự động ghim bình luận seeding.</p>
+
+            <button class="studio-btn primary-btn full-btn" id="btnScanAffiliateProducts">
+              <span>🔍 Quét Sản Phẩm Khớp Video & Tính Hoa Hồng</span>
+            </button>
+            <div id="affiliateScanStatusBox" class="pub-status-box hidden" style="margin-top: 8px;"></div>
+
+            <div id="affiliateProductCard" class="hidden" style="margin-top: 10px;">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+
+          <!-- WEAPON 5: PROXY MATRIX & ANTI-DETECT WARM-UP -->
+          <div class="branding-card" id="proSectionProxy">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <h4 style="margin: 0;">5. 🛡️ Proxy Matrix & Nuôi Nick FYP An Toàn</h4>
+              <span class="status-pill active">Anti-Shadowban</span>
+            </div>
+            <p class="section-desc">Gán IP dân cư riêng biệt cho từng Clone, giả lập thiết bị di động thật và nuôi nick lướt FYP tự động.</p>
+
+            <!-- Proxy List -->
+            <div class="proxy-matrix-list" id="proxyMatrixList">
+              <!-- Injected via JS -->
+            </div>
+
+            <div class="form-row grid-2" style="margin-top: 10px;">
+              <div>
+                <label>Thiết bị giả lập:</label>
+                <select id="selectDeviceFingerprint" class="studio-select sm-select">
+                  <option value="dev_iphone_15_pro">iPhone 15 Pro Max (iOS 17.5.1)</option>
+                  <option value="dev_samsung_s24_ultra">Samsung S24 Ultra (Android 14)</option>
+                </select>
+              </div>
+              <div>
+                <label>Thời lượng nuôi:</label>
+                <select id="selectWarmupDuration" class="studio-select sm-select">
+                  <option value="15">15 phút (Khuyên dùng)</option>
+                  <option value="30">30 phút (Chuyên sâu)</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="studio-btn primary-btn full-btn" id="btnRunMatrixWarmup">
+              <span>🔥 Bắt Đầu Nuôi Nick Tránh 0-View (15 Phút)</span>
+            </button>
+            <div id="proxyWarmupAlert" class="pub-status-box hidden" style="margin-top: 8px;"></div>
+          </div>
+
+          <!-- WEAPON 6: TELEGRAM REMOTE COMMANDER BOT -->
+          <div class="branding-card" id="proSectionTelegram">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <h4 style="margin: 0;">6. 🤖 Telegram Remote Commander Bot</h4>
+              <span class="status-pill active" id="telegramBotPill">🟢 Bot Trực Tuyến</span>
+            </div>
+            <p class="section-desc">Điều khiển TMD Studio qua Telegram: Bắn link video vào chat ➔ Server tự cào, lật Anti-Reup, dịch phụ đề và đăng theo lệnh.</p>
+
+            <div class="form-row grid-2">
+              <div>
+                <label>Bot Username:</label>
+                <input type="text" id="inputTgBotUser" class="studio-input sm-input" value="@TMD_Studio_Pro_Bot" readonly>
+              </div>
+              <div>
+                <label>Chat ID / Admin:</label>
+                <input type="text" id="inputTgAdminUser" class="studio-input sm-input" value="@tmd_creator_vip">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="cb-label">
+                <input type="checkbox" id="checkTgAutoScrape" checked>
+                <span>⚡ Tự động cào video & xóa watermark khi nhận link</span>
+              </label>
+            </div>
+
+            <!-- Live Simulator Console -->
+            <div style="margin-top: 8px;">
+              <label style="font-size: 11px; font-weight: 700; color: #cbd5e1;">💬 Thử Gửi Lệnh Hoặc Link Video Giả Lập Telegram:</label>
+              <div style="display: flex; gap: 6px; margin-top: 4px;">
+                <input type="text" id="inputTgTestMsg" class="studio-input" value="https://v.douyin.com/i8hGq2/">
+                <button class="studio-btn secondary-btn sm-btn" id="btnSendTgSimulate">
+                  <span>Gửi Lệnh</span>
+                </button>
+              </div>
+            </div>
+            <div id="telegramReplyBox" class="pub-status-box hidden" style="margin-top: 8px;"></div>
+          </div>
+
+          <!-- WEAPON 7: VIRAL A/B HOOK & THUMBNAIL SPLIT TESTER -->
+          <div class="branding-card" id="proSectionAB">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <h4 style="margin: 0;">7. 🧪 Thử Nghiệm A/B Hook & Thumbnail</h4>
+              <span class="status-pill active">Viral Multiplier</span>
+            </div>
+            <p class="section-desc">Sinh 3 biến thể Hook 3 giây đầu tiên và Thumbnail khác nhau, đăng lên các kênh clone để đo lường video nào giữ chân người xem tốt nhất.</p>
+
+            <button class="studio-btn primary-btn full-btn" id="btnGenerateABVariants">
+              <span>⚡ Tạo 3 Biến Thể Hook 3 Giây Đầu & Thumbnail</span>
+            </button>
+            <div id="abVariantsContainer" class="hidden" style="margin-top: 10px;">
+              <!-- Injected via JS -->
+            </div>
           </div>
         </div>
       </aside>
