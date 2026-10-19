@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 const { exec } = require('child_process');
+const db = require('./database');
 
 const PORT = process.env.PORT || 3000;
 const STUDIO_DIR = path.join(__dirname, 'studio');
@@ -27,11 +28,120 @@ const server = http.createServer(async (req, res) => {
 
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Range');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Range, Authorization');
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
     res.end();
+    return;
+  }
+
+  // Helper: Read JSON Body
+  const readJsonBody = () => new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        resolve(JSON.parse(body || '{}'));
+      } catch (e) {
+        reject(new Error('Invalid JSON body'));
+      }
+    });
+    req.on('error', reject);
+  });
+
+  // Helper: Extract Bearer token
+  const getBearerToken = () => {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
+    return authHeader.substring(7).trim();
+  };
+
+  // --- AUTH ROUTE: Register ---
+  if (pathname === '/api/auth/register' && req.method === 'POST') {
+    try {
+      const data = await readJsonBody();
+      const result = db.registerUser(data);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, message: 'Đăng ký tài khoản thành công!', ...result }));
+    } catch (err) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: err.message }));
+    }
+    return;
+  }
+
+  // --- AUTH ROUTE: Login ---
+  if (pathname === '/api/auth/login' && req.method === 'POST') {
+    try {
+      const data = await readJsonBody();
+      const result = db.loginUser(data);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, message: 'Đăng nhập thành công!', ...result }));
+    } catch (err) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: err.message }));
+    }
+    return;
+  }
+
+  // --- AUTH ROUTE: Get Current User Profile (Me) ---
+  if (pathname === '/api/auth/me' && req.method === 'GET') {
+    const token = getBearerToken();
+    const user = db.verifySession(token);
+    if (!user) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: 'Phiên đăng nhập đã hết hạn hoặc không hợp lệ!' }));
+      return;
+    }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, user }));
+    return;
+  }
+
+  // --- AUTH ROUTE: Logout ---
+  if (pathname === '/api/auth/logout' && req.method === 'POST') {
+    const token = getBearerToken();
+    if (token) db.deleteSession(token);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, message: 'Đã đăng xuất thành công!' }));
+    return;
+  }
+
+  // --- USERS MANAGEMENT: List all accounts ---
+  if (pathname === '/api/users' && req.method === 'GET') {
+    const users = db.getAllUsers();
+    const stats = db.getSystemStats();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, users, stats }));
+    return;
+  }
+
+  // --- USERS MANAGEMENT: Update User ---
+  if (pathname === '/api/users/update' && req.method === 'POST') {
+    try {
+      const { id, updates } = await readJsonBody();
+      const updatedUser = db.updateUser(id, updates);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, message: 'Cập nhật tài khoản thành công!', user: updatedUser }));
+    } catch (err) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: err.message }));
+    }
+    return;
+  }
+
+  // --- USERS MANAGEMENT: Delete User ---
+  if (pathname === '/api/users/delete' && req.method === 'POST') {
+    try {
+      const { id } = await readJsonBody();
+      db.deleteUser(id);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, message: 'Đã xóa tài khoản thành công!' }));
+    } catch (err) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, message: err.message }));
+    }
     return;
   }
 

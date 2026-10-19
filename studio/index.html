@@ -96,6 +96,43 @@
         <button class="studio-btn primary-btn glow-btn" id="btnOpenExportModal">
           <span>⚡ Xuất Video & Phụ Đề</span>
         </button>
+
+        <div class="tool-divider"></div>
+
+        <!-- User Profile Pill & Dropdown -->
+        <div class="user-profile-menu-container" id="userProfileMenuContainer">
+          <button class="user-pill-btn" id="btnUserMenuToggle">
+            <span class="user-avatar-badge" id="topbarUserAvatar">👑</span>
+            <div class="user-text-meta">
+              <span class="user-display-name" id="topbarUserName">Quản Trị Viên</span>
+              <span class="user-plan-tag" id="topbarUserPlan">VIP PRO</span>
+            </div>
+            <span class="dropdown-chevron">▾</span>
+          </button>
+
+          <!-- Dropdown Popup -->
+          <div class="user-dropdown-popup hidden" id="userDropdownPopup">
+            <div class="dropdown-user-header">
+              <span class="header-avatar" id="dropdownAvatar">👑</span>
+              <div class="header-info">
+                <strong id="dropdownName">Quản Trị Viên</strong>
+                <small id="dropdownEmail">admin@tmdstudio.com</small>
+                <small id="dropdownPhone" style="color: var(--accent-cyan);">📞 0988888888</small>
+              </div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item-btn" id="btnOpenAccountManager">
+              <span>🛡️ Quản Lý Account Website</span>
+            </button>
+            <button class="dropdown-item-btn" id="btnOpenProfileModal">
+              <span>👤 Hồ Sơ Của Tôi</span>
+            </button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item-btn danger-item" id="btnLogoutBtn">
+              <span>🚪 Đăng Xuất</span>
+            </button>
+          </div>
+        </div>
       </div>
     </nav>
 
@@ -846,6 +883,256 @@
         <div class="modal-footer">
           <button class="studio-btn secondary-btn" id="btnCancelExport">Đóng</button>
           <button class="studio-btn primary-btn glow-btn" id="btnConfirmExport">Xuất ngay</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Auth & Access Gate (Login / Register) -->
+    <div class="studio-modal-backdrop" id="modalAuth">
+      <div class="studio-modal modal-auth">
+        <div class="auth-brand-header">
+          <div class="auth-icon-badge">🎬</div>
+          <h2>TMD Studio Pro</h2>
+          <p class="auth-sub">Hệ thống biên tập video, lồng tiếng AI & tự động hóa đa kênh</p>
+          <div class="auth-tabs">
+            <button class="auth-tab-btn active" id="tabBtnLogin" data-target="formLogin">🔑 Đăng Nhập</button>
+            <button class="auth-tab-btn" id="tabBtnRegister" data-target="formRegister">📝 Đăng Ký Tài Khoản</button>
+          </div>
+        </div>
+
+        <div class="modal-body auth-modal-body">
+          <div id="authAlertBox" class="auth-alert-box hidden"></div>
+
+          <!-- FORM 1: LOGIN -->
+          <form id="formLogin" class="auth-form-panel active">
+            <div class="form-row">
+              <label>Email hoặc Số Điện Thoại (SĐT):</label>
+              <input type="text" id="loginIdentifier" class="studio-input" placeholder="admin@tmdstudio.com hoặc 0988888888" required>
+            </div>
+            <div class="form-row">
+              <label>Mật khẩu:</label>
+              <input type="password" id="loginPassword" class="studio-input" placeholder="Nhập mật khẩu..." required>
+            </div>
+            <div class="form-row flex-between">
+              <label class="checkbox-label sm-cb">
+                <input type="checkbox" id="loginRememberMe" checked>
+                Ghi nhớ đăng nhập trên thiết bị này
+              </label>
+              <a href="#" class="forgot-link" id="linkForgotPass" onclick="alert('Vui lòng liên hệ Admin qua SĐT 0988888888 để cấp lại mật khẩu!'); return false;">Quên mật khẩu?</a>
+            </div>
+
+            <button type="submit" class="studio-btn primary-btn full-btn glow-btn" id="btnSubmitLogin" style="margin-top: 10px;">
+              <span>🔑 Đăng Nhập Vào Studio</span>
+            </button>
+
+            <!-- Quick Demo Accounts -->
+            <div class="quick-demo-box">
+              <span class="demo-label">Tài khoản có sẵn:</span>
+              <div class="demo-chips">
+                <button type="button" class="demo-chip" id="btnDemoAdmin" title="Đăng nhập tài khoản Admin">👑 Admin (0988888888)</button>
+                <button type="button" class="demo-chip" id="btnDemoCreator" title="Đăng nhập tài khoản Creator">🎵 Creator (0912345678)</button>
+              </div>
+            </div>
+          </form>
+
+          <!-- FORM 2: REGISTER -->
+          <form id="formRegister" class="auth-form-panel">
+            <div class="form-row">
+              <label>Họ và Tên:</label>
+              <input type="text" id="regFullname" class="studio-input" placeholder="Ví dụ: Nguyễn Văn A" required>
+            </div>
+            <div class="form-row grid-2">
+              <div>
+                <label>Email:</label>
+                <input type="email" id="regEmail" class="studio-input" placeholder="email@gmail.com" required>
+              </div>
+              <div>
+                <label>Số Điện Thoại (SĐT):</label>
+                <input type="tel" id="regPhone" class="studio-input" placeholder="0988123456" required>
+              </div>
+            </div>
+            <div class="form-row grid-2">
+              <div>
+                <label>Mật khẩu (≥ 6 ký tự):</label>
+                <input type="password" id="regPassword" class="studio-input" placeholder="••••••••" required>
+              </div>
+              <div>
+                <label>Xác nhận mật khẩu:</label>
+                <input type="password" id="regConfirmPassword" class="studio-input" placeholder="••••••••" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <label class="checkbox-label sm-cb">
+                <input type="checkbox" id="regTerms" checked required>
+                Tôi đồng ý với Điều khoản dịch vụ và Chính sách bảo mật TMD Studio
+              </label>
+            </div>
+
+            <button type="submit" class="studio-btn success-btn full-btn glow-btn" id="btnSubmitRegister" style="margin-top: 6px;">
+              <span>🚀 Tạo Tài Khoản & Bắt Đầu Ngay</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Website Account Management Dashboard (Database & Users) -->
+    <div class="studio-modal-backdrop" id="modalAccountManager">
+      <div class="studio-modal modal-xl">
+        <div class="modal-header">
+          <div class="modal-title-with-badge">
+            <span class="header-icon">🛡️</span>
+            <div>
+              <h3>Hệ Thống Quản Lý Tài Khoản Website & Database</h3>
+              <p class="modal-subtext">Cơ sở dữ liệu người dùng, phân quyền Admin/Creator, gói bản quyền và trạng thái hoạt động.</p>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="btnCloseAccountManager">✕</button>
+        </div>
+
+        <div class="modal-body account-manager-body">
+          <!-- Stats Summary Bar -->
+          <div class="account-stats-grid">
+            <div class="acc-stat-card">
+              <span class="stat-number" id="statTotalUsers">0</span>
+              <span class="stat-desc">👥 Tổng Tài Khoản</span>
+            </div>
+            <div class="acc-stat-card">
+              <span class="stat-number stat-green" id="statActiveUsers">0</span>
+              <span class="stat-desc">🟢 Đang Hoạt Động</span>
+            </div>
+            <div class="acc-stat-card">
+              <span class="stat-number stat-purple" id="statAdminCount">0</span>
+              <span class="stat-desc">👑 Quản Trị Viên</span>
+            </div>
+            <div class="acc-stat-card">
+              <span class="stat-number stat-cyan" id="statTotalDownloads">0</span>
+              <span class="stat-desc">⬇️ Lượt Tải & Edit</span>
+            </div>
+          </div>
+
+          <!-- Controls Bar: Search, Filter & Add User Toggle -->
+          <div class="account-controls-row">
+            <div class="search-box-wrap">
+              <input type="text" id="userSearchInput" class="studio-input search-input" placeholder="🔍 Tìm theo Họ tên, Email hoặc Số điện thoại...">
+            </div>
+            <div class="controls-right-group">
+              <select id="userRoleFilter" class="studio-select">
+                <option value="all">Tất cả vai trò</option>
+                <option value="admin">Chỉ Admin</option>
+                <option value="creator">Chỉ Creator</option>
+              </select>
+              <button class="studio-btn primary-btn sm-btn" id="btnToggleAddUserForm">
+                <span>➕ Thêm Người Dùng</span>
+              </button>
+              <button class="icon-refresh-btn" id="btnRefreshUsers" title="Làm mới danh sách">🔄</button>
+            </div>
+          </div>
+
+          <!-- Collapsible Add User Form -->
+          <div class="add-user-drawer hidden" id="addUserDrawer">
+            <h4>➕ Tạo Tài Khoản Người Dùng Mới</h4>
+            <div class="drawer-grid">
+              <div>
+                <label>Họ và Tên:</label>
+                <input type="text" id="newUserFullname" class="studio-input sm-input" placeholder="Nguyễn Văn B">
+              </div>
+              <div>
+                <label>Email:</label>
+                <input type="email" id="newUserEmail" class="studio-input sm-input" placeholder="user@domain.com">
+              </div>
+              <div>
+                <label>Số Điện Thoại (SĐT):</label>
+                <input type="tel" id="newUserPhone" class="studio-input sm-input" placeholder="0911223344">
+              </div>
+              <div>
+                <label>Mật khẩu khởi tạo:</label>
+                <input type="password" id="newUserPassword" class="studio-input sm-input" placeholder="••••••••">
+              </div>
+              <div>
+                <label>Vai trò:</label>
+                <select id="newUserRole" class="studio-select sm-select">
+                  <option value="creator">Creator (Biên tập viên)</option>
+                  <option value="admin">Admin (Quản trị viên)</option>
+                </select>
+              </div>
+              <div>
+                <label>Gói bản quyền:</label>
+                <select id="newUserPlan" class="studio-select sm-select">
+                  <option value="VIP Pro Lifetime">VIP Pro Lifetime</option>
+                  <option value="Creator Studio Pro">Creator Studio Pro</option>
+                  <option value="Free Trial 2026">Free Trial 2026</option>
+                </select>
+              </div>
+            </div>
+            <div class="drawer-actions">
+              <button class="studio-btn secondary-btn sm-btn" id="btnCancelAddUser">Hủy</button>
+              <button class="studio-btn success-btn sm-btn" id="btnSaveNewUser">✔ Lưu Tài Khoản</button>
+            </div>
+          </div>
+
+          <!-- Users Data Table -->
+          <div class="users-table-container">
+            <table class="users-data-table">
+              <thead>
+                <tr>
+                  <th>Người Dùng</th>
+                  <th>Số Điện Thoại (SĐT)</th>
+                  <th>Email</th>
+                  <th>Vai Trò</th>
+                  <th>Gói Bản Quyền</th>
+                  <th>Trạng Thái</th>
+                  <th>Thao Tác</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody">
+                <!-- Injected via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="studio-btn secondary-btn" id="btnCloseAccountManagerBottom">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Current User Profile -->
+    <div class="studio-modal-backdrop" id="modalUserProfile">
+      <div class="studio-modal modal-md">
+        <div class="modal-header">
+          <h3>👤 Hồ Sơ Tài Khoản Của Tôi</h3>
+          <button class="modal-close-btn" id="btnCloseProfileModal">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="profile-hero-card">
+            <span class="profile-big-avatar" id="myProfileAvatar">👑</span>
+            <div class="profile-hero-text">
+              <h3 id="myProfileFullname">Quản Trị Viên</h3>
+              <span class="role-badge" id="myProfileRoleBadge">Admin System</span>
+              <span class="plan-badge" id="myProfilePlanBadge">VIP Pro Lifetime</span>
+            </div>
+          </div>
+
+          <div class="profile-details-grid">
+            <div class="form-row">
+              <label>Email đăng ký:</label>
+              <input type="text" id="myProfileEmail" class="studio-input" readonly disabled>
+            </div>
+            <div class="form-row">
+              <label>Số Điện Thoại (SĐT):</label>
+              <input type="tel" id="myProfilePhone" class="studio-input">
+            </div>
+            <div class="form-row">
+              <label>Đổi mật khẩu mới (Để trống nếu không đổi):</label>
+              <input type="password" id="myProfileNewPassword" class="studio-input" placeholder="Nhập mật khẩu mới...">
+            </div>
+          </div>
+          <div id="profileAlertBox" class="auth-alert-box hidden"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="studio-btn secondary-btn" id="btnCancelProfile">Hủy</button>
+          <button class="studio-btn primary-btn" id="btnSaveProfile">Lưu Thay Đổi</button>
         </div>
       </div>
     </div>

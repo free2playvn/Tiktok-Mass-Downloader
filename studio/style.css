@@ -1761,4 +1761,464 @@ body.theme-windows .window-titlebar {
 .terminal-log-row.share { color: #60a5fa; }
 .terminal-log-row.success { color: #4ade80; font-weight: 700; }
 
+/* ===================================================================
+   15. USER PROFILE WIDGET & DROPDOWN (TOPBAR)
+   =================================================================== */
+.user-profile-menu-container {
+  position: relative;
+}
+.user-pill-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+}
+.user-pill-btn:hover {
+  background: rgba(139, 92, 246, 0.15);
+  border-color: var(--accent-purple);
+}
+.user-avatar-badge {
+  font-size: 14px;
+}
+.user-text-meta {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+.user-display-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+.user-plan-tag {
+  font-size: 8px;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.dropdown-chevron {
+  font-size: 9px;
+  color: var(--text-muted);
+}
+
+.user-dropdown-popup {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 8px;
+  width: 250px;
+  background: #0f172a;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
+  padding: 8px 0;
+  z-index: 999;
+}
+.dropdown-user-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+}
+.header-avatar {
+  font-size: 24px;
+}
+.header-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.header-info strong {
+  font-size: 12px;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.header-info small {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+.dropdown-divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 6px 0;
+}
+.dropdown-item-btn {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 12px;
+  padding: 8px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background var(--transition-fast);
+}
+.dropdown-item-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+.dropdown-item-btn.danger-item:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+/* ===================================================================
+   16. AUTH MODAL (LOGIN & REGISTER)
+   =================================================================== */
+.modal-auth {
+  width: 440px;
+  max-width: 95vw;
+}
+.auth-brand-header {
+  padding: 24px 24px 0 24px;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(139, 92, 246, 0.12) 0%, transparent 100%);
+}
+.auth-icon-badge {
+  font-size: 32px;
+  margin-bottom: 6px;
+}
+.auth-brand-header h2 {
+  font-size: 20px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #fff, #c084fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 4px;
+}
+.auth-sub {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+.auth-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.auth-tab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all var(--transition-fast);
+}
+.auth-tab-btn.active {
+  color: #fff;
+  border-bottom-color: var(--accent-purple);
+  background: rgba(139, 92, 246, 0.08);
+}
+.auth-modal-body {
+  padding: 20px 24px;
+}
+.auth-form-panel {
+  display: none;
+}
+.auth-form-panel.active {
+  display: block;
+}
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sm-cb {
+  font-size: 10px;
+}
+.forgot-link {
+  font-size: 10px;
+  color: var(--accent-purple);
+  text-decoration: none;
+}
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+.auth-alert-box {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+.auth-alert-box.error {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}
+.auth-alert-box.success {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+}
+
+.quick-demo-box {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-subtle);
+}
+.demo-label {
+  display: block;
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.demo-chips {
+  display: flex;
+  gap: 8px;
+}
+.demo-chip {
+  flex: 1;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.demo-chip:hover {
+  background: rgba(139, 92, 246, 0.15);
+  border-color: var(--accent-purple);
+  color: #fff;
+}
+
+/* ===================================================================
+   17. WEBSITE ACCOUNT MANAGEMENT DASHBOARD MODAL
+   =================================================================== */
+.modal-xl {
+  width: 900px;
+  max-width: 95vw;
+}
+.modal-md {
+  width: 520px;
+  max-width: 95vw;
+}
+.modal-title-with-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.modal-title-with-badge .header-icon {
+  font-size: 26px;
+}
+.modal-subtext {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.account-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.acc-stat-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  text-align: center;
+}
+.stat-number {
+  display: block;
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+}
+.stat-number.stat-green { color: #10b981; }
+.stat-number.stat-purple { color: #c084fc; }
+.stat-number.stat-cyan { color: #38bdf8; }
+.stat-desc {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.account-controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.search-box-wrap {
+  flex: 1;
+}
+.search-input {
+  margin-bottom: 0 !important;
+}
+.controls-right-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-user-drawer {
+  background: #090d16;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  margin-bottom: 14px;
+}
+.add-user-drawer h4 {
+  font-size: 12px;
+  color: var(--accent-purple);
+  margin-bottom: 10px;
+}
+.drawer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.drawer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.users-table-container {
+  max-height: 340px;
+  overflow-y: auto;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+.users-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 11px;
+}
+.users-data-table th {
+  background: #0f172a;
+  color: var(--text-secondary);
+  font-weight: 700;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.users-data-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+.users-data-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.role-pill {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.role-pill.admin {
+  background: rgba(192, 132, 252, 0.15);
+  color: #c084fc;
+  border: 1px solid rgba(192, 132, 252, 0.4);
+}
+.role-pill.creator {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+}
+
+.status-pill {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.status-pill.active {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+.status-pill.suspended {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.table-actions {
+  display: flex;
+  gap: 6px;
+}
+.action-icon-btn {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 11px;
+}
+.action-icon-btn:hover {
+  border-color: var(--border-light);
+  background: rgba(255, 255, 255, 0.1);
+}
+.action-icon-btn.danger:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+}
+
+/* Profile Modal Styles */
+.profile-hero-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.profile-big-avatar {
+  font-size: 40px;
+}
+.profile-hero-text h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+}
+.role-badge, .plan-badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-right: 4px;
+}
+.role-badge {
+  background: rgba(192, 132, 252, 0.2);
+  color: #c084fc;
+}
+.plan-badge {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+}
+
+
 

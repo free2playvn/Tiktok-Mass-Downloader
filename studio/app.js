@@ -125,6 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
      =================================================================== */
   function init() {
     setupOsSwitcher();
+    setupAuthAndAccountManager();
     setupSidebarTabs();
     setupAspectRatio();
     setupVideoPlayer();
@@ -1397,6 +1398,522 @@ document.addEventListener('DOMContentLoaded', () => {
         state.aiAgents.speakVietnamese(cleanText, { rate: 1.0 });
       });
     }
+  }
+
+  /* ===================================================================
+     14. AUTHENTICATION & WEBSITE ACCOUNT MANAGEMENT SYSTEM
+     =================================================================== */
+  function setupAuthAndAccountManager() {
+    state.currentUser = null;
+    state.authToken = localStorage.getItem('tmd_auth_token') || null;
+
+    // Modals
+    const modalAuth = document.getElementById('modalAuth');
+    const modalAccountManager = document.getElementById('modalAccountManager');
+    const modalUserProfile = document.getElementById('modalUserProfile');
+
+    // Auth Form Elements
+    const tabBtnLogin = document.getElementById('tabBtnLogin');
+    const tabBtnRegister = document.getElementById('tabBtnRegister');
+    const formLogin = document.getElementById('formLogin');
+    const formRegister = document.getElementById('formRegister');
+    const loginIdentifier = document.getElementById('loginIdentifier');
+    const loginPassword = document.getElementById('loginPassword');
+    const authAlertBox = document.getElementById('authAlertBox');
+    const btnDemoAdmin = document.getElementById('btnDemoAdmin');
+    const btnDemoCreator = document.getElementById('btnDemoCreator');
+
+    // Register Form Elements
+    const regFullname = document.getElementById('regFullname');
+    const regEmail = document.getElementById('regEmail');
+    const regPhone = document.getElementById('regPhone');
+    const regPassword = document.getElementById('regPassword');
+    const regConfirmPassword = document.getElementById('regConfirmPassword');
+
+    // Topbar Profile Elements
+    const btnUserMenuToggle = document.getElementById('btnUserMenuToggle');
+    const userDropdownPopup = document.getElementById('userDropdownPopup');
+    const topbarUserAvatar = document.getElementById('topbarUserAvatar');
+    const topbarUserName = document.getElementById('topbarUserName');
+    const topbarUserPlan = document.getElementById('topbarUserPlan');
+    const dropdownAvatar = document.getElementById('dropdownAvatar');
+    const dropdownName = document.getElementById('dropdownName');
+    const dropdownEmail = document.getElementById('dropdownEmail');
+    const dropdownPhone = document.getElementById('dropdownPhone');
+    const btnOpenAccountManager = document.getElementById('btnOpenAccountManager');
+    const btnOpenProfileModal = document.getElementById('btnOpenProfileModal');
+    const btnLogoutBtn = document.getElementById('btnLogoutBtn');
+
+    // Account Manager Elements
+    const btnCloseAccountManager = document.getElementById('btnCloseAccountManager');
+    const btnCloseAccountManagerBottom = document.getElementById('btnCloseAccountManagerBottom');
+    const statTotalUsers = document.getElementById('statTotalUsers');
+    const statActiveUsers = document.getElementById('statActiveUsers');
+    const statAdminCount = document.getElementById('statAdminCount');
+    const statTotalDownloads = document.getElementById('statTotalDownloads');
+    const userSearchInput = document.getElementById('userSearchInput');
+    const userRoleFilter = document.getElementById('userRoleFilter');
+    const btnRefreshUsers = document.getElementById('btnRefreshUsers');
+    const btnToggleAddUserForm = document.getElementById('btnToggleAddUserForm');
+    const addUserDrawer = document.getElementById('addUserDrawer');
+    const btnSaveNewUser = document.getElementById('btnSaveNewUser');
+    const btnCancelAddUser = document.getElementById('btnCancelAddUser');
+    const usersTableBody = document.getElementById('usersTableBody');
+
+    // Profile Modal Elements
+    const btnCloseProfileModal = document.getElementById('btnCloseProfileModal');
+    const btnCancelProfile = document.getElementById('btnCancelProfile');
+    const btnSaveProfile = document.getElementById('btnSaveProfile');
+    const myProfileAvatar = document.getElementById('myProfileAvatar');
+    const myProfileFullname = document.getElementById('myProfileFullname');
+    const myProfileRoleBadge = document.getElementById('myProfileRoleBadge');
+    const myProfilePlanBadge = document.getElementById('myProfilePlanBadge');
+    const myProfileEmail = document.getElementById('myProfileEmail');
+    const myProfilePhone = document.getElementById('myProfilePhone');
+    const myProfileNewPassword = document.getElementById('myProfileNewPassword');
+    const profileAlertBox = document.getElementById('profileAlertBox');
+
+    let allLoadedUsers = [];
+
+    // Helper: Show Auth Alert
+    function showAuthAlert(msg, type = 'error') {
+      authAlertBox.className = `auth-alert-box ${type}`;
+      authAlertBox.textContent = msg;
+      authAlertBox.classList.remove('hidden');
+    }
+
+    function hideAuthAlert() {
+      authAlertBox.classList.add('hidden');
+    }
+
+    // Tab Switcher in Auth Modal
+    if (tabBtnLogin && tabBtnRegister) {
+      tabBtnLogin.addEventListener('click', () => {
+        tabBtnLogin.classList.add('active');
+        tabBtnRegister.classList.remove('active');
+        formLogin.classList.add('active');
+        formRegister.classList.remove('active');
+        hideAuthAlert();
+      });
+
+      tabBtnRegister.addEventListener('click', () => {
+        tabBtnRegister.classList.add('active');
+        tabBtnLogin.classList.remove('active');
+        formRegister.classList.add('active');
+        formLogin.classList.remove('active');
+        hideAuthAlert();
+      });
+    }
+
+    // Demo Chips
+    if (btnDemoAdmin) {
+      btnDemoAdmin.addEventListener('click', () => {
+        loginIdentifier.value = 'admin@tmdstudio.com';
+        loginPassword.value = 'admin123';
+      });
+    }
+    if (btnDemoCreator) {
+      btnDemoCreator.addEventListener('click', () => {
+        loginIdentifier.value = '0912345678';
+        loginPassword.value = 'creator123';
+      });
+    }
+
+    // Submit Login
+    if (formLogin) {
+      formLogin.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideAuthAlert();
+        const identifier = loginIdentifier.value.trim();
+        const password = loginPassword.value;
+
+        try {
+          const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ identifier, password })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            state.authToken = data.token;
+            state.currentUser = data.user;
+            localStorage.setItem('tmd_auth_token', data.token);
+            showAuthAlert('Đăng nhập thành công! Đang chuyển vào Studio...', 'success');
+            setTimeout(() => {
+              modalAuth.classList.remove('open');
+              updateUserUI();
+            }, 600);
+          } else {
+            showAuthAlert(data.message || 'Đăng nhập thất bại!');
+          }
+        } catch (err) {
+          showAuthAlert('Lỗi kết nối máy chủ: ' + err.message);
+        }
+      });
+    }
+
+    // Submit Register
+    if (formRegister) {
+      formRegister.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideAuthAlert();
+        const fullname = regFullname.value.trim();
+        const email = regEmail.value.trim();
+        const phone = regPhone.value.trim();
+        const password = regPassword.value;
+        const confirmPass = regConfirmPassword.value;
+
+        if (password !== confirmPass) {
+          showAuthAlert('Mật khẩu xác nhận không khớp! Vui lòng kiểm tra lại.');
+          return;
+        }
+
+        try {
+          const res = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fullname, email, phone, password })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            state.authToken = data.token;
+            state.currentUser = data.user;
+            localStorage.setItem('tmd_auth_token', data.token);
+            showAuthAlert('Đăng ký tài khoản thành công! Đang mở Studio...', 'success');
+            setTimeout(() => {
+              modalAuth.classList.remove('open');
+              updateUserUI();
+            }, 800);
+          } else {
+            showAuthAlert(data.message || 'Đăng ký thất bại!');
+          }
+        } catch (err) {
+          showAuthAlert('Lỗi đăng ký: ' + err.message);
+        }
+      });
+    }
+
+    // Update Topbar User UI
+    function updateUserUI() {
+      if (!state.currentUser) return;
+      const u = state.currentUser;
+      if (topbarUserAvatar) topbarUserAvatar.textContent = u.avatar || '👤';
+      if (topbarUserName) topbarUserName.textContent = u.fullname;
+      if (topbarUserPlan) topbarUserPlan.textContent = u.role === 'admin' ? 'ADMIN VIP' : u.plan.toUpperCase();
+
+      if (dropdownAvatar) dropdownAvatar.textContent = u.avatar || '👤';
+      if (dropdownName) dropdownName.textContent = u.fullname;
+      if (dropdownEmail) dropdownEmail.textContent = u.email;
+      if (dropdownPhone) dropdownPhone.textContent = `📞 ${u.phone}`;
+    }
+
+    // Toggle Dropdown Popup
+    if (btnUserMenuToggle) {
+      btnUserMenuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userDropdownPopup.classList.toggle('hidden');
+      });
+    }
+
+    document.addEventListener('click', (e) => {
+      if (userDropdownPopup && !userDropdownPopup.contains(e.target) && e.target !== btnUserMenuToggle) {
+        userDropdownPopup.classList.add('hidden');
+      }
+    });
+
+    // Logout
+    if (btnLogoutBtn) {
+      btnLogoutBtn.addEventListener('click', async () => {
+        if (confirm('Bạn có chắc chắn muốn đăng xuất khỏi TMD Studio?')) {
+          try {
+            await fetch('/api/auth/logout', {
+              method: 'POST',
+              headers: { 'Authorization': 'Bearer ' + state.authToken }
+            });
+          } catch (e) {}
+          state.authToken = null;
+          state.currentUser = null;
+          localStorage.removeItem('tmd_auth_token');
+          userDropdownPopup.classList.add('hidden');
+          modalAuth.classList.add('open');
+        }
+      });
+    }
+
+    // Open Account Manager Modal
+    if (btnOpenAccountManager) {
+      btnOpenAccountManager.addEventListener('click', () => {
+        userDropdownPopup.classList.add('hidden');
+        modalAccountManager.classList.add('open');
+        loadUsersData();
+      });
+    }
+
+    if (btnCloseAccountManager) btnCloseAccountManager.addEventListener('click', () => modalAccountManager.classList.remove('open'));
+    if (btnCloseAccountManagerBottom) btnCloseAccountManagerBottom.addEventListener('click', () => modalAccountManager.classList.remove('open'));
+
+    // Open User Profile Modal
+    if (btnOpenProfileModal) {
+      btnOpenProfileModal.addEventListener('click', () => {
+        userDropdownPopup.classList.add('hidden');
+        if (!state.currentUser) return;
+        const u = state.currentUser;
+        if (myProfileAvatar) myProfileAvatar.textContent = u.avatar || '👑';
+        if (myProfileFullname) myProfileFullname.textContent = u.fullname;
+        if (myProfileRoleBadge) myProfileRoleBadge.textContent = u.role.toUpperCase();
+        if (myProfilePlanBadge) myProfilePlanBadge.textContent = u.plan;
+        if (myProfileEmail) myProfileEmail.value = u.email;
+        if (myProfilePhone) myProfilePhone.value = u.phone;
+        if (myProfileNewPassword) myProfileNewPassword.value = '';
+        if (profileAlertBox) profileAlertBox.classList.add('hidden');
+        modalUserProfile.classList.add('open');
+      });
+    }
+
+    if (btnCloseProfileModal) btnCloseProfileModal.addEventListener('click', () => modalUserProfile.classList.remove('open'));
+    if (btnCancelProfile) btnCancelProfile.addEventListener('click', () => modalUserProfile.classList.remove('open'));
+
+    // Save Profile Changes
+    if (btnSaveProfile) {
+      btnSaveProfile.addEventListener('click', async () => {
+        if (!state.currentUser) return;
+        const newPhone = myProfilePhone.value.trim();
+        const newPass = myProfileNewPassword.value.trim();
+
+        const updates = { phone: newPhone };
+        if (newPass) updates.password = newPass;
+
+        try {
+          const res = await fetch('/api/users/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: state.currentUser.id, updates })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            state.currentUser = data.user;
+            updateUserUI();
+            profileAlertBox.className = 'auth-alert-box success';
+            profileAlertBox.textContent = 'Đã cập nhật thông tin thành công!';
+            profileAlertBox.classList.remove('hidden');
+            setTimeout(() => modalUserProfile.classList.remove('open'), 1000);
+          } else {
+            profileAlertBox.className = 'auth-alert-box error';
+            profileAlertBox.textContent = data.message || 'Lỗi cập nhật!';
+            profileAlertBox.classList.remove('hidden');
+          }
+        } catch (err) {
+          profileAlertBox.className = 'auth-alert-box error';
+          profileAlertBox.textContent = 'Lỗi mạng: ' + err.message;
+          profileAlertBox.classList.remove('hidden');
+        }
+      });
+    }
+
+    // Toggle Add User Drawer
+    if (btnToggleAddUserForm) {
+      btnToggleAddUserForm.addEventListener('click', () => {
+        addUserDrawer.classList.toggle('hidden');
+      });
+    }
+    if (btnCancelAddUser) {
+      btnCancelAddUser.addEventListener('click', () => {
+        addUserDrawer.classList.add('hidden');
+      });
+    }
+
+    // Save New User (Admin adding user)
+    if (btnSaveNewUser) {
+      btnSaveNewUser.addEventListener('click', async () => {
+        const fullname = document.getElementById('newUserFullname').value.trim();
+        const email = document.getElementById('newUserEmail').value.trim();
+        const phone = document.getElementById('newUserPhone').value.trim();
+        const password = document.getElementById('newUserPassword').value.trim();
+        const role = document.getElementById('newUserRole').value;
+        const plan = document.getElementById('newUserPlan').value;
+
+        if (!fullname || !email || !phone || !password) {
+          alert('Vui lòng điền đầy đủ Họ tên, Email, SĐT và Mật khẩu!');
+          return;
+        }
+
+        try {
+          const res = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fullname, email, phone, password })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            if (role !== 'creator' || plan !== 'Free Trial 2026') {
+              await fetch('/api/users/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: data.user.id, updates: { role, plan } })
+              });
+            }
+            alert(`Đã tạo thành công tài khoản [${fullname}] trong cơ sở dữ liệu!`);
+            addUserDrawer.classList.add('hidden');
+            document.getElementById('newUserFullname').value = '';
+            document.getElementById('newUserEmail').value = '';
+            document.getElementById('newUserPhone').value = '';
+            document.getElementById('newUserPassword').value = '';
+            loadUsersData();
+          } else {
+            alert('Lỗi tạo tài khoản: ' + data.message);
+          }
+        } catch (err) {
+          alert('Lỗi: ' + err.message);
+        }
+      });
+    }
+
+    if (btnRefreshUsers) btnRefreshUsers.addEventListener('click', loadUsersData);
+
+    // Search and Filter Users
+    if (userSearchInput) userSearchInput.addEventListener('input', renderUsersList);
+    if (userRoleFilter) userRoleFilter.addEventListener('change', renderUsersList);
+
+    // Load Users from Backend
+    async function loadUsersData() {
+      try {
+        const res = await fetch('/api/users');
+        const data = await res.json();
+        if (data.ok) {
+          allLoadedUsers = data.users || [];
+          if (statTotalUsers) statTotalUsers.textContent = data.stats.totalUsers || allLoadedUsers.length;
+          if (statActiveUsers) statActiveUsers.textContent = data.stats.activeUsers || allLoadedUsers.length;
+          if (statAdminCount) statAdminCount.textContent = data.stats.adminCount || 1;
+          if (statTotalDownloads) statTotalDownloads.textContent = data.stats.totalDownloads || 112;
+          renderUsersList();
+        }
+      } catch (e) {
+        console.error('Lỗi tải danh sách người dùng:', e);
+      }
+    }
+
+    function renderUsersList() {
+      if (!usersTableBody) return;
+      const keyword = (userSearchInput ? userSearchInput.value : '').toLowerCase().trim();
+      const roleFilter = userRoleFilter ? userRoleFilter.value : 'all';
+
+      const filtered = allLoadedUsers.filter(u => {
+        const matchesKeyword = !keyword || 
+          u.fullname.toLowerCase().includes(keyword) || 
+          u.email.toLowerCase().includes(keyword) || 
+          u.phone.includes(keyword);
+        const matchesRole = roleFilter === 'all' || u.role === roleFilter;
+        return matchesKeyword && matchesRole;
+      });
+
+      if (filtered.length === 0) {
+        usersTableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">Không tìm thấy tài khoản phù hợp với từ khóa!</td></tr>`;
+        return;
+      }
+
+      usersTableBody.innerHTML = filtered.map(u => `
+        <tr data-user-id="${u.id}">
+          <td>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span>${u.avatar || '👤'}</span>
+              <div>
+                <strong>${u.fullname}</strong>
+                <small style="display: block; color: var(--text-muted); font-size: 9px;">ID: ${u.id}</small>
+              </div>
+            </div>
+          </td>
+          <td><strong style="color: var(--accent-cyan);">${u.phone}</strong></td>
+          <td>${u.email}</td>
+          <td><span class="role-pill ${u.role}">${u.role}</span></td>
+          <td><span class="plan-pill" style="color: #cbd5e1; font-weight: 600;">${u.plan}</span></td>
+          <td>
+            <span class="status-pill ${u.status}">${u.status === 'active' ? '🟢 Hoạt động' : '🔴 Đã khóa'}</span>
+          </td>
+          <td>
+            <div class="table-actions">
+              <button class="action-icon-btn btn-toggle-role" data-id="${u.id}" data-role="${u.role}" title="Đổi quyền Admin/Creator">👑</button>
+              <button class="action-icon-btn btn-toggle-status" data-id="${u.id}" data-status="${u.status}" title="${u.status === 'active' ? 'Khóa tài khoản' : 'Mở khóa'}">
+                ${u.status === 'active' ? '🔒' : '🔓'}
+              </button>
+              ${u.role !== 'admin' ? `<button class="action-icon-btn danger btn-delete-user" data-id="${u.id}" title="Xóa tài khoản">🗑️</button>` : ''}
+            </div>
+          </td>
+        </tr>
+      `).join('');
+
+      // Wire Action Buttons
+      usersTableBody.querySelectorAll('.btn-toggle-role').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          const currentRole = btn.dataset.role;
+          const newRole = currentRole === 'admin' ? 'creator' : 'admin';
+          if (confirm(`Bạn muốn chuyển vai trò tài khoản sang ${newRole.toUpperCase()}?`)) {
+            await fetch('/api/users/update', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id, updates: { role: newRole } })
+            });
+            loadUsersData();
+          }
+        });
+      });
+
+      usersTableBody.querySelectorAll('.btn-toggle-status').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          const currentStatus = btn.dataset.status;
+          const newStatus = currentStatus === 'active' ? 'suspended' : 'active';
+          await fetch('/api/users/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, updates: { status: newStatus } })
+          });
+          loadUsersData();
+        });
+      });
+
+      usersTableBody.querySelectorAll('.btn-delete-user').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          if (confirm('Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản này khỏi cơ sở dữ liệu?')) {
+            await fetch('/api/users/delete', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id })
+            });
+            loadUsersData();
+          }
+        });
+      });
+    }
+
+    // Check Auth Session on Startup
+    async function checkAuthSession() {
+      if (!state.authToken) {
+        modalAuth.classList.add('open');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/auth/me', {
+          headers: { 'Authorization': 'Bearer ' + state.authToken }
+        });
+        const data = await res.json();
+        if (data.ok && data.user) {
+          state.currentUser = data.user;
+          updateUserUI();
+          modalAuth.classList.remove('open');
+        } else {
+          localStorage.removeItem('tmd_auth_token');
+          state.authToken = null;
+          modalAuth.classList.add('open');
+        }
+      } catch (err) {
+        modalAuth.classList.add('open');
+      }
+    }
+
+    checkAuthSession();
   }
 
   // Start app

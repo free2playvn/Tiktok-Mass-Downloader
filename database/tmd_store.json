@@ -1,0 +1,182 @@
+{
+  "users": [
+    {
+      "id": "usr_admin_001",
+      "email": "admin@tmdstudio.com",
+      "phone": "0988888888",
+      "passwordHash": "4ad74754c551d7024616b88515554ac054f371efeb87720304e44808c147db3cd9c3112d093e8843b16c837b9511532e4365d1ec0c138a8c3a49c943a4d00498",
+      "salt": "d5cbfe23075cf320d638d5f2c2cb6ea6",
+      "fullname": "Quản Trị Viên Cấp Cao",
+      "role": "admin",
+      "plan": "VIP Pro Enterprise",
+      "status": "active",
+      "avatar": "👑",
+      "createdAt": "2026-10-19T07:25:11.039Z",
+      "lastLogin": "2026-10-19T07:34:28.005Z",
+      "stats": {
+        "downloadsCount": 67,
+        "editedVideos": 12,
+        "clonesManaged": 5
+      }
+    },
+    {
+      "id": "usr_creator_002",
+      "email": "creator@tmdstudio.com",
+      "phone": "0912345678",
+      "passwordHash": "84d80975e5ebd5fed9c2ae494c0af816d9cf87d888acba98f6f38c7ea0843f5b6974094ca482187773cc80b54f494c3f7c5992b687b78bd66d059a4376f62771",
+      "salt": "92a79c935977da76be9479ab2000fab6",
+      "fullname": "Nhạc Nghe Đi Xe Official",
+      "role": "creator",
+      "plan": "Creator Studio Pro",
+      "status": "active",
+      "avatar": "🎵",
+      "createdAt": "2026-10-19T07:25:11.042Z",
+      "lastLogin": "2026-10-19T07:25:11.042Z",
+      "stats": {
+        "downloadsCount": 45,
+        "editedVideos": 8,
+        "clonesManaged": 3
+      }
+    },
+    {
+      "id": "usr_mvexjd16_08163d",
+      "email": "test@gmail.com",
+      "phone": "0977112233",
+      "passwordHash": "7a979d4d20fb8360d152209c71b8dcddd5ce7c036325c7d6e1266aff341fb16a7a10e59a9e8978e877de0b42aa1dc6884d86319da565abb13c0cef6d8e866833",
+      "salt": "526d59628fb7fab0671ce64975f4b891",
+      "fullname": "Nguyen Van A",
+      "role": "creator",
+      "plan": "Free Trial 2026",
+      "status": "active",
+      "avatar": "👤",
+      "createdAt": "2026-10-19T07:25:19.674Z",
+      "lastLogin": "2026-10-19T07:25:19.683Z",
+      "stats": {
+        "downloadsCount": 0,
+        "editedVideos": 0,
+        "clonesManaged": 0
+      }
+    },
+    {
+      "id": "usr_mvexlaai_ada4ee",
+      "email": "tuananh@gmail.com",
+      "phone": "0933221100",
+      "passwordHash": "8e67c641783f127581176f3b27fc358362b098ae4385a36fffe36d1812a5fc080a6f13ba416ac841706ba3ad77ea5d004d734715b7a2231b920c39e96a25f79c",
+      "salt": "9dffc83e2260058222857761e75c46f3",
+      "fullname": "Đặng Tuấn Anh",
+      "role": "creator",
+      "plan": "Free Trial 2026",
+      "status": "active",
+      "avatar": "👤",
+      "createdAt": "2026-10-19T07:26:49.434Z",
+      "lastLogin": "2026-10-19T07:26:58.013Z",
+      "stats": {
+        "downloadsCount": 0,
+        "editedVideos": 0,
+        "clonesManaged": 0
+      }
+    }
+  ],
+  "sessions": [
+    {
+      "token": "tmd_tok_278fa5eda554817fd4ea9207bdfd0770edc7ae4b6f031874dd00004ee9f1c9d8",
+      "userId": "usr_mvexjd16_08163d",
+      "createdAt": "2026-10-19T07:25:19.677Z",
+      "expiresAt": "2026-11-18T07:25:19.677Z"
+    },
+    {
+      "token": "tmd_tok_9e9b768cd4869c9e7ebc9df6d883a1777eeb3477c6fcee985878eab0bb4f1827",
+      "userId": "usr_mvexjd16_08163d",
+      "createdAt": "2026-10-19T07:25:19.685Z",
+      "expiresAt": "2026-11-18T07:25:19.685Z"
+    },
+    {
+      "token": "tmd_tok_0c97ef2f7d7e79bab396094ebd69b2274d6ebba5186da030aeef5cf5e12de849",
+      "userId": "usr_admin_001",
+      "createdAt": "2026-10-19T07:26:40.602Z",
+      "expiresAt": "2026-11-18T07:26:40.602Z"
+    },
+    {
+      "token": "tmd_tok_c51f1587af694fe51d2e11e1d5ec85fcf834cf57fd4ecf4ed96663c5240b0524",
+      "userId": "usr_mvexlaai_ada4ee",
+      "createdAt": "2026-10-19T07:26:49.439Z",
+      "expiresAt": "2026-11-18T07:26:49.439Z"
+    },
+    {
+      "token": "tmd_tok_f36bd03d37fcbd85a9f62cf9ea1a4ddebb7ab1c9a8d1990c7bd26991deeeb007",
+      "userId": "usr_mvexlaai_ada4ee",
+      "createdAt": "2026-10-19T07:26:58.015Z",
+      "expiresAt": "2026-11-18T07:26:58.015Z"
+    },
+    {
+      "token": "tmd_tok_551e1cd4d7ec1072f2ad34fbafa3640c32b074324ab33b59632207cb5644b53c",
+      "userId": "usr_admin_001",
+      "createdAt": "2026-10-19T07:32:33.441Z",
+      "expiresAt": "2026-11-18T07:32:33.441Z"
+    },
+    {
+      "token": "tmd_tok_9c4dda444d6dd807f9496e59c9b61b043ab4af61d18c8fd2cfd8c144275edcdd",
+      "userId": "usr_admin_001",
+      "createdAt": "2026-10-19T07:34:28.009Z",
+      "expiresAt": "2026-11-18T07:34:28.009Z"
+    }
+  ],
+  "activity_logs": [
+    {
+      "id": "act_mvexv44l",
+      "userId": "usr_admin_001",
+      "action": "user_login",
+      "details": "Đăng nhập thành công vào hệ thống",
+      "timestamp": "2026-10-19T07:34:28.005Z"
+    },
+    {
+      "id": "act_mvexsnq6",
+      "userId": "usr_admin_001",
+      "action": "user_login",
+      "details": "Đăng nhập thành công vào hệ thống",
+      "timestamp": "2026-10-19T07:32:33.438Z"
+    },
+    {
+      "id": "act_mvexlgwt",
+      "userId": "usr_mvexlaai_ada4ee",
+      "action": "user_login",
+      "details": "Đăng nhập thành công vào hệ thống",
+      "timestamp": "2026-10-19T07:26:58.013Z"
+    },
+    {
+      "id": "act_mvexlaaj",
+      "userId": "usr_mvexlaai_ada4ee",
+      "action": "user_register",
+      "details": "Đăng ký tài khoản thành công qua email tuananh@gmail.com và SĐT 0933221100",
+      "timestamp": "2026-10-19T07:26:49.435Z"
+    },
+    {
+      "id": "act_mvexl3h3",
+      "userId": "usr_admin_001",
+      "action": "user_login",
+      "details": "Đăng nhập thành công vào hệ thống",
+      "timestamp": "2026-10-19T07:26:40.599Z"
+    },
+    {
+      "id": "act_mvexjd1g",
+      "userId": "usr_mvexjd16_08163d",
+      "action": "user_login",
+      "details": "Đăng nhập thành công vào hệ thống",
+      "timestamp": "2026-10-19T07:25:19.684Z"
+    },
+    {
+      "id": "act_mvexjd17",
+      "userId": "usr_mvexjd16_08163d",
+      "action": "user_register",
+      "details": "Đăng ký tài khoản thành công qua email test@gmail.com và SĐT 0977112233",
+      "timestamp": "2026-10-19T07:25:19.675Z"
+    },
+    {
+      "id": "act_init_001",
+      "userId": "usr_admin_001",
+      "action": "system_init",
+      "details": "Khởi tạo cơ sở dữ liệu hệ thống TMD Studio Pro",
+      "timestamp": "2026-10-19T07:25:11.042Z"
+    }
+  ]
+}
